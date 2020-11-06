@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <androidx.cardview.widget.CardView
+            android:layout_width="340dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="16dp"
+            android:background="@color/grey"
+            android:orientation="vertical"
+            app:cardCornerRadius="16dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@mipmap/bg">
+
+            <ImageView
+                    android:id="@+id/ivLogo"
+                    android:layout_width="140dp"
+
+                    android:layout_height="48dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="36dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/vector_logo"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                    android:id="@+id/btnContinue"
+                    style="@style/ButtonLogin"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="36dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="36dp"
+                    android:background="@drawable/rounded_rectangle_red"
+                    android:gravity="center"
+                    android:paddingLeft="36dp"
+                    android:paddingTop="8dp"
+                    android:paddingRight="36dp"
+                    android:paddingBottom="8dp"
+                    android:text="@string/btn_continue"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvUID" />
+
+            <Button
+                    android:id="@+id/btnRelogin"
+                    style="@style/ButtonLogin"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="48dp"
+                    android:background="@drawable/button_selector_tosca"
+                    android:drawablePadding="24dp"
+                    android:gravity="center"
+                    android:paddingLeft="36dp"
+                    android:paddingTop="8dp"
+                    android:paddingRight="36dp"
+                    android:paddingBottom="8dp"
+                    android:text="@string/btn_choose_account"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/btnContinue"
+                    app:layout_constraintStart_toStartOf="@+id/btnContinue"
+                    app:layout_constraintTop_toBottomOf="@+id/tvChangePassword"
+                    app:layout_constraintVertical_bias="0.01999998" />
+
+            <TextView
+                    android:id="@+id/tvChangePassword"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/sign_in_with_another_account"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btnContinue" />
+
+            <View
+                    android:id="@+id/view"
+                    android:layout_width="0dp"
+                    android:layout_height="2dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@color/light_grey"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvChangePassword"
+                    app:layout_constraintEnd_toStartOf="@+id/tvChangePassword"
+                    app:layout_constraintStart_toStartOf="@+id/btnRelogin"
+                    app:layout_constraintTop_toTopOf="@+id/tvChangePassword" />
+
+            <View
+                    android:id="@+id/view2"
+                    android:layout_width="0dp"
+                    android:layout_height="2dp"
+                    android:layout_marginStart="12dp"
+                    android:background="@color/light_grey"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvChangePassword"
+                    app:layout_constraintEnd_toEndOf="@+id/btnRelogin"
+                    app:layout_constraintStart_toEndOf="@+id/tvChangePassword"
+                    app:layout_constraintTop_toTopOf="@+id/tvChangePassword" />
+
+            <TextView
+                    android:id="@+id/tvPhoneNumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Welcome +62812577719,"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="@+id/btnContinue"
+                    app:layout_constraintTop_toBottomOf="@+id/ivLogo" />
+
+            <TextView
+                    android:id="@+id/tvUID"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="UID : 20182874108b3147839"
+
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="@+id/btnContinue"
+                    app:layout_constraintTop_toBottomOf="@+id/tvPhoneNumber" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</FrameLayout>

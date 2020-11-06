@@ -9,38 +9,51 @@
 
     <Button
             android:id="@+id/btnPayment"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
-            android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="google payment"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.26"/>
 
+    <Button
+            android:id="@+id/btnPaymentOttoPay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="Ottopay Payment"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnPayment"
+            app:layout_constraintVertical_bias="0.1" />
 
-    <com.akggames.akg_sdk.ui.component.FloatingButton
+
+
+
+    <com.akggame.akg_sdk.ui.component.FloatingButton
             android:id="@+id/floatingButton"
             android:layout_width="wrap_content"
             android:background="@color/greeny_blue"
             android:layout_height="wrap_content"
-            app:floating_button_animation="scale"
-            app:floating_button_autoDip="false"
-            app:floating_button_autoNavigate="true"
-            app:floating_button_borderColor="@color/transparent"
-            app:floating_button_borderSize="1dp"
-            app:floating_button_circleAnchor="left"
-            app:floating_button_color="@color/transparent"
-            app:floating_button_circlePadding="2dp"
-            app:floating_button_circleSize="28dp"
-            app:floating_button_duration="300"
-            app:floating_button_orientation="horizontal"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="8dp"
+            android:elevation="3dp"
             android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toTopOf="parent"/>
+            />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

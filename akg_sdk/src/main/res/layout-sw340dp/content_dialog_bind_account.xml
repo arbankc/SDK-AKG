@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent">
+
+    <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:background="@mipmap/bg_box"
+                android:layout_margin="20dp"
+                android:layout_height="match_parent">
+            <TextView
+                    android:text="Bind Account"
+                    android:drawableLeft="@drawable/vector_ic_people_white"
+                    android:layout_marginTop="40dp"
+                    android:layout_width="wrap_content"
+                    android:textSize="20sp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:drawablePadding="8dp"
+                    android:textColor="@color/white"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tvPhoneNumber"
+                    app:layout_constraintStart_toStartOf="@+id/btnBindFacebook" tools:layout_editor_absoluteY="16dp"/>
+
+            <TextView
+                    android:text="@string/verify_account"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tvUID"
+                    android:textSize="12sp"
+                    android:layout_marginRight="28dp"
+                    android:textColor="@color/white" app:layout_constraintStart_toStartOf="@+id/tvPhoneNumber"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@+id/tvPhoneNumber"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    />
+            <com.facebook.login.widget.LoginButton
+                    android:id="@+id/fbLoginButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    tools:ignore="MissingConstraints"/>
+
+            <Button
+                    android:id="@+id/btnBindFacebook"
+                    style="@style/ButtonLogin"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="28dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="28dp"
+                    android:background="@drawable/button_selector_blue"
+                    android:clickable="true"
+                    android:drawableLeft="@drawable/vector_ic_btn_fb_small"
+                    android:drawablePadding="20dp"
+                    android:paddingStart="36dp"
+                    android:paddingTop="4dp"
+                    android:paddingRight="36dp"
+                    android:paddingBottom="4dp"
+                    android:text="@string/btn_login_facebook"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvUID" />
+
+            <Button
+                    android:id="@+id/btnBindGoogle"
+                    style="@style/ButtonLogin"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/button_selector_green"
+                    android:clickable="true"
+
+                    android:drawableLeft="@drawable/vector_ic_btn_google_small"
+                    android:drawablePadding="20dp"
+                    android:paddingStart="36dp"
+                    android:paddingTop="4dp"
+                    android:paddingRight="36dp"
+                    android:paddingBottom="4dp"
+                    android:text="@string/btn_login_gmail"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="@+id/btnBindFacebook"
+                    app:layout_constraintStart_toStartOf="@+id/btnBindFacebook"
+                    app:layout_constraintTop_toBottomOf="@+id/btnBindFacebook" />
+            <TextView
+                    android:text="Bind with Phone Login"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    android:id="@+id/tvChangePassword" app:layout_constraintEnd_toEndOf="parent"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:layout_marginEnd="8dp"
+                    app:layout_constraintStart_toStartOf="@+id/btnBindFacebook"
+                    app:layout_constraintTop_toBottomOf="@+id/btnBindGoogle" android:layout_marginTop="14dp"
+                    app:layout_constraintHorizontal_bias="0.00"/>
+
+
+            <Button
+                    android:id="@+id/btnBack"
+                    style="@style/ButtonLogin"
+                    android:layout_width="150dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="24dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/button_selector_tosca"
+                    android:clickable="true"
+                    android:drawableLeft="@drawable/vector_ic_btn_phone"
+                    android:drawablePadding="8dp"
+                    android:visibility="invisible"
+                    android:paddingStart="8dp"
+                    android:paddingTop="4dp"
+                    android:paddingRight="20dp"
+                    android:paddingBottom="4dp"
+                    android:text="@string/btn_login_phone"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/btnBindGoogle"
+                    app:layout_constraintTop_toBottomOf="@id/tvChangePassword" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleY="1.5"
+                android:scaleX="1.5"
+                android:id="@+id/ivClose"
+                android:layout_gravity="right"
+                android:layout_margin="16dp"
+                android:background="@mipmap/x_btn"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                />
+    </FrameLayout>
+</FrameLayout>

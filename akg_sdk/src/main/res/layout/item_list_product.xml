@@ -8,6 +8,7 @@
     <ImageView
             android:id="@+id/ivProductImage"
             android:layout_width="150dp"
+            android:background="@drawable/com_facebook_profile_picture_blank_portrait"
             android:layout_height="200dp"/>
 
     <TextView

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent">
+    <FrameLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:paddingBottom="24dp"
+                android:layout_gravity="center"
+                android:layout_margin="20dp"
+                android:background="@mipmap/bg_box"
+                android:layout_height="wrap_content" app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" android:layout_marginEnd="8dp"
+                app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="8dp"
+                app:layout_constraintStart_toStartOf="parent" android:id="@+id/constraintLayout">
+            <TextView
+                    android:text="Log Out"
+                    android:drawablePadding="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView4"
+                    android:textColor="@color/white"
+                    android:drawableLeft="@drawable/vector_ic_people_white"
+                    android:textSize="22sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toTopOf="parent" app:layout_constraintVertical_bias="0.13999999"/>
+
+            <TextView
+                    android:text="@string/logout_desc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tvVersion"
+                    app:layout_constraintStart_toStartOf="@+id/textView4"
+                    android:layout_marginTop="10dp" app:layout_constraintTop_toBottomOf="@+id/textView4"
+                    android:textColor="@color/white"/>
+            <LinearLayout
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginTop="20dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvVersion"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginBottom="56dp" app:layout_constraintBottom_toBottomOf="parent">
+                <Button
+                        android:text="Log out"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/btnNext"
+                        style="@style/ButtonMenu"
+                        android:background="@drawable/button_selector_deepblue"
+                        android:layout_marginEnd="8dp"/>
+                <Button
+                        android:text="Back"
+                        android:layout_weight="1"
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/ButtonMenu"
+                        android:layout_marginLeft="8dp"
+                        android:background="@drawable/button_selector_deepblue"
+                        android:id="@+id/btnBack"
+                        />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleY="1.5"
+                android:scaleX="1.5"
+                android:layout_gravity="right"
+                android:layout_margin="16dp"
+                android:id="@+id/ivClose"
+                android:background="@mipmap/x_btn"/>
+    </FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

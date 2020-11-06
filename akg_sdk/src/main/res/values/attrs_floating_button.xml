@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="FloatingButton">
-        <attr format="enum" name="floating_button_orientation">
-            <enum name="horizontal" value="0"/>
-            <enum name="vertical" value="1"/>
-        </attr>
-        <attr format="enum" name="floating_button_circleAnchor">
-            <enum name="left" value="0"/>
-            <enum name="right" value="1"/>
-            <enum name="top" value="2"/>
-            <enum name="bottom" value="3"/>
-        </attr>
-        <attr format="enum" name="floating_button_animation">
-            <enum name="none" value="0"/>
-            <enum name="fade" value="1"/>
-            <enum name="scale" value="2"/>
-        </attr>
-        <attr format="boolean" name="floating_button_autoNavigate"/>
-        <attr format="boolean" name="floating_button_autoDip"/>
+<!--        <attr format="enum" name="floating_button_orientation">-->
+<!--            <enum name="horizontal" value="0"/>-->
+<!--            <enum name="vertical" value="1"/>-->
+<!--        </attr>-->
+<!--        <attr format="enum" name="floating_button_circleAnchor">-->
+<!--            <enum name="left" value="0"/>-->
+<!--            <enum name="right" value="1"/>-->
+<!--            <enum name="top" value="2"/>-->
+<!--            <enum name="bottom" value="3"/>-->
+<!--        </attr>-->
+<!--        <attr format="enum" name="floating_button_animation">-->
+<!--            <enum name="none" value="0"/>-->
+<!--            <enum name="fade" value="1"/>-->
+<!--            <enum name="scale" value="2"/>-->
+<!--        </attr>-->
+<!--        <attr format="boolean" name="floating_button_autoNavigate"/>-->
+<!--        <attr format="boolean" name="floating_button_autoDip"/>-->
         <attr format="integer" name="floating_button_duration"/>
         <attr format="dimension" name="floating_button_circleSize"/>
         <attr format="reference" name="floating_button_circleDrawable"/>
@@ -28,6 +28,6 @@
         <attr format="color" name="floating_button_color"/>
         <attr format="dimension" name="floating_button_borderSize"/>
         <attr format="color" name="floating_button_borderColor"/>
-        <attr format="dimension" name="floating_button_expandSize"/>
+<!--        <attr format="dimension" name="floating_button_expandSize"/>-->
     </declare-styleable>
 </resources>

@@ -7,6 +7,6 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:showIn="@layout/activity_main"
-        tools:context="com.akggames.akg_sdk.ui.MainActivity">
+        tools:context="com.akggame.akg_sdk.ui.MainActivity">
 
 </androidx.constraintlayout.widget.ConstraintLayout>

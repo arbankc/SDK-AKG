@@ -1,140 +1,160 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:layout_height="match_parent"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@android:color/transparent">
+
     <androidx.cardview.widget.CardView
-            android:layout_gravity="center"
-            android:orientation="vertical"
-            app:cardCornerRadius="16dp"
             android:layout_width="400dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_margin="16dp"
             android:maxHeight="400dp"
-            android:layout_height="match_parent">
+            android:orientation="vertical"
+            app:cardCornerRadius="16dp">
+
         <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_gravity="center"
-                android:background="@mipmap/bg"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="@mipmap/bg">
+
             <com.facebook.login.widget.LoginButton
                     android:id="@+id/fbLoginButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
-                    tools:ignore="MissingConstraints"/>
-            <ImageView
-                    android:layout_width="210dp"
-                    android:layout_height="70dp"
+                    tools:ignore="MissingConstraints" />
 
-                    android:background="@drawable/vector_logo"
-                    android:id="@+id/ivLogo" android:layout_marginTop="24dp"
-                    app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginEnd="8dp"
-                    app:layout_constraintHorizontal_bias="0.5"/>
-            <Button
-                    android:text="@string/btn_login_facebook"
-                    android:paddingLeft="36dp"
-                    android:paddingRight="36dp"
-                    android:layout_width="0dp"
-                    style="@style/ButtonLogin"
-                    android:drawablePadding="24dp"
-                    android:drawableLeft="@drawable/vector_ic_btn_fb"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/rounded_rectangle_blue"
-                    android:id="@+id/btnTimer"
+            <ImageView
+                    android:id="@+id/ivLogo"
+                    android:layout_width="210dp"
+
+                    android:layout_height="70dp"
+                    android:layout_marginStart="8dp"
                     android:layout_marginTop="24dp"
-                    app:layout_constraintTop_toBottomOf="@+id/ivLogo" app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginEnd="36dp" app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginStart="36dp"/>
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/vector_logo"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
             <Button
-                    android:text="@string/btn_login_gmail"
+                    android:id="@+id/btnBindFacebook"
+                    style="@style/ButtonLogin"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="36dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="36dp"
+                    android:background="@drawable/rounded_rectangle_blue"
+                    android:drawableLeft="@drawable/vector_ic_btn_fb"
+                    android:drawablePadding="24dp"
                     android:paddingLeft="36dp"
                     android:paddingRight="36dp"
-                    android:id="@+id/btnRelogin"
-                    style="@style/ButtonLogin"
-                    android:drawablePadding="24dp"
-                    android:drawableLeft="@drawable/vector_ic_btn_google"
-                    android:background="@drawable/rounded_rectangle_green"
-                    android:layout_marginTop="16dp"
-                    app:layout_constraintTop_toBottomOf="@+id/btnTimer"
-                    app:layout_constraintEnd_toEndOf="@+id/btnTimer"
-                    app:layout_constraintStart_toStartOf="@+id/btnTimer"/>
-            <TextView
-                    android:text="Other Login"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/tvChangePassword" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-                    android:textSize="12sp"
-                    app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
-                    android:layout_marginTop="12dp" app:layout_constraintTop_toBottomOf="@+id/btnRelogin"/>
-            <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="0dp"
-                    android:layout_marginTop="12sp"
-                    android:gravity="center"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintTop_toBottomOf="@id/tvChangePassword"
+                    android:text="@string/btn_login_facebook"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/ivLogo" />
+
+            <Button
+                    android:id="@+id/btnBindGoogle"
+                    style="@style/ButtonLogin"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/rounded_rectangle_green"
+                    android:drawableLeft="@drawable/vector_ic_btn_google"
+                    android:drawablePadding="24dp"
+                    android:paddingLeft="36dp"
+                    android:paddingRight="36dp"
+                    android:text="@string/btn_login_gmail"
+                    app:layout_constraintEnd_toEndOf="@+id/btnBindFacebook"
+                    app:layout_constraintStart_toStartOf="@+id/btnBindFacebook"
+                    app:layout_constraintTop_toBottomOf="@+id/btnBindFacebook" />
+
+            <TextView
+                    android:id="@+id/tvChangePassword"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="Other Login"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btnBindGoogle" />
+
+            <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12sp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvChangePassword"
                     app:layout_constraintVertical_bias="0.07999998">
 
                 <Button
-                        android:text="@string/btn_login_guest"
-                        android:layout_width="150dp"
-                        android:layout_height="wrap_content"
                         android:id="@+id/btnGuest"
-                        android:textSize="12sp"
-                        android:drawablePadding="8dp"
-                        android:layout_marginLeft="8dp"
-                        android:drawableLeft="@drawable/vector_ic_btn_guest"
-                        android:paddingLeft="8dp"
-                        android:paddingRight="8dp"
                         style="@style/ButtonLogin"
-                        android:background="@drawable/rounded_rectangle_tosca"
-                        android:layout_marginEnd="8dp"
-                />
-                <Button
-                        android:text="@string/btn_login_phone"
-                        android:layout_width="150dp"
-                        style="@style/ButtonLogin"
-                        android:textSize="12sp"
-                        android:paddingLeft="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:paddingRight="8dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/rounded_rectangle_tosca"
+                        android:drawableLeft="@drawable/vector_ic_btn_guest"
+                        android:drawablePadding="24dp"
+                        android:paddingLeft="36dp"
+                        android:layout_marginStart="36dp"
+                        android:layout_marginEnd="36dp"
+                        android:paddingRight="36dp"
+                        android:text="@string/btn_login_guest"
+                        android:textSize="12sp" />
+
+                <Button
                         android:id="@+id/btnBack"
+                        style="@style/ButtonLogin"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/rounded_rectangle_tosca"
                         android:drawableLeft="@drawable/vector_ic_btn_phone"
                         android:drawablePadding="8dp"
-                        android:background="@drawable/rounded_rectangle_tosca"
-                        android:layout_marginStart="8dp"
-                />
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:text="@string/btn_login_phone"
+                        android:textSize="12sp"
+                        android:visibility="gone" />
             </LinearLayout>
+
             <View
+                    android:id="@+id/view"
                     android:layout_width="0dp"
-                    android:background="@color/light_grey"
                     android:layout_height="2dp"
-                    android:id="@+id/view" app:layout_constraintEnd_toStartOf="@+id/tvChangePassword"
                     android:layout_marginEnd="12dp"
-                    app:layout_constraintStart_toStartOf="@+id/btnRelogin"
-                    app:layout_constraintTop_toTopOf="@+id/tvChangePassword"
-                    app:layout_constraintBottom_toBottomOf="@+id/tvChangePassword"/>
-            <View
-                    android:layout_width="0dp"
                     android:background="@color/light_grey"
-                    android:layout_height="2dp"
-                    android:id="@+id/view2"
-                    app:layout_constraintTop_toTopOf="@+id/tvChangePassword"
                     app:layout_constraintBottom_toBottomOf="@+id/tvChangePassword"
-                    app:layout_constraintEnd_toEndOf="@+id/btnRelogin"
+                    app:layout_constraintEnd_toStartOf="@+id/tvChangePassword"
+                    app:layout_constraintStart_toStartOf="@+id/btnBindGoogle"
+                    app:layout_constraintTop_toTopOf="@+id/tvChangePassword" />
+
+            <View
+                    android:id="@+id/view2"
+                    android:layout_width="0dp"
+                    android:layout_height="2dp"
+                    android:layout_marginStart="12dp"
+                    android:background="@color/light_grey"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvChangePassword"
+                    app:layout_constraintEnd_toEndOf="@+id/btnBindGoogle"
                     app:layout_constraintStart_toEndOf="@+id/tvChangePassword"
-                    android:layout_marginStart="12dp"/>
+                    app:layout_constraintTop_toTopOf="@+id/tvChangePassword" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </FrameLayout>

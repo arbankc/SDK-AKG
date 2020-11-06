@@ -1,16 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.akggames.android.sdk">
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="com.android.vending.BILLING "/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+        package="com.akggame.android.sdk">
 
-    <application>
-        <activity android:name="com.akggames.akg_sdk.ui.activity.PaymentActivity"
-                  android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize">
-        </activity>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="com.android.vending.BILLING " />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <supports-screens
+            android:anyDensity="true"
+            android:largeScreens="true"
+            android:normalScreens="true"
+            android:smallScreens="true"
+            android:xlargeScreens="true" />
+
+    <application
+            android:networkSecurityConfig="@xml/network_security_conf"
+            >
+        <activity android:name="com.akggame.akg_sdk.ui.activity.PaymentOttopayActivity"></activity>
+        <activity android:name="com.akggame.akg_sdk.ui.activity.WebView" />
+
+<!--        <receiver-->
+<!--                android:name="com.adjust.sdk.AdjustReferrerReceiver"-->
+<!--                android:exported="true">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="com.android.vending.INSTALL_REFERRER" />-->
+<!--            </intent-filter>-->
+<!--        </receiver>-->
+
+        <activity
+                android:name="com.akggame.akg_sdk.ui.activity.PaymentActivity"
+                android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize" />
+
         <meta-data
                 android:name="com.google.android.gms.wallet.api.enabled"
                 android:value="true" />

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">13.228.25.85</domain>
+        <domain includeSubdomains="true">dplk-payment-service.ptape.com</domain>
+        <domain includeSubdomains="true">akg-api.ptape.com</domain>
+    </domain-config>
+</network-security-config>

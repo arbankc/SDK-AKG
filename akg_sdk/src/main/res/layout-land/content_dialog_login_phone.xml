@@ -82,7 +82,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/greeny_blue"
 
-                    android:id="@+id/tvCreateAccount" app:layout_constraintEnd_toEndOf="@+id/etOtpCode"
+                    android:id="@+id/tvResendOTP" app:layout_constraintEnd_toEndOf="@+id/etOtpCode"
                     android:layout_marginTop="8dp"
                     app:layout_constraintTop_toBottomOf="@+id/etOtpCode"/>
             <TextView
@@ -91,9 +91,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
-                    android:id="@+id/tvForgotPassword" app:layout_constraintEnd_toEndOf="@+id/tvCreateAccount"
+                    android:id="@+id/tvForgotPassword" app:layout_constraintEnd_toEndOf="@+id/tvResendOTP"
                     android:layout_marginTop="8dp"
-                    app:layout_constraintTop_toBottomOf="@+id/tvCreateAccount"/>
+                    app:layout_constraintTop_toBottomOf="@+id/tvResendOTP"/>
             <Button
                     android:id="@+id/btnBack"
                     android:text="Phone Login"
@@ -105,7 +105,7 @@
                     android:layout_marginEnd="8dp"
                     style="@style/ButtonLogin"
                     android:drawableLeft="@drawable/vector_ic_btn_phone"
-                    android:background="@drawable/rounded_rectangle_tosca"
+                    android:background="@drawable/button_selector_tosca"
                     android:drawablePadding="8dp"
                     android:paddingLeft="12dp"
                     android:paddingTop="4dp"

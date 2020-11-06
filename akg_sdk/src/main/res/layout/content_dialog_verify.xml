@@ -6,131 +6,141 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/transparent" android:id="@+id/constraintLayout2">
-    <FrameLayout android:layout_width="0dp" android:layout_height="wrap_content"
-                 app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-                 app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
-                 android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"
+    <FrameLayout android:layout_width="0dp"
+                 android:layout_height="wrap_content"
+                 app:layout_constraintEnd_toEndOf="parent"
+                 app:layout_constraintStart_toStartOf="parent"
+                 android:layout_marginBottom="8dp"
+                 android:layout_gravity="center"
+                 app:layout_constraintBottom_toBottomOf="parent"
                  android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
+                android:orientation="vertical"
                 android:background="@mipmap/bg_box"
                 android:padding="24dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_margin="20dp"
-                android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toBottomOf="parent" android:layout_marginTop="8dp"
-                app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" app:layout_constraintHorizontal_bias="0.6"
-                app:layout_constraintVertical_bias="0.498" android:id="@+id/constraintLayout3">
-
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
             <TextView
-                    android:text="Verify Account"
+                    android:layout_marginTop="16dp"
+                    android:text="Registration"
                     android:drawableLeft="@drawable/vector_ic_people_white"
                     android:layout_width="wrap_content"
-                    android:textSize="24sp"
+                    android:textSize="20sp"
                     android:drawablePadding="8dp"
                     android:textColor="@color/white"
                     android:layout_height="wrap_content"
-                    android:id="@+id/tvPhoneNumber"
-                    app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent"
-                    android:layout_marginTop="16dp"/>
-
+                    android:id="@+id/tvPhoneNumber"/>
             <TextView
                     android:text="@string/verify_account"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/tvUID"
-                    android:textColor="@color/white" app:layout_constraintStart_toStartOf="@+id/tvPhoneNumber"
-                    android:layout_marginTop="8dp"
-                    app:layout_constraintTop_toBottomOf="@+id/tvPhoneNumber"
-                    app:layout_constraintEnd_toEndOf="parent"/>
-            <EditText
-                    android:layout_width="80dp"
-                    android:layout_height="wrap_content"
-                    android:inputType="text|phone"
-                    android:ems="10"
-                    android:hint="+62"
-                    android:paddingStart="16dp"
-                    android:background="@drawable/rounded_rectangle_white"
-                    android:id="@+id/etPhoneCode"
-                    app:layout_constraintStart_toStartOf="@+id/tvUID" android:layout_marginTop="12dp"
-                    app:layout_constraintTop_toBottomOf="@+id/tvUID"/>
-            <EditText
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:inputType="phone"
-
-                    android:ems="10"
-                    android:id="@+id/etPhoneNumber"
-                    app:layout_constraintEnd_toEndOf="@+id/tvUID"
-                    android:background="@drawable/rounded_rectangle_white"
-
-                    app:layout_constraintTop_toTopOf="@+id/etPhoneCode"
-                    app:layout_constraintBottom_toBottomOf="@+id/etPhoneCode" android:hint="Phone Number"
-                    app:layout_constraintStart_toEndOf="@+id/etPhoneCode" android:layout_marginStart="8dp"/>
-            <EditText
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPassword"
-                    android:ems="10"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    style="@style/DescriptionStyle"
                     android:layout_marginTop="16dp"
-                    android:background="@drawable/rounded_rectangle_white"
-                    android:layout_marginLeft="16dp"
-                    android:id="@+id/etOtpCode"
-                    app:layout_constraintEnd_toEndOf="@+id/etPhoneNumber"
-                    android:hint="OTP's Code"
-                    app:layout_constraintTop_toBottomOf="@+id/view3"
-                    app:layout_constraintStart_toEndOf="@+id/textView2" android:layout_marginStart="8dp"/>
-            <TextView
-                    android:text="Resend OTP's Code"
-                    android:layout_width="wrap_content"
+            />
+            <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/greeny_blue"
-
-                    android:id="@+id/tvCreateAccount" app:layout_constraintEnd_toEndOf="@+id/etOtpCode"
                     android:layout_marginTop="8dp"
-                    app:layout_constraintTop_toBottomOf="@+id/etOtpCode"/>
+                    android:orientation="horizontal">
+                <EditText
+                        android:layout_width="80dp"
+                        android:layout_height="match_parent"
+                        android:inputType="text|phone"
+                        android:ems="10"
+                        android:paddingLeft="16dp"
+                        android:text="+62"
+                        android:enabled="false"
+                        style="@style/EditTextStyle" android:background="@drawable/rounded_rectangle_white"
+                        android:id="@+id/etPhoneCode"
+                />
+                <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="phone"
+                        android:maxLength="13"
+                        android:ems="10"
+                        android:id="@+id/etPhoneNumber"
+                        android:layout_marginStart="12dp"
+                        android:background="@drawable/rounded_rectangle_white"
+                        style="@style/EditTextStyle"
+                        android:hint="Phone Number"/>
+            </LinearLayout>
+            <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="14dp"
+                    android:layout_marginBottom="14dp"
+                    android:id="@+id/view3"
+                    android:background="@color/grey"/>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/clOtp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+            >
+                <TextView
+                        android:text="OTP Code send"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:id="@+id/textView2"
+                        style="@style/DescriptionStyle"
+                        app:layout_constraintTop_toTopOf="@+id/etOtpCode"
+                        app:layout_constraintBottom_toBottomOf="@+id/etOtpCode"
+                        app:layout_constraintStart_toStartOf="parent"/>
+                <EditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:digits="0123456789"
+                        android:ems="10"
+                        android:maxLength="6"
+                        android:maxLines="1"
+                        android:background="@drawable/rounded_rectangle_white"
+                        android:id="@+id/etOtpCode"
+                        android:imeOptions="actionDone"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:hint="OTP Code"
+                        style="@style/EditTextStyle"
+                        app:layout_constraintStart_toEndOf="@+id/textView2"
+                        android:layout_marginStart="12dp"
+                        app:layout_constraintTop_toTopOf="parent"/>
+                <TextView
+                        android:text="Resend OTP's Code"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/greeny_blue"
+                        android:id="@+id/tvResendOTP"
+                        style="@style/DescriptionStyle"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintTop_toBottomOf="@+id/etOtpCode"
+                        app:layout_constraintEnd_toEndOf="@+id/etOtpCode"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
             <Button
                     android:text="Next"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="42dp"
                     android:id="@+id/btnNext"
-                    android:gravity="center"
+                    android:layout_gravity="center"
                     android:paddingEnd="56dp"
                     android:paddingStart="56dp"
-                    style="@style/ButtonMenu"
-                    android:background="@drawable/rounded_rectangle_deepblue"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center"
+                    android:layout_marginTop="48dp"
+                    style="@style/ButtonLogin" android:background="@drawable/button_selector_deepblue"
                     android:drawablePadding="8dp"
                     android:paddingTop="4dp"
                     android:paddingBottom="4dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginTop="16dp"
-                    app:layout_constraintTop_toBottomOf="@+id/tvCreateAccount"
-                    app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toBottomOf="parent"
-                    android:layout_marginBottom="36dp"/>
-            <View
-                    android:layout_width="0dp"
-                    android:layout_height="2dp"
-                    android:id="@+id/view3"
-                    android:layout_marginTop="16dp"
-                    android:background="@color/grey"
-                    app:layout_constraintTop_toBottomOf="@+id/etPhoneNumber"
-                    app:layout_constraintStart_toStartOf="@+id/etPhoneCode"
-                    app:layout_constraintEnd_toEndOf="@+id/etPhoneNumber"
             />
-            <TextView
-                    android:text="Send OTP's Code"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="11sp"
-                    android:textColor="@color/white"
-                    android:id="@+id/textView2" app:layout_constraintStart_toStartOf="@+id/etPhoneCode"
-                    app:layout_constraintTop_toTopOf="@+id/etOtpCode"
-                    app:layout_constraintBottom_toBottomOf="@+id/etOtpCode"
-                    app:layout_constraintEnd_toStartOf="@+id/etPhoneNumber" android:layout_marginEnd="8dp"/>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
 
         <ImageButton
                 android:layout_width="wrap_content"

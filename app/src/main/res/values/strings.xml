@@ -7,8 +7,8 @@
     <string name="btn_login_guest">Guest Login</string>
     <string name="btn_login_phone">Phone Login</string>
 
-    <string name="facebook_app_id" tools:ignore="ExtraTranslation">2116421908480837</string>
-    <string name="fb_login_protocol_scheme" tools:ignore="ExtraTranslation">fb2116421908480837</string>
+    <string name="facebook_app_id" >2116421908480837</string>
+    <string name="fb_login_protocol_scheme" >fb2116421908480837</string>
 
 
 </resources>

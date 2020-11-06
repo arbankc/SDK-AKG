@@ -5,22 +5,28 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.akggames.akg_sdk.ui.activity.PaymentActivity">
-    <TextView
-            android:id="@+id/tvProd1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_margin="24dp"
-    />
-    <TextView
-            android:id="@+id/tvProd2"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|right"
-            android:layout_margin="24dp"
+        tools:context="com.akggame.akg_sdk.ui.activity.PaymentActivity">
 
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+        <TextView
+                android:id="@+id/tvProd1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="24dp"
+        />
+        <TextView
+                android:id="@+id/tvProd2"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="24dp"
 
-    />
+        />
+    </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvProduct"
             android:layout_width="match_parent"

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent">
+
+    <androidx.cardview.widget.CardView
+            android:layout_width="340dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="16dp"
+            android:background="@color/grey"
+            android:maxWidth="400dp"
+            app:cardCornerRadius="16dp">
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@mipmap/bg2"
+
+                android:orientation="vertical"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp">
+
+            <TextView
+                    android:id="@+id/tvPhoneNumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:drawableLeft="@drawable/vector_ic_people"
+                    android:drawablePadding="8dp"
+                    android:text="Registration"
+                    android:textColor="#000000"
+                    android:textSize="20sp" />
+
+            <TextView
+                    android:id="@+id/tvUID"
+                    style="@style/DescriptionStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/registration_desc"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                <EditText
+                        android:id="@+id/etPhoneCode"
+                        style="@style/EditTextStyle"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/rounded_rectangle_white"
+                        android:ems="10"
+                        android:enabled="false"
+                        android:inputType="text|phone"
+                        android:paddingLeft="16dp"
+                        android:text="+62"
+                        android:textSize="16sp" />
+
+                <EditText
+                        android:id="@+id/etPhoneNumber"
+                        style="@style/EditTextStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:background="@drawable/rounded_rectangle_white"
+
+                        android:ems="10"
+                        android:hint="Phone Number"
+                        android:inputType="phone"
+                        android:maxLength="13"
+                        android:textSize="16sp" />
+            </LinearLayout>
+
+            <View
+                    android:id="@+id/view3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@color/grey" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/clOtp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible">
+
+                <TextView
+                        android:id="@+id/textView2"
+                        style="@style/DescriptionStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="OTP Code send"
+                        android:textColor="@color/black"
+
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/etOtpCode"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/etOtpCode" />
+
+                <EditText
+                        android:id="@+id/etOtpCode"
+                        style="@style/EditTextStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:background="@drawable/rounded_rectangle_white"
+                        android:digits="0123456789"
+                        android:ems="10"
+
+                        android:hint="OTP Code"
+                        android:imeOptions="actionDone"
+                        android:inputType="number"
+                        android:maxLength="6"
+                        android:maxLines="1"
+                        android:textSize="16sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/textView2"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                        android:id="@+id/tvResendOTP"
+                        style="@style/DescriptionStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Resend OTP's Code"
+                        android:textColor="@color/greeny_blue"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="@+id/etOtpCode"
+                        app:layout_constraintTop_toBottomOf="@+id/etOtpCode" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <Button
+                    android:id="@+id/btnNext"
+                    style="@style/ButtonLogin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_gravity="bottom|center"
+                    android:layout_marginTop="24dp"
+                    android:textSize="12sp" android:background="@drawable/button_selector_tosca"
+                    android:drawablePadding="8dp"
+                    android:paddingStart="56dp"
+                    android:paddingTop="4dp"
+                    android:layout_marginBottom="16dp"
+                    android:paddingEnd="56dp"
+                    android:paddingBottom="4dp"
+                    android:text="Next" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</FrameLayout>

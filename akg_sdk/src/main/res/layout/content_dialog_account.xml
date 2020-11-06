@@ -72,7 +72,7 @@
                     android:paddingRight="20dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/btnBack"
-                    android:drawableLeft="@drawable/rounded_rectangle_deepblue" android:background="@drawable/rounded_rectangle_deepblue"
+                    android:drawableLeft="@drawable/rounded_rectangle_deepblue" android:background="@drawable/button_selector_deepblue"
                     android:layout_marginBottom="50dp" app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_marginStart="8dp" app:layout_constraintStart_toStartOf="@+id/textView7"
                     app:layout_constraintEnd_toEndOf="@+id/etNewPassword"/>

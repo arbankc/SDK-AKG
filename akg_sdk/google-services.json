@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "899553062125",
+    "firebase_url": "https://akg-development-469ec.firebaseio.com",
+    "project_id": "akg-development-469ec",
+    "storage_bucket": "akg-development-469ec.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:899553062125:android:260ab0a8c644846cf770e4",
+        "android_client_info": {
+          "package_name": "com.akggame.android.sdk"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "899553062125-ajnck6p56fp23mmmlp8qlrn3lim1n2a4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.akggame.android.sdk",
+            "certificate_hash": "8eb9be4d579875049953e3be860d0003a33eb740"
+          }
+        },
+        {
+          "client_id": "899553062125-jtp72pmk9et9h3pogq2k92imerc1vjn1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbE7B6p64lNrsmamQbxXNPt_hcOQuLvbI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "899553062125-jtp72pmk9et9h3pogq2k92imerc1vjn1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -26,8 +26,10 @@
     <string name="title_activity_main">MainActivity</string>
 
     <string name="logout_desc">Do you want to get out from this account?</string>
-    <string name="check_update_desc">Your SDK\'s Version is 3.92, and already been updated</string>
-
+    <string name="check_update_desc">Your SDK\'s Version is %s, and already been updated</string>
+    <string name="update_sdk_version">Your SDK\’s Version is %s. You still not yet update the
+        newest version. For the newest updated version, please click
+        button below this.</string>
     <string name="contact_us_desc">Contact us to our email admin@akggames.com</string>
 
     <string name="verification_header">Account Verification</string>
