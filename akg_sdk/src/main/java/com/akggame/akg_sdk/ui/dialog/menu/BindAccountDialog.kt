@@ -27,6 +27,7 @@ import com.facebook.FacebookCallback
 import com.facebook.FacebookException
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
+import com.github.ajalt.timberkt.d
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -70,7 +71,11 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
         mMenuSDKCallback = menuSDKCallback
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         mView = inflater.inflate(R.layout.content_dialog_bind_account, container, true)
         return mView
     }
@@ -81,16 +86,34 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
     }
 
     override fun doOnSuccess(data: BaseResponse, socmedType: String) {
-        CacheUtil.putPreferenceString(IConfig.SESSION_TOKEN,data.BaseDataResponse?.token!!,requireActivity())
-        when(socmedType){
+        CacheUtil.putPreferenceString(
+            IConfig.SESSION_TOKEN,
+            data.BaseDataResponse?.token!!,
+            requireActivity()
+        )
+        when (socmedType) {
             "google" -> {
-                CacheUtil.putPreferenceString(IConfig.LOGIN_TYPE,IConfig.LOGIN_GOOGLE,requireActivity())
-                mMenuSDKCallback.onSuccessBind(data.BaseDataResponse!!.token!!,AKG_SDK.LOGIN_GOOGLE)
+                CacheUtil.putPreferenceString(
+                    IConfig.LOGIN_TYPE,
+                    IConfig.LOGIN_GOOGLE,
+                    requireActivity()
+                )
+                mMenuSDKCallback.onSuccessBind(
+                    data.BaseDataResponse!!.token!!,
+                    AKG_SDK.LOGIN_GOOGLE
+                )
 
             }
             "facebook" -> {
-                CacheUtil.putPreferenceString(IConfig.LOGIN_TYPE,IConfig.LOGIN_FACEBOOK,requireActivity())
-                mMenuSDKCallback.onSuccessBind(data.BaseDataResponse!!.token!!,AKG_SDK.LOGIN_FACEBOOK)
+                CacheUtil.putPreferenceString(
+                    IConfig.LOGIN_TYPE,
+                    IConfig.LOGIN_FACEBOOK,
+                    requireActivity()
+                )
+                mMenuSDKCallback.onSuccessBind(
+                    data.BaseDataResponse!!.token!!,
+                    AKG_SDK.LOGIN_FACEBOOK
+                )
             }
         }
         AKG_SDK.resetFloatingButton(requireActivity() as AppCompatActivity)
@@ -105,7 +128,7 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
             this.dismiss()
         }
         btnBack.setOnClickListener {
-            if(myFragmentManager!=null){
+            if (myFragmentManager != null) {
                 val verifyDialog = VerifyAccountDialog.newInstance(myFragmentManager)
                 val ftransaction = myFragmentManager!!.beginTransaction()
                 ftransaction.addToBackStack("verify account")
@@ -202,6 +225,7 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
         try {
             val account = completedTask.getResult(ApiException::class.java)
+            val getEmail = account?.email
 
             val data = BindSocMedRequest(
                 account?.idToken,
@@ -210,6 +234,7 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
                 "Android",
                 DeviceUtil.getDeviceName()
             )
+            d { "responeData $account" }
             presenter.onBindAccount(data, "google", requireActivity())
         } catch (e: ApiException) {
             Log.w("FRAGMENT_GOOGLE", "signInResult:failed code=" + e.statusCode)

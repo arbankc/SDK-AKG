@@ -8,18 +8,18 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:899553062125:android:260ab0a8c644846cf770e4",
+        "mobilesdk_app_id": "1:899553062125:android:53fe0ca62930032ff770e4",
         "android_client_info": {
           "package_name": "com.akggame.android.sdk"
         }
       },
       "oauth_client": [
         {
-          "client_id": "899553062125-ajnck6p56fp23mmmlp8qlrn3lim1n2a4.apps.googleusercontent.com",
+          "client_id": "899553062125-lpamdkgunafa1pqtfgsc0emjbikm2doj.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.akggame.android.sdk",
-            "certificate_hash": "8eb9be4d579875049953e3be860d0003a33eb740"
+            "certificate_hash": "bb0de1cff9ad6af9b670aade6766a83fa771fd08"
           }
         },
         {

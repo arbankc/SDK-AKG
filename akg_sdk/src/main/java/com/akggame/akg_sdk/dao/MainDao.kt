@@ -17,6 +17,13 @@ class MainDao() {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
+    fun onAuthUpsert(model: FacebookAuthRequest): Observable<FacebookAuthResponse> {
+        return Api.onUpsert(model)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+
     fun onPhoneAuth(model: PhoneAuthRequest): Observable<PhoneAuthResponse> {
         return Api.onPhoneLogin(model)
             .subscribeOn(Schedulers.io())

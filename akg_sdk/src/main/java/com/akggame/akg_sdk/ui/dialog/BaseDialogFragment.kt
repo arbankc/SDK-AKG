@@ -58,6 +58,11 @@ open class BaseDialogFragment() : DialogFragment(), IView{
 
     }
 
+
+    fun showToast(message: String?) {
+        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
+    }
+
     open fun setOnBackPressed() {
         dialog?.setOnKeyListener(object : View.OnKeyListener, DialogInterface.OnKeyListener {
             override fun onKey(p0: View?, keyCode: Int, event: KeyEvent?): Boolean {
@@ -94,7 +99,7 @@ open class BaseDialogFragment() : DialogFragment(), IView{
 
     fun restartBackStack() {
         customDismiss()
-        var backStackSize = myFragmentManager?.backStackEntryCount
+        val backStackSize = myFragmentManager?.backStackEntryCount
         if (backStackSize != null) {
             if (backStackSize > 0) {
                 var backEntry = myFragmentManager?.getBackStackEntryAt(0)
@@ -119,7 +124,7 @@ open class BaseDialogFragment() : DialogFragment(), IView{
     }
 
     fun onBackPressed() {
-        var backStackSize = myFragmentManager?.backStackEntryCount
+        val backStackSize = myFragmentManager?.backStackEntryCount
 
         if (backStackSize != null) {
             if (backStackSize > 1) {
@@ -137,7 +142,7 @@ open class BaseDialogFragment() : DialogFragment(), IView{
     }
 
     fun showLastFragment() {
-        var backStackSize = myFragmentManager?.backStackEntryCount
+        val backStackSize = myFragmentManager?.backStackEntryCount
         if (backStackSize != null) {
             if (backStackSize > 0) {
                 var backEntry = myFragmentManager?.getBackStackEntryAt(backStackSize - 1)

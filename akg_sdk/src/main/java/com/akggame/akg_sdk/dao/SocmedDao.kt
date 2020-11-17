@@ -12,6 +12,7 @@ import com.akggame.akg_sdk.presenter.LogoutPresenter
 import com.akggame.akg_sdk.rx.IView
 import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.akg_sdk.util.DeviceUtil
+import com.akggame.android.sdk.R
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.Auth
@@ -52,7 +53,7 @@ object SocmedDao {
 
     fun setSuccessFacebookRequest(result: LoginResult?, context: Context): FacebookAuthRequest {
         val model = FacebookAuthRequest()
-        model.access_token = result?.accessToken?.token
+//        model.access_token = result?.accessToken?.token
         model.auth_provider = "facebook"
         model.device_id = DeviceUtil.getImei(context)
         model.game_provider =
@@ -101,9 +102,10 @@ object SocmedDao {
     }
 
     fun setGoogleSigninClient(context: Context): GoogleSignInClient {
+        val google_client_id: String = context.getString(R.string.default_web_client_id)
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
-            .requestIdToken(IConfig.GOOGLE_CLIENT_ID)
+            .requestIdToken(google_client_id)
             .build()
 
         return GoogleSignIn.getClient(context, gso)

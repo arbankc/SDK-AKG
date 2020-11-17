@@ -14,6 +14,9 @@ class FacebookAuthRequest {
      * operating_system : Ios
      */
 
+    var email: String? = null
+    var phone_number: String? = null
+    var name: String? = null
     var access_token: String? = null
     var auth_provider: String? = null
     var game_provider: String? = null

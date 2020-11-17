@@ -62,6 +62,11 @@ class Api {
         }
 
         @Synchronized
+        fun onUpsert(model: FacebookAuthRequest): Observable<FacebookAuthResponse> {
+            return initApiDomain().callUpsert(initHeader(), model)
+        }
+
+        @Synchronized
         fun onPhoneLogin(model: PhoneAuthRequest): Observable<PhoneAuthResponse> {
             return initApiDomain().callPhoneLogin(initHeader(), model)
         }

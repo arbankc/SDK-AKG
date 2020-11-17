@@ -4,6 +4,7 @@ import android.os.Build
 import android.util.Log
 import com.akggame.akg_sdk.IConfig
 import com.akggame.akg_sdk.dao.api.model.TLSSocketFactory
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -38,7 +39,11 @@ class ApiManager {
         }
 
 
-        fun getHttpClient(allowUntrustedSSL: Boolean, timeout: Int, enableLoggingHttp: Boolean): OkHttpClient {
+        fun getHttpClient(
+            allowUntrustedSSL: Boolean,
+            timeout: Int,
+            enableLoggingHttp: Boolean
+        ): OkHttpClient {
 
             val httpClient = OkHttpClient.Builder()
 
@@ -46,7 +51,7 @@ class ApiManager {
                 allowUntrustedSSL(httpClient)
             }//    implementation 'com.github.acan12:coconut:2.0.13'
 
-            var trustManager = object :X509TrustManager{
+            var trustManager = object : X509TrustManager {
                 override fun checkClientTrusted(p0: Array<out X509Certificate>?, p1: String?) {
 
                 }
@@ -60,16 +65,17 @@ class ApiManager {
                     return cArrr
                 }
             }
+
+            val sc = SSLContext.getInstance("TLS")
             try {
-                val sc = SSLContext.getInstance("TLS")
                 sc.init(null, null, null)
-                var noSSLv3Factory :SSLSocketFactory?= null
-                if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT){
+                var noSSLv3Factory: SSLSocketFactory? = null
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
                     noSSLv3Factory = TLSSocketFactory(sc.socketFactory)
                 } else {
                     noSSLv3Factory = sc.socketFactory
                 }
-                httpClient.sslSocketFactory(noSSLv3Factory,trustManager)
+                httpClient.sslSocketFactory(noSSLv3Factory, trustManager)
 
             } catch (e: NoSuchAlgorithmException) {
                 e.printStackTrace()
@@ -78,6 +84,8 @@ class ApiManager {
             }
 
 
+
+//            httpClient.addInterceptor(ChuckerInterceptor(this))
             httpClient.connectTimeout(timeout.toLong(), TimeUnit.SECONDS)
             httpClient.readTimeout(timeout.toLong(), TimeUnit.SECONDS)
             httpClient.writeTimeout(timeout.toLong(), TimeUnit.SECONDS)

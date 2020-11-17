@@ -11,6 +11,6 @@ class WebView : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_web_view)
 
-        wvInfo.loadUrl(intent.getStringExtra("url"))
+        wvInfo.loadUrl(intent.getStringExtra("url").toString())
     }
 }

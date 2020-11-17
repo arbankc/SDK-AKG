@@ -48,7 +48,7 @@ class PaymentOttopayActivity : AppCompatActivity(), OttopayIView {
         paymentView.requestFocus()
         paymentView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-                view?.loadUrl(url)
+                view?.loadUrl(url.toString())
                 return true
             }
 

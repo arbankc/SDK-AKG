@@ -102,13 +102,12 @@ class BillingDao constructor(
                 billingResult: BillingResult?,
                 skuDetailsList: MutableList<SkuDetails>?
             ) {
-                if (billingResult?.responseCode == BillingClient.BillingResponseCode.OK) {
+                if (billingResult?.responseCode == OK) {
                     Log.d(LOG_TAG, "onBillingResultResponseCode is OK")
                     if (skuDetailsList != null) {
                         queryCallback.onQuerySKU(skuDetailsList)
                     }
                 } else {
-                    Log.e(LOG_TAG, billingResult?.debugMessage)
                     Log.e(LOG_TAG, billingResult?.debugMessage.toString())
                 }
             }
@@ -130,19 +129,19 @@ class BillingDao constructor(
 
     override fun onBillingSetupFinished(billingResult: BillingResult?) {
         when (billingResult?.responseCode) {
-            BillingClient.BillingResponseCode.OK -> {
+            OK -> {
                 Log.d(LOG_TAG, "onBillingSetupFinished successfully")
                 querySkuDetailsAsync(BillingClient.SkuType.INAPP, listOfSku)
                 queryPurchasesAsync()
             }
             BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
                 //Some apps may choose to make decisions based on this knowledge.
-                Log.d(LOG_TAG, billingResult.debugMessage)
+                Log.e(LOG_TAG, billingResult?.debugMessage.toString())
             }
             else -> {
                 //do nothing. Someone else will connect it through retry policy.
                 //May choose to send to server though
-                Log.d(LOG_TAG, billingResult?.debugMessage)
+                Log.e(LOG_TAG, billingResult?.debugMessage.toString())
             }
         }
     }
