@@ -49,7 +49,8 @@ class LoginPresenter(val mIView: IView) {
                     (mIView as LoginIView).doOnSuccess(
                         t.data?.is_first_login!!,
                         t.data?.token!!,
-                        LOGIN_GUEST
+                        LOGIN_GUEST,
+                        ""
                     )
                     CacheUtil.putPreferenceString(LOGIN_TYPE, LOGIN_GUEST, context)
                     CacheUtil.putPreferenceString(SESSION_TOKEN, t.data?.token!!, context)
@@ -88,7 +89,8 @@ class LoginPresenter(val mIView: IView) {
                     (mIView as LoginIView).doOnSuccess(
                         t.data?.is_first_login!!,
                         t.data?.token!!,
-                        LOGIN_PHONE
+                        LOGIN_PHONE,
+                        ""
                     )
                     CacheUtil.putPreferenceString(LOGIN_TYPE, LOGIN_PHONE, context)
                     CacheUtil.putPreferenceString(SESSION_TOKEN, t.data?.token!!, context)
@@ -106,7 +108,7 @@ class LoginPresenter(val mIView: IView) {
         })
     }
 
-    fun googleLogin(model: FacebookAuthRequest, context: Context) {
+    fun upsertUser(model: FacebookAuthRequest, context: Context, typeLogin: String) {
         MainDao().onAuthUpsert(model)
             .subscribe(object : RxObserver<FacebookAuthResponse>(mIView, "") {
                 override fun onSubscribe(d: Disposable) {
@@ -123,9 +125,11 @@ class LoginPresenter(val mIView: IView) {
                         (mIView as LoginIView).doOnSuccess(
                             t.data?.is_first_login!!,
                             t.data?.token!!,
-                            LOGIN_GOOGLE
+                            t.data?.user_id.toString(),
+                            typeLogin
                         )
-                        CacheUtil.putPreferenceString(LOGIN_TYPE, LOGIN_GOOGLE, context)
+
+//                        CacheUtil.putPreferenceString(LOGIN_TYPE, LOGIN_GOOGLE, context)
                         CacheUtil.putPreferenceString(SESSION_TOKEN, t.data?.token!!, context)
                         CacheUtil.putPreferenceBoolean(IConfig.SESSION_LOGIN, true, context)
 
@@ -163,7 +167,8 @@ class LoginPresenter(val mIView: IView) {
                         (mIView as LoginIView).doOnSuccess(
                             t.data!!.is_first_login,
                             t.data?.token!!,
-                            LOGIN_FACEBOOK
+                            LOGIN_FACEBOOK,
+                            ""
                         )
                         CacheUtil.putPreferenceString(LOGIN_TYPE, LOGIN_FACEBOOK, context)
                         CacheUtil.putPreferenceString(SESSION_TOKEN, t.data?.token!!, context)

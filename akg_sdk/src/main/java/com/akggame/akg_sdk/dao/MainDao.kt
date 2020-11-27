@@ -66,8 +66,18 @@ class MainDao() {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun onCheckCurrentUser(context: Context): Observable<CurrentUserResponse> {
-        return Api.onGetCurrentUser(context)
+    fun onCheckCurrentUser(idUser: String, context: Context): Observable<CurrentUserResponse> {
+        return Api.onGetCurrentUser(idUser, context)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun onRequestUpdatetUser(
+        facebookAuthRequest: FacebookAuthRequest,
+        idUser: String,
+        context: Context
+    ): Observable<FacebookAuthResponse> {
+        return Api.onRequestCurrentUser(idUser, context, facebookAuthRequest)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
@@ -125,4 +135,10 @@ class MainDao() {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
+
+    fun onGetGameList(context: Context): Observable<GameListResponse> {
+        return Api.onCallGameList(context)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
 }

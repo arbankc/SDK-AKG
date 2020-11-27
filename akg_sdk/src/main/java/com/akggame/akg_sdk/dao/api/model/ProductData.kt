@@ -1,7 +1,9 @@
 package com.akggame.akg_sdk.dao.api.model
 
+import android.os.Parcelable
 import androidx.annotation.Keep
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import kotlinx.android.parcel.Parcelize
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 class ProductData {

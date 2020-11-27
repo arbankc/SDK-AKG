@@ -39,4 +39,6 @@
     <string name="bind_account">Secure your progress by binding your account</string>
 
     <string name="change_password_desc">Input your old password and input your new password</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

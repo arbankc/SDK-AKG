@@ -6,12 +6,11 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import com.akggame.akg_sdk.dao.AkgDao
-import com.akggame.akg_sdk.ui.activity.PaymentActivity
 import com.akggame.akg_sdk.ui.component.FloatingButton
 import com.akggame.akg_sdk.util.CacheUtil
 import com.android.billingclient.api.SkuDetails
-import com.akggame.akg_sdk.dao.*
-import com.akggame.akg_sdk.ui.activity.PaymentOttopayActivity
+import com.akggame.akg_sdk.ui.activity.FrameLayoutActivity
+import com.akggame.akg_sdk.util.Constants
 
 enum class PAYMENT_TYPE {
     GOOGLE, OTTOPAY
@@ -43,7 +42,7 @@ object AKG_SDK {
     @JvmStatic
     fun registerAdjustOnAKG(gameProvider: String, application: Application) {
 //        AkgDao.registerAdjust(gameProvider, application)
-        CacheUtil.putPreferenceString(IConfig.SESSION_GAME, gameProvider, application)
+//        CacheUtil.putPreferenceString(IConfig.SESSION_GAME, gameProvider, application)
 
     }
 
@@ -93,11 +92,15 @@ object AKG_SDK {
     fun onSDKPayment(paymentType: PAYMENT_TYPE, activity: AppCompatActivity) {
         when (paymentType) {
             PAYMENT_TYPE.GOOGLE -> {
-                val intent = Intent(activity, PaymentActivity::class.java)
+                val intent = Intent(activity, FrameLayoutActivity::class.java)
+                intent.putExtra(Constants.TYPE_PAYMENT, "paymentgoogle")
+                intent.putExtra("pos", 1)
                 activity.startActivityForResult(intent, SDK_PAYMENT_CODE)
             }
             PAYMENT_TYPE.OTTOPAY -> {
-                val intent = Intent(activity, PaymentOttopayActivity::class.java)
+                val intent = Intent(activity, FrameLayoutActivity::class.java)
+                intent.putExtra(Constants.TYPE_PAYMENT, "paymentottopay")
+                intent.putExtra("pos", 2)
                 activity.startActivityForResult(intent, SDK_PAYMENT_CODE)
             }
         }

@@ -14,7 +14,7 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
-class BaseFragment : Fragment() {
+open class BaseFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -71,8 +71,17 @@ interface IApi {
     @DELETE("auth/logout")
     fun callLogout(@HeaderMap map: Map<String, String>): Observable<BaseResponse>
 
-    @GET("auth/current_user")
-    fun callGetCurrentUser(@HeaderMap map: Map<String, String>): Observable<CurrentUserResponse>
+    @GET("auth/current_user/{idUser}")
+    fun callGetCurrentUser(
+        @Path("idUser") idUser: String?
+    ): Observable<CurrentUserResponse>
+
+    @PUT("auth/update_user/{idUser}")
+    fun callUpdateUpsert(
+        @Path("idUser") idUser: String?,
+        @Body facebookAuthRequest: FacebookAuthRequest
+    ): Observable<FacebookAuthResponse>
+
 
     @PUT("auth/change_password")
     fun callChangePassword(
@@ -102,12 +111,17 @@ interface IApi {
     fun callGetBanner(
         @HeaderMap map: Map<String, String>,
         @Path("game-provider") gameProvider: String?
-    ):
-            Observable<BannerResponse>
+    ): Observable<BannerResponse>
 
-    @POST("/deposit")
+
+    @GET("/games")
+    fun callGameList(
+        @Query("platform") platform: String?
+    ): Observable<GameListResponse>
+
+
+    @POST("/v1/orders")
     fun createDeposit(
-        @HeaderMap headers: Map<String, String>,
         @Body data: DepositRequest
     ): Observable<DepositResponse>
 }

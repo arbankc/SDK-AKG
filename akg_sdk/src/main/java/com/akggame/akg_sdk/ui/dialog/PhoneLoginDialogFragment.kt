@@ -27,7 +27,10 @@ class PhoneLoginDialogFragment() : BaseDialogFragment(), LoginIView {
     companion object {
         private lateinit var mLoginCallback: LoginSDKCallback
 
-        fun newInstance(fm: FragmentManager?, loginCallback: LoginSDKCallback): PhoneLoginDialogFragment {
+        fun newInstance(
+            fm: FragmentManager?,
+            loginCallback: LoginSDKCallback
+        ): PhoneLoginDialogFragment {
             mLoginCallback = loginCallback
 
             return PhoneLoginDialogFragment(fm)
@@ -41,7 +44,11 @@ class PhoneLoginDialogFragment() : BaseDialogFragment(), LoginIView {
     private lateinit var mView: View
     val presenter = LoginPresenter(this@PhoneLoginDialogFragment)
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         mView = inflater.inflate(R.layout.content_dialog_login_phone, container, true)
         return mView
     }
@@ -57,6 +64,15 @@ class PhoneLoginDialogFragment() : BaseDialogFragment(), LoginIView {
         initView()
     }
 
+    override fun doOnSuccess(
+        isFirstLogin: Boolean,
+        token: String,
+        userId: String,
+        typeLogin: String
+    ) {
+        val id = DeviceUtil.decoded(token).toObject<UserData>()
+        mLoginCallback.onResponseSuccess(token, id.id, typeLogin)
+    }
 
 
     override fun doOnError(message: String) {
@@ -66,7 +82,7 @@ class PhoneLoginDialogFragment() : BaseDialogFragment(), LoginIView {
     fun initView() {
 
         mView.tvResendOTP.setOnClickListener {
-            if(myFragmentManager!=null){
+            if (myFragmentManager != null) {
                 val otpDialog = OTPDialog.newInstance(myFragmentManager)
                 val ftransaction = myFragmentManager!!.beginTransaction()
                 ftransaction.addToBackStack("registration")
@@ -80,7 +96,8 @@ class PhoneLoginDialogFragment() : BaseDialogFragment(), LoginIView {
             phoneAuthRequest.phone_number = "+62" + etPhoneNumber.text.toString()
             phoneAuthRequest.password = etOtpCode.text.toString()
             phoneAuthRequest.auth_provider = "akg"
-            phoneAuthRequest.game_provider = CacheUtil.getPreferenceString(IConfig.SESSION_GAME,requireActivity())
+            phoneAuthRequest.game_provider =
+                CacheUtil.getPreferenceString(IConfig.SESSION_GAME, requireActivity())
             phoneAuthRequest.device_id = DeviceUtil.getImei(requireActivity())
             phoneAuthRequest.phone_model = DeviceUtil.getDeviceName()
             phoneAuthRequest.operating_system = "Android"
@@ -88,7 +105,7 @@ class PhoneLoginDialogFragment() : BaseDialogFragment(), LoginIView {
         }
 
         mView.tvForgotPassword.setOnClickListener {
-            if(myFragmentManager!=null){
+            if (myFragmentManager != null) {
                 val forgetDialog = ForgetDialog.newInstance(myFragmentManager)
                 val ftransaction = myFragmentManager!!.beginTransaction()
                 ftransaction.addToBackStack("forget")
@@ -98,8 +115,4 @@ class PhoneLoginDialogFragment() : BaseDialogFragment(), LoginIView {
         }
     }
 
-    override fun doOnSuccess(isLoginType:Boolean,token: String, loginType: String) {
-        val id = DeviceUtil.decoded(token).toObject<UserData>()
-        mLoginCallback.onResponseSuccess(token,id.id, loginType)
-    }
 }

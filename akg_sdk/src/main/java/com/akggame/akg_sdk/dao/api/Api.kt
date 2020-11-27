@@ -33,9 +33,10 @@ class Api {
             return map
         }
 
-        private fun initHeaderOttopay(context: Context ): Map<String, String> {
+        private fun initHeaderOttopay(context: Context): Map<String, String> {
             val map = HashMap<String, String>()
-            map["Authorization"] = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZmVhYzc5OTktMzliNy00MWMzLTkxOGEtNmRhNjMyZjM1NWNhIiwiZW1haWwiOiIwODEzMDAwMDAwMTAiLCJleHAiOjE2MDY0MzYzODJ9.a-vumVipEhTkTH-SHToyFa7DXWyUHjVNLvSqH1xc8as"
+            map["Authorization"] =
+                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZmVhYzc5OTktMzliNy00MWMzLTkxOGEtNmRhNjMyZjM1NWNhIiwiZW1haWwiOiIwODEzMDAwMDAwMTAiLCJleHAiOjE2MDY0MzYzODJ9.a-vumVipEhTkTH-SHToyFa7DXWyUHjVNLvSqH1xc8as"
             map["x-api-key"] = IConfig.DPLK_X_API_KEY
             return map
         }
@@ -64,6 +65,11 @@ class Api {
         @Synchronized
         fun onUpsert(model: FacebookAuthRequest): Observable<FacebookAuthResponse> {
             return initApiDomain().callUpsert(initHeader(), model)
+        }
+
+        @Synchronized
+        fun onCallGameList(context: Context): Observable<GameListResponse> {
+            return initApiDomain().callGameList("android")
         }
 
         @Synchronized
@@ -105,8 +111,17 @@ class Api {
         }
 
         @Synchronized
-        fun onGetCurrentUser(context: Context): Observable<CurrentUserResponse> {
-            return initApiDomain().callGetCurrentUser(initHeader(context))
+        fun onGetCurrentUser(idUser: String, context: Context): Observable<CurrentUserResponse> {
+            return initApiDomain().callGetCurrentUser(idUser)
+        }
+
+        @Synchronized
+        fun onRequestCurrentUser(
+            idUser: String,
+            context: Context,
+            facebookAuthRequest: FacebookAuthRequest
+        ): Observable<FacebookAuthResponse> {
+            return initApiDomain().callUpdateUpsert(idUser, facebookAuthRequest)
         }
 
         @Synchronized
@@ -166,7 +181,7 @@ class Api {
 
         @Synchronized
         fun onCreateDeposit(body: DepositRequest, context: Context): Observable<DepositResponse> {
-            return initApiDomainOttopay().createDeposit(initHeaderOttopay(context), body)
+            return initApiDomainOttopay().createDeposit(body)
         }
     }
 }

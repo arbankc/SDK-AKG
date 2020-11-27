@@ -15,6 +15,7 @@ class FacebookAuthResponse : BaseResponse() {
     class DataBean {
         var is_first_login:Boolean = false
         var message: String? = ""
+        var user_id: String? = ""
         var token:String? = ""
     }
 

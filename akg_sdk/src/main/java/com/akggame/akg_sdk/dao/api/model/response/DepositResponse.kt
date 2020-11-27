@@ -20,6 +20,7 @@ class DepositResponse : BaseResponse() {
         val deleted_at: String = ""
         val tx_type: String = ""
         val tx_description: String = ""
+        val endpoint_url: String = ""
         val url: String = ""
     }
 

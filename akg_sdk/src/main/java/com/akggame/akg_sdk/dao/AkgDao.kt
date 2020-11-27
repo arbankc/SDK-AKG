@@ -3,11 +3,15 @@ package com.akggame.akg_sdk.dao
 import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startActivity
 import com.akggame.akg_sdk.*
 import com.akggame.akg_sdk.dao.api.model.FloatingItem
+import com.akggame.akg_sdk.dao.api.model.request.FacebookAuthRequest
 import com.akggame.akg_sdk.dao.api.model.response.CurrentUserResponse
 import com.akggame.akg_sdk.presenter.InfoPresenter
 import com.akggame.akg_sdk.presenter.ProductPresenter
@@ -18,10 +22,13 @@ import com.akggame.akg_sdk.ui.dialog.login.LoginDialogFragment
 import com.akggame.akg_sdk.ui.dialog.login.RelaunchDialog
 import com.akggame.akg_sdk.ui.dialog.menu.*
 import com.akggame.akg_sdk.util.CacheUtil
+import com.akggame.akg_sdk.util.Constants
 import com.akggame.android.sdk.R
 import com.android.billingclient.api.SkuDetails
+import com.orhanobut.hawk.Hawk
 
-class AkgDao : AccountIView{
+
+class AkgDao : AccountIView {
 
     private lateinit var customCallback: LoginSDKCallback
     private val productPresenter = ProductPresenter(this)
@@ -34,26 +41,35 @@ class AkgDao : AccountIView{
         dialog.show(ftransaction, "relaunch")
     }
 
-    fun registerAdjust(gameProvider: String, application: Application){
+    fun registerAdjust(gameProvider: String, application: Application) {
         presenter.onGetSDKConf(gameProvider, application, application)
     }
 
-    fun getProducts(application: Application, context: Context, callback: ProductSDKCallback){
+    fun getProducts(application: Application, context: Context, callback: ProductSDKCallback) {
         productPresenter.getProducts(
             CacheUtil.getPreferenceString(IConfig.SESSION_GAME, context),
             application, context, callback
         )
     }
 
-    fun launchBilling(activity: Activity, skuDetails: SkuDetails, callback: PurchaseSDKCallback){
+    fun callBrowserFanPage(context: Context) {
+        val url = "https://www.facebook.com/akggames/"
+        val i = Intent(Intent.ACTION_VIEW)
+        i.data = Uri.parse(url)
+        context.startActivity(i)
+    }
+
+    fun launchBilling(activity: Activity, skuDetails: SkuDetails, callback: PurchaseSDKCallback) {
         productPresenter.lauchBilling(activity, skuDetails, callback)
     }
-    fun callBannerDialog(activity: AppCompatActivity){
+
+    fun callBannerDialog(activity: AppCompatActivity) {
         val banner = BannerDialog()
         val ftransaction = activity.supportFragmentManager.beginTransaction()
         ftransaction.addToBackStack("banner")
         banner.show(ftransaction, "banner")
     }
+
     fun setFloatingButtonListener(
         activity: AppCompatActivity,
         floatingButton: FloatingButton,
@@ -73,17 +89,15 @@ class AkgDao : AccountIView{
                 val accountDialog = AccountDialog.newInstance(activity.supportFragmentManager)
                 when (position) {
                     0 -> {
-                        if (CacheUtil.getPreferenceString(
-                                IConfig.LOGIN_TYPE,
-                                activity
-                            )?.equals(IConfig.LOGIN_GUEST)!!
+                        if (CacheUtil.getPreferenceString(IConfig.LOGIN_TYPE, activity)
+                                ?.equals(IConfig.LOGIN_GUEST)!!
                         ) {
                             bindAccountDialog.show(activity.supportFragmentManager, "bind account")
                         } else {
                             accountDialog.show(activity.supportFragmentManager, "account")
                         }
                     }
-                    1 -> Toast.makeText(context, "fb", Toast.LENGTH_LONG).show()
+                    1 -> callBrowserFanPage(context)
 
                     2 -> Toast.makeText(context, "eula", Toast.LENGTH_LONG).show()
 
@@ -174,15 +188,25 @@ class AkgDao : AccountIView{
     }
 
     private fun callGetAccount(activity: AppCompatActivity) {
-        InfoPresenter(this).onGetCurrentUser(activity, activity)
+        val idUser = Hawk.get<String>(Constants.DATA_USER_ID)
+        InfoPresenter(this).onGetCurrentUser(
+            idUser,
+            activity,
+            activity
+        )
     }
 
-    fun callLoginDialog(activity: AppCompatActivity, gameName: String, loginSDKCallback: LoginSDKCallback){
+    fun callLoginDialog(
+        activity: AppCompatActivity,
+        gameName: String,
+        loginSDKCallback: LoginSDKCallback
+    ) {
         CacheUtil.putPreferenceString(IConfig.SESSION_GAME, gameName, activity)
         if (!CacheUtil.getPreferenceBoolean(IConfig.SESSION_LOGIN, activity)) {
             customCallback = loginSDKCallback
             val loginDialogFragment =
-                LoginDialogFragment.newInstance(activity.supportFragmentManager,
+                LoginDialogFragment.newInstance(
+                    activity.supportFragmentManager,
                     customCallback
                 )
             val ftransaction = activity.supportFragmentManager.beginTransaction()

@@ -28,14 +28,15 @@ import com.akggame.akg_sdk.ui.dialog.menu.AccountIView
 import com.akggame.akg_sdk.ui.dialog.menu.CheckVersionIView
 import com.akggame.akg_sdk.ui.dialog.register.OTPIView
 import com.akggame.akg_sdk.util.CacheUtil
+import com.akggame.akg_sdk.util.Constants
+import com.orhanobut.hawk.Hawk
 import io.reactivex.disposables.Disposable
 
 class InfoPresenter(val mIView: IView) {
 
 
-
-    fun onGetCurrentUser(activity: AppCompatActivity, context: Context) {
-        MainDao().onCheckCurrentUser(context)
+    fun onGetCurrentUser(email: String, activity: AppCompatActivity, context: Context) {
+        MainDao().onCheckCurrentUser(email, context)
             .subscribe(object : RxObserver<CurrentUserResponse>(mIView, "") {
                 override fun onNext(t: BaseResponse) {
                     super.onNext(t)
@@ -43,6 +44,7 @@ class InfoPresenter(val mIView: IView) {
                     t as CurrentUserResponse
                     if (t.meta?.code == 200) {
                         (mIView as AccountIView).doOnSuccess(activity, t)
+                        Hawk.put(Constants.DATA_LOGIN, t)
                     } else {
                         (mIView as AccountIView).doOnError(t.data?.message)
                     }

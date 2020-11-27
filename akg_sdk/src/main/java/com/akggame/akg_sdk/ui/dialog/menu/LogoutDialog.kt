@@ -1,21 +1,30 @@
 package com.akggame.akg_sdk.ui.dialog.menu
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.FragmentManager
+import com.akggame.akg_sdk.AKG_SDK
 //import com.adjust.sdk.Adjust
 //import com.adjust.sdk.AdjustEvent
 import com.akggame.akg_sdk.IConfig
 import com.akggame.akg_sdk.MenuSDKCallback
 import com.akggame.akg_sdk.dao.SocmedDao
 import com.akggame.akg_sdk.presenter.LogoutPresenter
+import com.akggame.akg_sdk.ui.activity.FrameLayoutActivity
 import com.akggame.akg_sdk.ui.dialog.BaseDialogFragment
+import com.akggame.akg_sdk.ui.dialog.login.LoginDialogFragment
 import com.akggame.akg_sdk.util.CacheUtil
+import com.akggame.akg_sdk.util.Constants
 import com.akggame.android.sdk.R
+import com.facebook.CustomTabMainActivity
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.auth.FirebaseAuth
+import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.content_dialog_logout.*
 import kotlinx.android.synthetic.main.content_dialog_logout.view.*
 
@@ -23,6 +32,8 @@ class LogoutDialog() : BaseDialogFragment(), LogoutIView {
 
     lateinit var mView: View
     val presenter = LogoutPresenter(this)
+    var auth: FirebaseAuth? = null
+    lateinit var mGoogleSignInClient: GoogleSignInClient
 
     constructor(fm: FragmentManager?) : this() {
         myFragmentManager = fm
@@ -47,6 +58,14 @@ class LogoutDialog() : BaseDialogFragment(), LogoutIView {
         return mView
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        auth = FirebaseAuth.getInstance()
+        mGoogleSignInClient = SocmedDao.setGoogleSigninClient(requireContext())
+
+    }
+
     override fun onStart() {
         super.onStart()
         initialize()
@@ -68,21 +87,7 @@ class LogoutDialog() : BaseDialogFragment(), LogoutIView {
         }
         btnNext.setOnClickListener {
             if (CacheUtil.getPreferenceBoolean(IConfig.SESSION_LOGIN, requireActivity())) {
-                val loginType = CacheUtil.getPreferenceString(IConfig.LOGIN_TYPE, requireActivity())
-                when (loginType) {
-                    IConfig.LOGIN_PHONE -> SocmedDao.logoutPhone(requireActivity(), this, presenter)
-                    IConfig.LOGIN_GUEST -> SocmedDao.logoutGuest(requireActivity(), this, presenter)
-                    IConfig.LOGIN_GOOGLE -> SocmedDao.logoutGoogle(
-                        requireActivity(),
-                        this,
-                        presenter
-                    )
-                    IConfig.LOGIN_FACEBOOK -> SocmedDao.logoutFacebook(
-                        requireActivity(),
-                        this,
-                        presenter
-                    )
-                }
+                signOut()
             } else {
                 Toast.makeText(requireActivity(), "You are not logged in", Toast.LENGTH_LONG).show()
             }
@@ -93,17 +98,26 @@ class LogoutDialog() : BaseDialogFragment(), LogoutIView {
         }
     }
 
+    private fun signOut() {
+        showDialogLoading(true)
+        auth?.signOut()
+        activity?.let {
+            mGoogleSignInClient.signOut().addOnCompleteListener(it) {
+                showDialogLoading(false)
+                setAdjustEventLogout()
+                Hawk.deleteAll()
+                CacheUtil.clearPreference(activity!!)
+
+                val intent = Intent(activity, FrameLayoutActivity::class.java)
+                intent.putExtra("pos", 4)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                context?.startActivity(intent)
+                activity!!.finish()
+            }
+        }
+    }
+
     fun setAdjustEventLogout() {
-//        if (CacheUtil.getPreferenceString(IConfig.ADJUST_LOGOUT, requireActivity()) != null) {
-//            Adjust.trackEvent(
-//                AdjustEvent(
-//                    CacheUtil.getPreferenceString(
-//                        IConfig.ADJUST_LOGOUT,
-//                        requireActivity()
-//                    )
-//                )
-//            )
-//        }
         val bundle = Bundle()
         val firebaseAnalytics = FirebaseAnalytics.getInstance(requireActivity())
         bundle.putString(

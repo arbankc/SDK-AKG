@@ -1,6 +1,8 @@
 package com.akggame.akg_sdk.ui.dialog
 
+import android.app.Dialog
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
@@ -8,15 +10,20 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import com.akggame.akg_sdk.rx.IView
+import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.android.sdk.R
 import com.google.gson.Gson
+import com.orhanobut.hawk.Hawk
 
 
-open class BaseDialogFragment() : DialogFragment(), IView{
+open class BaseDialogFragment() : DialogFragment(), IView {
+
+    var dialogLoading: Dialog? = null
 
     interface JSONConvertable {
         fun toJSON(): String = Gson().toJson(this)
@@ -26,15 +33,27 @@ open class BaseDialogFragment() : DialogFragment(), IView{
         Gson().fromJson(this, T::class.java)
 
     override fun handleError(message: String) {
-        Toast.makeText(requireActivity(),message,Toast.LENGTH_LONG).show()
+        Toast.makeText(requireActivity(), message, Toast.LENGTH_LONG).show()
     }
 
     var myFragmentManager: FragmentManager? = null
+    var dialogCustomlist: Dialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val style = STYLE_NO_FRAME
         setStyle(style, theme)
+
+        dialogCustomlist = activity?.let { Dialog(it) }
+        dialogLoading = activity?.let { Dialog(it) }
+        dialogLoading?.setContentView(R.layout.dialog_loading)
+
+    }
+
+    fun deleteLogin() {
+        activity!!.finish()
+        Hawk.deleteAll()
+        CacheUtil.clearPreference(activity!!)
     }
 
     override fun onStart() {
@@ -58,6 +77,19 @@ open class BaseDialogFragment() : DialogFragment(), IView{
 
     }
 
+    fun showDialogLoading(isShow: Boolean) {
+        if (isShow) dialogLoading?.show()
+        else dialogLoading?.dismiss()
+    }
+
+    fun dialogCustom(): Dialog {
+        dialogCustomlist?.setContentView(R.layout.layout_dialog_customlist)
+        dialogCustomlist?.window?.setLayout(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
+        return dialogCustomlist!!
+    }
 
     fun showToast(message: String?) {
         Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
@@ -91,7 +123,7 @@ open class BaseDialogFragment() : DialogFragment(), IView{
     }
 
     fun clearBackStack() {
-        val count = myFragmentManager?.getBackStackEntryCount()!!
+        val count = myFragmentManager?.backStackEntryCount!!
         for (i in 0 until count) {
             myFragmentManager?.popBackStack()
         }
@@ -102,7 +134,7 @@ open class BaseDialogFragment() : DialogFragment(), IView{
         val backStackSize = myFragmentManager?.backStackEntryCount
         if (backStackSize != null) {
             if (backStackSize > 0) {
-                var backEntry = myFragmentManager?.getBackStackEntryAt(0)
+                val backEntry = myFragmentManager?.getBackStackEntryAt(0)
                 val count = myFragmentManager?.getBackStackEntryCount()!!
                 if (count > 0) {
                     for (i in 0 until count - 1) {
@@ -128,7 +160,7 @@ open class BaseDialogFragment() : DialogFragment(), IView{
 
         if (backStackSize != null) {
             if (backStackSize > 1) {
-                var backEntry = myFragmentManager?.getBackStackEntryAt(backStackSize - 2)
+                val backEntry = myFragmentManager?.getBackStackEntryAt(backStackSize - 2)
                 customDismiss()
                 myFragmentManager?.popBackStack(this.tag, FragmentManager.POP_BACK_STACK_INCLUSIVE)
                 val mDialog =
@@ -145,7 +177,7 @@ open class BaseDialogFragment() : DialogFragment(), IView{
         val backStackSize = myFragmentManager?.backStackEntryCount
         if (backStackSize != null) {
             if (backStackSize > 0) {
-                var backEntry = myFragmentManager?.getBackStackEntryAt(backStackSize - 1)
+                val backEntry = myFragmentManager?.getBackStackEntryAt(backStackSize - 1)
                 val mDialog =
                     myFragmentManager?.findFragmentByTag(backEntry?.name) as BaseDialogFragment
                 if (myFragmentManager != null) {
@@ -156,8 +188,8 @@ open class BaseDialogFragment() : DialogFragment(), IView{
         }
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        onRelauch()
-    }
+//    override fun onConfigurationChanged(newConfig: Configuration) {
+//        super.onConfigurationChanged(newConfig)
+//        onRelauch()
+//    }
 }

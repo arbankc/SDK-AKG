@@ -56,8 +56,6 @@ public class GameActivity extends AppCompatActivity implements MenuSDKCallback {
         AKG_SDK.INSTANCE.getProducts(getApplication(), this, new ProductSDKCallback() {
             @Override
             public void ProductResult(@NotNull List<com.android.billingclient.api.SkuDetails> skuDetails) {
-
-
                 AKG_SDK.INSTANCE.launchBilling(GameActivity.this, skuDetails.get(0),
                         new PurchaseSDKCallback() {
                             @Override

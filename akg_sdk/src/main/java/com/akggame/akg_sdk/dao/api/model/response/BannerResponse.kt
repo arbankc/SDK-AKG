@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 class BannerResponse : BaseResponse() {
 
 
-    var meta: BaseResponse.MetaBean? = null
+    var meta: MetaBean? = null
     var data: List<DataBean>? = null
 
     @Keep

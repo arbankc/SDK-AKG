@@ -3,10 +3,8 @@ package com.akggame.akg_sdk.presenter
 import android.app.Activity
 import android.app.Application
 import android.content.Context
-import android.content.Intent
 import android.util.Log
 import android.widget.Toast
-import com.akggame.akg_sdk.AKG_SDK
 import com.akggame.akg_sdk.ProductSDKCallback
 import com.akggame.akg_sdk.PurchaseSDKCallback
 import com.akggame.akg_sdk.dao.BillingDao
@@ -20,12 +18,10 @@ import com.akggame.akg_sdk.rx.RxObserver
 import com.akggame.akg_sdk.ui.activity.PaymentIView
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.SkuDetails
-import io.reactivex.disposables.Disposable
 
 class ProductPresenter(val mIView: IView) {
     private lateinit var purchaseSDKCallback: PurchaseSDKCallback
     private lateinit var billingDao: BillingDao
-
 
 
     object SKU {
@@ -52,12 +48,14 @@ class ProductPresenter(val mIView: IView) {
         context: Context,
         callback: ProductSDKCallback
     ) {
+        (mIView as PaymentIView).doShowProgress(true)
         MainDao().onGetProduct(gameProvider, context)
             .subscribe(object : RxObserver<GameProductsResponse>(mIView, "") {
                 override fun onNext(t: BaseResponse) {
                     super.onNext(t)
                     t as GameProductsResponse
                     if (t.meta?.code == 200) {
+                        val dataItemGameProduct = t.data
                         billingDao = BillingDao(
 //                            GameProductsResponse().getListOfSKU(t.data),
                             SKU.testListSKU,
@@ -71,14 +69,17 @@ class ProductPresenter(val mIView: IView) {
                             }
                         )
                         billingDao.onInitiateBillingClient()
+                        (mIView as PaymentIView).doOnSuccessPost(t)
+                        mIView.doShowProgress(false)
                     } else {
                         (mIView as PaymentIView).handleError("Failed for getting products")
+                        mIView.doShowProgress(false)
                     }
                 }
 
                 override fun onError(e: Throwable) {
                     super.onError(e)
-                    Log.d("TESTING API", "onError : "+ e.toString())
+                    Log.d("TESTING API", "onError : " + e.toString())
 
                 }
             })
@@ -86,7 +87,6 @@ class ProductPresenter(val mIView: IView) {
 
     fun lauchBilling(activity: Activity, skuDetails: SkuDetails, callback: PurchaseSDKCallback) {
         billingDao.lauchBillingFlow(activity, skuDetails)
-
         purchaseSDKCallback = callback
     }
 
@@ -111,12 +111,11 @@ class ProductPresenter(val mIView: IView) {
 
                 override fun onComplete() {
                     super.onComplete()
-//                    (mIView as PaymentIView).doOnComplete(purchase)
                 }
 
                 override fun onError(e: Throwable) {
                     super.onError(e)
-                    Log.d("TESTING API", "onError : "+ e.toString())
+                    Log.d("TESTING API", "onError : " + e.toString())
 
                 }
             })

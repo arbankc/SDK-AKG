@@ -5,7 +5,7 @@ import com.akggame.akg_sdk.rx.IView
 
 interface BindAccountIView : IView {
 
-    fun doOnSuccess(data:BaseResponse,socmedType:String)
+    fun doOnSuccess(data: BaseResponse, socmedType: String)
 
-    fun doOnError(message:String,socmedType: String)
+    fun doOnError(message: String, socmedType: String)
 }

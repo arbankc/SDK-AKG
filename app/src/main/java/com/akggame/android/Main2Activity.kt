@@ -10,10 +10,13 @@ import android.widget.Toast
 import com.akggame.akg_sdk.AKG_SDK
 import com.akggame.akg_sdk.MenuSDKCallback
 import com.akggame.akg_sdk.PAYMENT_TYPE
+import com.akggame.akg_sdk.baseextend.BaseActivity
 import com.akggame.akg_sdk.dao.pojo.PurchaseItem
+import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_main2.*
 
-class Main2Activity : AppCompatActivity(),MenuSDKCallback {
+class Main2Activity : BaseActivity(), MenuSDKCallback {
+    var saveBanner: String? = null
     override fun onSuccessBind(token: String, loginType: String) {
 
     }
@@ -21,8 +24,9 @@ class Main2Activity : AppCompatActivity(),MenuSDKCallback {
     override fun onCheckSDK(isUpdated: Boolean) {
 
     }
+
     override fun onLogout() {
-        startActivity(Intent(this@Main2Activity,MainActivity::class.java))
+        startActivity(Intent(this@Main2Activity, MainActivity::class.java))
         finish()
     }
 
@@ -31,20 +35,23 @@ class Main2Activity : AppCompatActivity(),MenuSDKCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
-        AKG_SDK.setFloatingButton(this,floatingButton, this,this)
+        AKG_SDK.setFloatingButton(this, floatingButton, this, this)
         floatingButton.setFloat()
-        callBanner()
+
+        saveBanner = Hawk.get("callBanner")
+        if (!saveBanner.equals("true"))
+            callBanner()
 
         btnPayment.setOnClickListener {
-            AKG_SDK.onSDKPayment(PAYMENT_TYPE.GOOGLE,this)
+            AKG_SDK.onSDKPayment(PAYMENT_TYPE.GOOGLE, this)
         }
 
         btnPaymentOttoPay.setOnClickListener {
-            AKG_SDK.onSDKPayment(PAYMENT_TYPE.OTTOPAY,this)
+            AKG_SDK.onSDKPayment(PAYMENT_TYPE.OTTOPAY, this)
         }
     }
 
-    fun callBanner(){
+    fun callBanner() {
         AKG_SDK.callBannerDialog(this)
     }
 
@@ -54,11 +61,16 @@ class Main2Activity : AppCompatActivity(),MenuSDKCallback {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(resultCode== Activity.RESULT_OK){
-            if(requestCode == AKG_SDK.SDK_PAYMENT_CODE){
-                val payment : PurchaseItem? = data?.getParcelableExtra("orderDetail")
-                Toast.makeText(this,payment?.product_name,Toast.LENGTH_LONG).show()
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == AKG_SDK.SDK_PAYMENT_CODE) {
+                val payment: PurchaseItem? = data?.getParcelableExtra("orderDetail")
+                Toast.makeText(this, payment?.product_name, Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        Hawk.delete("callBanner")
     }
 }

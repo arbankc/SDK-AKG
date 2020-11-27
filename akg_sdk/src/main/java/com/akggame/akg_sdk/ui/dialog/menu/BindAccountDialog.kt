@@ -13,18 +13,20 @@ import androidx.fragment.app.FragmentManager
 import com.akggame.akg_sdk.AKG_SDK
 import com.akggame.akg_sdk.IConfig
 import com.akggame.akg_sdk.MenuSDKCallback
-import com.akggame.akg_sdk.dao.api.model.request.BindSocMedRequest
+import com.akggame.akg_sdk.dao.SocmedDao
+import com.akggame.akg_sdk.dao.api.model.request.FacebookAuthRequest
 import com.akggame.akg_sdk.dao.api.model.response.BaseResponse
 import com.akggame.akg_sdk.presenter.BindAccountPresenter
+import com.akggame.akg_sdk.presenter.GamePresenter
 import com.akggame.akg_sdk.ui.component.FloatingButton
 import com.akggame.akg_sdk.ui.dialog.BaseDialogFragment
 import com.akggame.akg_sdk.ui.dialog.menu.binding.VerifyAccountDialog
 import com.akggame.akg_sdk.util.CacheUtil
+import com.akggame.akg_sdk.util.Constants
 import com.akggame.akg_sdk.util.DeviceUtil
 import com.akggame.android.sdk.R
-import com.facebook.CallbackManager
-import com.facebook.FacebookCallback
-import com.facebook.FacebookException
+import com.facebook.*
+import com.facebook.internal.ImageRequest
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.github.ajalt.timberkt.d
@@ -34,10 +36,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
-import kotlinx.android.synthetic.main.content_dialog_bind_account.btnBack
-import kotlinx.android.synthetic.main.content_dialog_bind_account.fbLoginButton
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+import com.orhanobut.hawk.Hawk
+import kotlinx.android.synthetic.main.content_dialog_bind_account.*
 import kotlinx.android.synthetic.main.content_dialog_bind_account.view.*
-import kotlinx.android.synthetic.main.content_dialog_bind_account.view.fbLoginButton
+import org.json.JSONException
 
 class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
 
@@ -48,6 +52,8 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
     lateinit var mFloatingButton: FloatingButton
     lateinit var mMenuSDKCallback: MenuSDKCallback
     val presenter = BindAccountPresenter(this)
+    val presenterGame = GamePresenter(this)
+    var auth: FirebaseAuth? = null
 
 
     companion object {
@@ -80,17 +86,18 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
         return mView
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        auth = FirebaseAuth.getInstance()
+    }
+
     override fun onStart() {
         super.onStart()
         initialize()
     }
 
     override fun doOnSuccess(data: BaseResponse, socmedType: String) {
-        CacheUtil.putPreferenceString(
-            IConfig.SESSION_TOKEN,
-            data.BaseDataResponse?.token!!,
-            requireActivity()
-        )
+        showDialogLoading(false)
         when (socmedType) {
             "google" -> {
                 CacheUtil.putPreferenceString(
@@ -98,21 +105,12 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
                     IConfig.LOGIN_GOOGLE,
                     requireActivity()
                 )
-                mMenuSDKCallback.onSuccessBind(
-                    data.BaseDataResponse!!.token!!,
-                    AKG_SDK.LOGIN_GOOGLE
-                )
-
             }
             "facebook" -> {
                 CacheUtil.putPreferenceString(
                     IConfig.LOGIN_TYPE,
                     IConfig.LOGIN_FACEBOOK,
                     requireActivity()
-                )
-                mMenuSDKCallback.onSuccessBind(
-                    data.BaseDataResponse!!.token!!,
-                    AKG_SDK.LOGIN_FACEBOOK
                 )
             }
         }
@@ -140,7 +138,6 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
 
 
     override fun doOnError(message: String, socmedType: String) {
-
         when (socmedType) {
             "google" -> {
                 val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -163,7 +160,7 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
 
     fun setFacebookLogin() {
         callbackManager = CallbackManager.Factory.create();
-        mView.fbLoginButton.setFragment(this)
+        mView.fbLoginButton.fragment = this
         mView.fbLoginButton.setPermissions(arrayListOf("email"))
 
         mView.btnBindFacebook.setOnClickListener {
@@ -174,14 +171,7 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
 
         fbLoginButton.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
             override fun onSuccess(result: LoginResult?) {
-                val data = BindSocMedRequest(
-                    result?.accessToken?.token,
-                    "facebook",
-                    DeviceUtil.getImei(requireActivity()),
-                    "Android",
-                    DeviceUtil.getDeviceName()
-                )
-                presenter.onBindAccount(data, "facebook", requireActivity())
+                result?.let { setFacebookData(it) }
             }
 
             override fun onCancel() {
@@ -196,20 +186,48 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
   * GOOGLE SIGN IN----------------------------------------->
   **/
     fun setGoogleLogin() {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestEmail()
-            .requestIdToken(IConfig.GOOGLE_CLIENT_ID)
-            .build()
-
-        mGoogleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
+        mGoogleSignInClient = SocmedDao.setGoogleSigninClient(requireContext())
 
         mView.btnBindGoogle.setOnClickListener {
             if (DeviceUtil.getImei(requireActivity()).isNotEmpty()) {
-                val signInIntent = mGoogleSignInClient.getSignInIntent()
+                val signInIntent = mGoogleSignInClient.signInIntent
                 startActivityForResult(signInIntent, 101)
             }
         }
     }
+
+    private fun setFacebookData(loginResult: LoginResult) {
+        val request = GraphRequest.newMeRequest(
+            loginResult.accessToken
+        ) { _, response ->
+            try {
+                d { " responData Fb $response" }
+                val emailFb = response.jsonObject.getString("email")
+                val nameFb = response.jsonObject.getString("first_name")
+                val tokenFb = loginResult.accessToken.toString()
+
+                val lastName = response.jsonObject.getString("last_name")
+                var profileURL = ""
+                if (Profile.getCurrentProfile() != null) {
+                    profileURL = ImageRequest.getProfilePictureUri(
+                        Profile.getCurrentProfile().id,
+                        400,
+                        400
+                    ).toString()
+                }
+
+                hitLoginBindAccount(emailFb, nameFb, "facebook")
+
+            } catch (e: JSONException) {
+                d { "respon Error ${e.message}" }
+            }
+        }
+        val parameters = Bundle()
+        parameters.putString("fields", "id,email,first_name,last_name")
+        request.parameters = parameters
+        request.executeAsync()
+    }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         callbackManager.onActivityResult(requestCode, resultCode, data)
@@ -225,19 +243,84 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
         try {
             val account = completedTask.getResult(ApiException::class.java)
-            val getEmail = account?.email
 
-            val data = BindSocMedRequest(
-                account?.idToken,
-                "google",
-                DeviceUtil.getImei(requireActivity()),
-                "Android",
-                DeviceUtil.getDeviceName()
-            )
-            d { "responeData $account" }
-            presenter.onBindAccount(data, "google", requireActivity())
+            auth?.let { firebaseAuthWithGoogle(account?.idToken.toString(), it) }
+
+            hitLoginBindAccount(account?.email, account?.displayName, "google")
+
         } catch (e: ApiException) {
             Log.w("FRAGMENT_GOOGLE", "signInResult:failed code=" + e.statusCode)
         }
+    }
+
+
+    private fun hitLoginBindAccount(email: String?, name: String?, typeLogin: String?) {
+        showDialogLoading(true)
+        val getChaceLogin = Hawk.get<FacebookAuthRequest>(Constants.DATA_UPSERT)
+        val idUser = Hawk.get<String>(Constants.DATA_USER_ID)
+
+        val model = FacebookAuthRequest()
+        model.email = email
+        model.access_token = getChaceLogin.access_token
+        model.name = name
+        model.phone_number = "-"
+        model.auth_provider = "akg"
+
+        model.device_id = getChaceLogin.device_id
+        model.game_provider = getChaceLogin.game_provider
+        model.operating_system = "Android"
+        model.phone_model = getChaceLogin.phone_model
+        model.login_type = typeLogin
+
+        typeLogin(typeLogin)
+
+        Hawk.put(Constants.DATA_UPSERT, model)
+        presenter.updateUpsertUser(model, idUser, requireActivity(), typeLogin.toString())
+
+    }
+
+
+    private fun typeLogin(typeLogin: String?) {
+        when {
+            typeLogin.equals("facebook", ignoreCase = true) -> {
+                CacheUtil.putPreferenceString(
+                    IConfig.LOGIN_TYPE,
+                    IConfig.LOGIN_FACEBOOK,
+                    activity!!
+                )
+            }
+
+            typeLogin.equals("google", ignoreCase = true) -> {
+                CacheUtil.putPreferenceString(
+                    IConfig.LOGIN_TYPE,
+                    IConfig.LOGIN_GOOGLE,
+                    activity!!
+                )
+            }
+            typeLogin.equals("guest", ignoreCase = true) -> {
+                CacheUtil.putPreferenceString(
+                    IConfig.LOGIN_TYPE,
+                    IConfig.LOGIN_GUEST,
+                    activity!!
+                )
+            }
+        }
+
+
+    }
+
+    private fun firebaseAuthWithGoogle(idToken: String, auth: FirebaseAuth) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+//                    activity?.let { presenterGame.onGameList(it) }
+
+                } else {
+                    d { "respon Login failed " }
+
+                }
+            }
+
     }
 }

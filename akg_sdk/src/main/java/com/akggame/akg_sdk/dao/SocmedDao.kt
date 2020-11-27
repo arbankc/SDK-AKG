@@ -1,11 +1,10 @@
 package com.akggame.akg_sdk.dao
 
+//import com.adjust.sdk.Adjust
+//import com.adjust.sdk.AdjustEvent
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
-//import com.adjust.sdk.Adjust
-//import com.adjust.sdk.AdjustEvent
 import com.akggame.akg_sdk.IConfig
 import com.akggame.akg_sdk.dao.api.model.request.FacebookAuthRequest
 import com.akggame.akg_sdk.presenter.LogoutPresenter
@@ -15,11 +14,9 @@ import com.akggame.akg_sdk.util.DeviceUtil
 import com.akggame.android.sdk.R
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
-import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.GoogleApiClient
 import com.google.firebase.analytics.FirebaseAnalytics
 
 object SocmedDao {

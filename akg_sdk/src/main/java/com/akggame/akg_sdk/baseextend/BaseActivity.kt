@@ -14,13 +14,15 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
-import com.akggame.android.sdk.R
+import com.akggame.akg_sdk.dao.api.model.request.FacebookAuthRequest
+import com.akggame.akg_sdk.dao.api.model.response.CurrentUserResponse
+import com.akggame.akg_sdk.util.Constants
+import com.orhanobut.hawk.Hawk
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
-class BaseActivity : AppCompatActivity() {
+open class BaseActivity : AppCompatActivity() {
 
     private var accessToken: String? = null
     var dialogShow: Dialog? = null
@@ -34,7 +36,6 @@ class BaseActivity : AppCompatActivity() {
         hideKeyboard()
 
 
-
     }
 
     private fun validateExpiredLogin() {
@@ -43,6 +44,14 @@ class BaseActivity : AppCompatActivity() {
 
     }
 
+    fun getDataUpsert(): FacebookAuthRequest {
+        return Hawk.get(Constants.DATA_UPSERT)
+    }
+
+
+    fun getDataLogin(): CurrentUserResponse {
+        return Hawk.get(Constants.DATA_LOGIN)
+    }
 
     fun convertDate(getDate: String?): String {
         val input = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
@@ -139,7 +148,8 @@ class BaseActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun encodeBase64(value: String?) {
-        val encodedString = Base64.getEncoder().withoutPadding().encodeToString(value?.toByteArray())
+        val encodedString =
+            Base64.getEncoder().withoutPadding().encodeToString(value?.toByteArray())
         println(encodedString)
     }
 }
