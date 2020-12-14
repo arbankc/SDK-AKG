@@ -15,6 +15,25 @@ data class GameListResponse(
 ) : Parcelable, BaseResponse()
 
 @Parcelize
+data class Attributes(
+
+	@field:JsonProperty("revenue_share")
+	val revenueShare: Int? = null,
+
+	@field:JsonProperty("name")
+	val name: String? = null,
+
+	@field:JsonProperty("package_name")
+	val packageName: String? = null,
+
+	@field:JsonProperty("product_code")
+	val productCode: String? = null,
+
+	@field:JsonProperty("platform")
+	val platform: String? = null
+) : Parcelable
+
+@Parcelize
 data class Meta(
 
 	@field:JsonProperty("code")
@@ -35,20 +54,4 @@ data class DataItemGameList(
 
 	@field:JsonProperty("type")
 	val type: String? = null
-) : Parcelable
-
-@Parcelize
-data class Attributes(
-
-	@field:JsonProperty("name")
-	val name: String? = null,
-
-	@field:JsonProperty("package_name")
-	val packageName: String? = null,
-
-	@field:JsonProperty("product_code")
-	val productCode: String? = null,
-
-	@field:JsonProperty("platform")
-	val platform: String? = null
 ) : Parcelable

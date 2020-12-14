@@ -34,7 +34,12 @@ class PaymentOttopayActivity : BaseActivity(), OttopayIView {
 
 
     override fun doOnSuccessCreateDeposit(data: DepositResponse) {
+        val bundle = Bundle()
+        bundle.putString("User Id", data.data.id)
+//        bundle.putString("Game Product Id", data.data.)
+
         loadUrl(data.data.endpoint_url)
+
     }
 
     override fun handleError(message: String) {

@@ -49,14 +49,12 @@ class Main2Activity : BaseActivity(), MenuSDKCallback {
         btnPaymentOttoPay.setOnClickListener {
             AKG_SDK.onSDKPayment(PAYMENT_TYPE.OTTOPAY, this)
         }
+
+
     }
 
     fun callBanner() {
         AKG_SDK.callBannerDialog(this)
-    }
-
-    override fun onStart() {
-        super.onStart()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

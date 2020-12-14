@@ -273,12 +273,26 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
         model.login_type = typeLogin
 
         typeLogin(typeLogin)
+        hitEvent(model)
 
         Hawk.put(Constants.DATA_UPSERT, model)
         presenter.updateUpsertUser(model, idUser, requireActivity(), typeLogin.toString())
 
     }
 
+    fun hitEvent(model: FacebookAuthRequest) {
+        val bundle = Bundle()
+
+        bundle.putString("UID", model.device_id)
+        bundle.putString("Email", model.email)
+        bundle.putString("Name", model.name)
+        bundle.putString("Phone Number", model.phone_number)
+        bundle.putString("Game Provider", model.game_provider)
+        bundle.putString("Model Phone", model.phone_model)
+        bundle.putString("Operating System", model.operating_system)
+
+        hitEventFirebase("Bind Account ", bundle)
+    }
 
     private fun typeLogin(typeLogin: String?) {
         when {

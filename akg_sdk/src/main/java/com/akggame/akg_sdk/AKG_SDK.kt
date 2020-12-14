@@ -52,6 +52,11 @@ object AKG_SDK {
     }
 
     @JvmStatic
+    fun getProductsGoogle(application: Application, context: Context, callback: ProductSDKCallback) {
+        AkgDao.getProductsGoogle(application, context, callback)
+    }
+
+    @JvmStatic
     fun callBannerDialog(activity: AppCompatActivity) {
         AkgDao.callBannerDialog(activity)
     }
@@ -85,7 +90,7 @@ object AKG_SDK {
 
     @JvmStatic
     fun onLogin(activity: AppCompatActivity, gameName: String, loginSDKCallback: LoginSDKCallback) {
-        AkgDao.callLoginDialog(activity, gameName, loginSDKCallback)
+        AkgDao.callLoginDialog(activity, "", loginSDKCallback)
     }
 
     @JvmStatic

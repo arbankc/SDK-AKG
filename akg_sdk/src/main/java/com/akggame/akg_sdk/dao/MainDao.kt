@@ -141,4 +141,11 @@ class MainDao() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
+
+    fun onGetEula(context: Context, gameId: String): Observable<EulaResponse> {
+        return Api.onCallEulaDetail(gameId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
 }
+

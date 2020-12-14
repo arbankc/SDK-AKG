@@ -7,5 +7,5 @@ import com.android.billingclient.api.SkuDetails
 
 interface ProductSDKCallback {
 
-    fun ProductResult(skuDetails:MutableList<SkuDetails>)
+    fun ProductResult(skuDetails: MutableList<SkuDetails>)
 }

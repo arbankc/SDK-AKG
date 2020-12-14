@@ -1,10 +1,13 @@
 package com.akggame.akg_sdk.dao.api.model.request
 
+import android.os.Parcelable
 import androidx.annotation.Keep
 import com.akggame.akg_sdk.dao.api.model.response.BaseResponse
+import kotlinx.android.parcel.Parcelize
 
 @Keep
-class FacebookAuthRequest : BaseResponse(){
+@Parcelize
+class FacebookAuthRequest : Parcelable, BaseResponse() {
 
     /**
      * access_token : EAAN9LULZASj0BAJTkvozxhOpLvv9Gn6erQmO21yHMDalcitjZC0FWSVLtPibVzLzFS6izrXKvQT9lq0pZAgeRXXxtXYUOi6qpDe9jDfzgky3v5irya08dNSKgZC39lnrW8NRe1uhcdGDFb2F0uf3b4xw4pDZBPC4MWP6pOafC2Dc7hz69UqPqaskIHpbOBFbFSZAu06hm3OQZDZD

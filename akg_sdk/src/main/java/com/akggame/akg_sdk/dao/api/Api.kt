@@ -183,5 +183,11 @@ class Api {
         fun onCreateDeposit(body: DepositRequest, context: Context): Observable<DepositResponse> {
             return initApiDomainOttopay().createDeposit(body)
         }
+
+
+        @Synchronized
+        fun onCallEulaDetail(gameId: String?): Observable<EulaResponse> {
+            return initApiDomain().callEula(gameId.toString())
+        }
     }
 }

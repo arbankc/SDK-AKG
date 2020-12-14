@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentManager
 import com.akggame.akg_sdk.rx.IView
 import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.android.sdk.R
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
 import com.orhanobut.hawk.Hawk
 
@@ -75,6 +76,12 @@ open class BaseDialogFragment() : DialogFragment(), IView {
         }
         setOnBackPressed()
 
+    }
+
+
+    fun hitEventFirebase(eventName: String, bundle: Bundle) {
+        val firebaseAnalytics = FirebaseAnalytics.getInstance(requireActivity())
+        firebaseAnalytics.logEvent(eventName, bundle)
     }
 
     fun showDialogLoading(isShow: Boolean) {

@@ -29,6 +29,9 @@ class CurrentUserResponse : BaseResponse() {
             var auth_provider: String? = null
             var created_at: String? = null
             var game_provider: String? = null
+            var last_login: String? = null
+            var register_time: String? = null
+
         }
     }
 }

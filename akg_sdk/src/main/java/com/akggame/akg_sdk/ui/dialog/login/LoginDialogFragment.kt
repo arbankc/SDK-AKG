@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,13 +20,16 @@ import com.akggame.akg_sdk.LoginSDKCallback
 import com.akggame.akg_sdk.`interface`.OnClickItem
 import com.akggame.akg_sdk.dao.SocmedDao
 import com.akggame.akg_sdk.dao.api.model.request.FacebookAuthRequest
+import com.akggame.akg_sdk.dao.api.model.response.CurrentUserResponse
 import com.akggame.akg_sdk.dao.api.model.response.DataItemGameList
 import com.akggame.akg_sdk.dao.api.model.response.GameListResponse
 import com.akggame.akg_sdk.presenter.GamePresenter
+import com.akggame.akg_sdk.presenter.InfoPresenter
 import com.akggame.akg_sdk.presenter.LoginPresenter
 import com.akggame.akg_sdk.ui.adapter.GameListAdapter
 import com.akggame.akg_sdk.ui.dialog.BaseDialogFragment
 import com.akggame.akg_sdk.ui.dialog.PhoneLoginDialogFragment
+import com.akggame.akg_sdk.ui.dialog.menu.AccountIView
 import com.akggame.akg_sdk.ui.dialog.menu.GameListIView
 import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.akg_sdk.util.Constants
@@ -42,6 +46,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -70,11 +75,39 @@ class LoginDialogFragment() : BaseDialogFragment(), LoginIView, GameListIView {
     var dialogListGame: Dialog? = null
     var dataItemGameList: List<DataItemGameList>? = null
     var productCodeGame: String? = null
-
+    var gameIdProduct: String? = null
     var emailFb: String? = null
     var nameFb: String? = null
     var tokenFb: String? = null
 
+    val accountIView: AccountIView = (object : AccountIView {
+        override fun doOnSuccess(activity: AppCompatActivity, data: CurrentUserResponse) {
+            val bundle = Bundle()
+            bundle.putString("UID", data.data?.id)
+            bundle.putString("Email", data.data?.attributes?.email)
+            bundle.putString("Phone Number", data.data?.attributes?.phone_number)
+            bundle.putString("Auth Provider ", data.data?.attributes?.auth_provider)
+//            bundle.putString("Game Id", data.data?.attributes?.game_provider)
+            bundle.putString("Last Login", data.data?.attributes?.last_login)
+            bundle.putString("Register Time", data.data?.attributes?.register_time)
+            bundle.putString("Game Provider number", data.data?.attributes?.game_provider)
+            hitEventFirebase("Info Login User", bundle)
+        }
+
+        override fun doOnError(message: String?) {
+            TODO("Not yet implemented")
+        }
+
+        override fun handleError(message: String) {
+            TODO("Not yet implemented")
+        }
+
+        override fun handleRetryConnection() {
+            TODO("Not yet implemented")
+        }
+
+
+    })
 
     constructor(fm: FragmentManager?) : this() {
         myFragmentManager = fm
@@ -107,7 +140,6 @@ class LoginDialogFragment() : BaseDialogFragment(), LoginIView, GameListIView {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
 
     }
 
@@ -143,6 +175,14 @@ class LoginDialogFragment() : BaseDialogFragment(), LoginIView, GameListIView {
         dismiss()
         showDialogLoading(false)
         Hawk.put(Constants.DATA_USER_ID, userId)
+//
+//        val idUser = Hawk.get<String>(Constants.DATA_USER_ID)
+//        InfoPresenter(accountIView).onGetCurrentUser(
+//            idUser,
+//            requireActivity() as AppCompatActivity,
+//            activity as Context
+//        )
+
     }
 
     override fun doOnError(message: String) {
@@ -342,6 +382,7 @@ class LoginDialogFragment() : BaseDialogFragment(), LoginIView, GameListIView {
         override fun clickItem(pos: Int) {
             val itemGameList = dataItemGameList?.get(pos)
             productCodeGame = itemGameList?.attributes?.productCode
+            gameIdProduct = itemGameList?.id.toString()
         }
     }
 
@@ -349,14 +390,6 @@ class LoginDialogFragment() : BaseDialogFragment(), LoginIView, GameListIView {
         val rvGameList = dialogListGame?.findViewById<RecyclerView>(R.id.rvListGame)
         val btnStart = dialogListGame?.findViewById<Button>(R.id.btnStartGame)
         dialogListGame?.show()
-
-//        val groupieAdapterMenu = GroupAdapter<ViewHolder>().apply {
-//            dataItemGameList?.forEach {
-//                add(MenuListGameAdapter(onClickItem, it))
-//            }
-//
-//            notifyDataSetChanged()
-//        }
 
         val gameListAdapter = GameListAdapter()
         gameListAdapter.dataItemGameList = dataItemGameList as MutableList<DataItemGameList>?
@@ -448,10 +481,28 @@ class LoginDialogFragment() : BaseDialogFragment(), LoginIView, GameListIView {
         typeLogin(typeLogin)
 
         Hawk.put(Constants.DATA_UPSERT, model)
+        Hawk.put("gameId", gameIdProduct)
+
         dialogListGame?.dismiss()
+
+        hitLogEvent(typeLogin.toString(), model)
 
         LoginPresenter(this@LoginDialogFragment)
             .upsertUser(model, requireActivity(), typeLogin.toString())
+    }
+
+    private fun hitLogEvent(typeLogin: String, model: FacebookAuthRequest) {
+        val bundle = Bundle()
+
+        bundle.putString("UID", model.device_id)
+        bundle.putString("Email", model.email)
+        bundle.putString("Name", model.name)
+        bundle.putString("Phone Number", model.phone_number)
+        bundle.putString("Game Provider", model.game_provider)
+        bundle.putString("Model Phone", model.phone_model)
+        bundle.putString("Operating System", model.operating_system)
+
+        hitEventFirebase("Login $typeLogin", bundle)
     }
 
     private fun typeLogin(typeLogin: String?) {

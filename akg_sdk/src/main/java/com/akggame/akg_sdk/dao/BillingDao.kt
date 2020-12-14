@@ -12,7 +12,6 @@ import android.util.Log
 import com.akggame.akg_sdk.IConfig
 import com.akggame.akg_sdk.dao.api.model.ProductData
 import com.akggame.akg_sdk.dao.api.model.request.PostOrderRequest
-import com.akggame.akg_sdk.dao.api.model.response.GameProductsResponse
 import com.akggame.akg_sdk.presenter.ProductPresenter
 import com.akggame.akg_sdk.util.CacheUtil
 import com.android.billingclient.api.*
@@ -24,7 +23,7 @@ import java.security.spec.InvalidKeySpecException
 import java.security.spec.X509EncodedKeySpec
 import java.util.HashSet
 
-class BillingDao constructor(
+class BillingDao(
     private val listOfSku: List<String>,
     private val productData: List<ProductData>,
     private val presenter: ProductPresenter,
@@ -90,33 +89,48 @@ class BillingDao constructor(
         return false
     }
 
-    fun querySkuDetailsAsync(@BillingClient.SkuType skuType: String, skuList: List<String>) {
-
+    private fun querySkuDetailsAsync(
+        @BillingClient.SkuType skuType: String,
+        skuList: MutableList<String>
+    ) {
         val params = SkuDetailsParams.newBuilder()
-            .setSkusList(skuList)
-            .setType(skuType)
-            .build()
 
-        billingClient.querySkuDetailsAsync(params, object : SkuDetailsResponseListener {
-            override fun onSkuDetailsResponse(
-                billingResult: BillingResult?,
-                skuDetailsList: MutableList<SkuDetails>?
-            ) {
-                if (billingResult?.responseCode == OK) {
-                    Log.d(LOG_TAG, "onBillingResultResponseCode is OK")
-                    if (skuDetailsList != null) {
-                        queryCallback.onQuerySKU(skuDetailsList)
-                    }
-                } else {
-                    Log.e(LOG_TAG, billingResult?.debugMessage.toString())
+//        val skuListString = ArrayList<String>()
+//        skuList.forEach {
+//            skuListString.add(it.id.toString())
+//            skuListString.add(it.attributes?.game.toString())
+//            skuListString.add(it.attributes?.name.toString())
+//            skuListString.add(it.attributes?.game_id.toString())
+//            params.setSkusList(skuListString).setType(BillingClient.SkuType.INAPP)
+//        }
+
+//        skuList.add("premium_upgrade")
+//        skuList.add("gas")
+//
+//        skuList.add("hahahaha")
+//        skuList.add("kwkwkw")
+//
+//        skuList.add("cakepss")
+//        skuList.add("hei tayoo")
+
+
+        params.setSkusList(skuList).setType(skuType)
+        billingClient.querySkuDetailsAsync(
+            params.build()
+        ) { billingResult, skuDetailsList ->
+            if (billingResult?.responseCode == OK) {
+                Log.d(LOG_TAG, "onBillingResultResponseCode is OK")
+                if (skuDetailsList != null) {
+                    queryCallback.onQuerySKU(skuDetailsList)
                 }
+            } else {
+                Log.e(LOG_TAG, billingResult?.debugMessage.toString())
             }
-
-        })
+        }
     }
 
     fun lauchBillingFlow(activity: Activity, skuDetails: SkuDetails) {
-        var billingFlowParams = BillingFlowParams.newBuilder()
+        val billingFlowParams = BillingFlowParams.newBuilder()
             .setSkuDetails(skuDetails)
             .build()
         billingClient.launchBillingFlow(activity, billingFlowParams)
@@ -131,7 +145,7 @@ class BillingDao constructor(
         when (billingResult?.responseCode) {
             OK -> {
                 Log.d(LOG_TAG, "onBillingSetupFinished successfully")
-                querySkuDetailsAsync(BillingClient.SkuType.INAPP, listOfSku)
+                querySkuDetailsAsync(BillingClient.SkuType.INAPP, listOfSku.toMutableList())
                 queryPurchasesAsync()
             }
             BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
@@ -183,11 +197,11 @@ class BillingDao constructor(
             }
         }
 
-        val (consumables, nonConsumables) = validPurchases.partition {
-            listOfSku.contains(it.sku)
-        }
+//        val (consumables, nonConsumables) = validPurchases.partition {
+//            listOfSku.contains(it.sku)
+//        }
 
-        handleConsumablePurchasesAsync(consumables)
+//        handleConsumablePurchasesAsync(consumables)
 
     }
 
@@ -337,10 +351,13 @@ class BillingDao constructor(
 //            Adjust.trackEvent(adjustEvent)
 
             val bundle = Bundle()
-            bundle.putString(FirebaseAnalytics.Param.CURRENCY,"IDR")
-            bundle.putString(FirebaseAnalytics.Param.ITEM_ID,sku)
-            bundle.putString("user_id",CacheUtil.getPreferenceString(IConfig.SESSION_PIW,application))
-            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.ECOMMERCE_PURCHASE,bundle)
+            bundle.putString(FirebaseAnalytics.Param.CURRENCY, "IDR")
+            bundle.putString(FirebaseAnalytics.Param.ITEM_ID, sku)
+            bundle.putString(
+                "user_id",
+                CacheUtil.getPreferenceString(IConfig.SESSION_PIW, application)
+            )
+            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.ECOMMERCE_PURCHASE, bundle)
         }
     }
 
@@ -352,9 +369,9 @@ class BillingDao constructor(
 //
 //        }
         val bundle = Bundle()
-        bundle.putString(FirebaseAnalytics.Param.CURRENCY,"IDR")
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID,sku)
-        bundle.putString("user_id",CacheUtil.getPreferenceString(IConfig.SESSION_PIW,application))
-        firebaseAnalytics.logEvent("purchase_failed",bundle)
+        bundle.putString(FirebaseAnalytics.Param.CURRENCY, "IDR")
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, sku)
+        bundle.putString("user_id", CacheUtil.getPreferenceString(IConfig.SESSION_PIW, application))
+        firebaseAnalytics.logEvent("purchase_failed", bundle)
     }
 }

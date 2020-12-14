@@ -124,4 +124,9 @@ interface IApi {
     fun createDeposit(
         @Body data: DepositRequest
     ): Observable<DepositResponse>
+
+    @GET("/end-user-license-agreements")
+    fun callEula(
+        @Query("game_id") gameId: String
+    ): Observable<EulaResponse>
 }

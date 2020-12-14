@@ -1,19 +1,31 @@
 package com.akggame.akg_sdk.ui.fragment.paymentmethod
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log.d
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import com.akggame.akg_sdk.AKG_SDK
+import com.akggame.akg_sdk.AKG_SDK.launchBilling
 import com.akggame.akg_sdk.IConfig
+import com.akggame.akg_sdk.ProductSDKCallback
+import com.akggame.akg_sdk.PurchaseSDKCallback
+import com.akggame.akg_sdk.dao.BillingDao
+import com.akggame.akg_sdk.dao.api.model.response.GameProductsResponse
+import com.akggame.akg_sdk.dao.pojo.PurchaseItem
 import com.akggame.akg_sdk.ui.activity.PaymentOttopayActivity
+import com.akggame.akg_sdk.ui.adapter.PaymentAdapter
+import com.akggame.akg_sdk.ui.adapter.PaymentAdapterGoogle
 import com.akggame.akg_sdk.ui.dialog.menu.BindAccountDialog
 import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.akg_sdk.util.Constants
 import com.akggame.android.sdk.R
-import com.github.ajalt.timberkt.v
+import com.android.billingclient.api.SkuDetails
+import com.google.android.gms.wallet.PaymentsClient
 import kotlinx.android.synthetic.main.fragment_payment_otto.*
 
 // TODO: Rename parameter arguments, choose names that match
@@ -26,12 +38,16 @@ private const val ARG_PARAM2 = "param2"
  * Use the [PaymentOttoFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class PaymentOttoFragment : Fragment() {
+class PaymentOttoFragment : Fragment(), PurchaseSDKCallback {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
     var idGameProduct: String? = null
     var mView: View? = null
+    lateinit var mPaymentsClient: PaymentsClient
+    lateinit var adapter: PaymentAdapterGoogle
+    lateinit private var billingDao: BillingDao
+    lateinit var productData: GameProductsResponse
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,9 +68,22 @@ class PaymentOttoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        adapter = activity?.let { PaymentAdapterGoogle(it, this) }!!
 
         llPaymentGoogle.setOnClickListener {
-
+            AKG_SDK.getProductsGoogle(
+                activity!!.application,
+                activity as Context,
+                object : ProductSDKCallback {
+                    override fun ProductResult(skuDetails: MutableList<SkuDetails>) {
+                        println("responArray google $skuDetails")
+                        AKG_SDK.launchBilling(
+                            context as Activity,
+                            skuDetails[0],
+                            this@PaymentOttoFragment
+                        )
+                    }
+                })
         }
 
         llOttoPayPayment.setOnClickListener {
@@ -73,20 +102,19 @@ class PaymentOttoFragment : Fragment() {
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment PaymentOttoFragment.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(idGetGameProduct: String, param2: String) =
             PaymentOttoFragment().apply {
                 idGameProduct = idGetGameProduct
 
             }
+    }
+
+    override fun onPurchasedItem(purchaseItem: PurchaseItem) {
+        activity?.setResult(
+            Activity.RESULT_OK,
+            activity!!.intent.putExtra("orderDetail", purchaseItem)
+        )
+        activity?.finish()
     }
 }

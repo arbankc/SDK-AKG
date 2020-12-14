@@ -30,6 +30,7 @@ class PaymentAdapter(val context: Context) :
     lateinit var view: View
     var skuDetails = mutableListOf<ProductData>()
     var onClickItem: OnClickItem? = null
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         view = LayoutInflater.from(context).inflate(R.layout.item_list_product, null)
         return ViewHolder(view)

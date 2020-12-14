@@ -56,24 +56,57 @@ class ProductPresenter(val mIView: IView) {
                     t as GameProductsResponse
                     if (t.meta?.code == 200) {
                         val dataItemGameProduct = t.data
-                        billingDao = BillingDao(
-//                            GameProductsResponse().getListOfSKU(t.data),
-                            SKU.testListSKU,
-                            t.data,
-                            this@ProductPresenter,
-                            application,
-                            object : BillingDao.BillingDaoQuerySKU {
-                                override fun onQuerySKU(skuDetails: MutableList<SkuDetails>) {
-                                    callback.ProductResult(skuDetails)
-                                }
-                            }
-                        )
-                        billingDao.onInitiateBillingClient()
                         (mIView as PaymentIView).doOnSuccessPost(t)
                         mIView.doShowProgress(false)
                     } else {
                         (mIView as PaymentIView).handleError("Failed for getting products")
                         mIView.doShowProgress(false)
+                    }
+                }
+
+                override fun onError(e: Throwable) {
+                    super.onError(e)
+                    Log.d("TESTING API", "onError : " + e.toString())
+
+                }
+            })
+    }
+
+    fun getProductsGoogle(
+        gameProvider: String?,
+        application: Application,
+        context: Context,
+        callback: ProductSDKCallback
+    ) {
+        MainDao().onGetProduct(gameProvider, context)
+            .subscribe(object : RxObserver<GameProductsResponse>(mIView, "") {
+                override fun onNext(t: BaseResponse) {
+                    super.onNext(t)
+                    t as GameProductsResponse
+                    if (t.meta?.code == 200) {
+                        t.data.forEach {
+                            val dataProductList = ArrayList<String>()
+                            dataProductList.add(it.id.toString())
+                            dataProductList.add(it.attributes?.name.toString())
+                            billingDao = BillingDao(
+//                                dataProductList,
+                                SKU.testListSKU,
+                                t.data,
+                                this@ProductPresenter,
+                                application,
+                                object : BillingDao.BillingDaoQuerySKU {
+                                    override fun onQuerySKU(skuDetails: MutableList<SkuDetails>) {
+                                        println("dataArray sku $$skuDetails")
+//                                    callback.ProductResult(skuDetails)
+                                    }
+                                }
+                            )
+                            billingDao.onInitiateBillingClient()
+                        }
+
+
+                    } else {
+                        (mIView as PaymentIView).handleError("Failed for getting products")
                     }
                 }
 

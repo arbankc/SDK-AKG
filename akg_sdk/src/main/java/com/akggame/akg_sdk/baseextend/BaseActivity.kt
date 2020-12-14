@@ -17,6 +17,7 @@ import androidx.appcompat.widget.Toolbar
 import com.akggame.akg_sdk.dao.api.model.request.FacebookAuthRequest
 import com.akggame.akg_sdk.dao.api.model.response.CurrentUserResponse
 import com.akggame.akg_sdk.util.Constants
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.orhanobut.hawk.Hawk
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -36,6 +37,11 @@ open class BaseActivity : AppCompatActivity() {
         hideKeyboard()
 
 
+    }
+
+    fun hitEventFirebase(eventName: String, bundle: Bundle) {
+        val firebaseAnalytics = FirebaseAnalytics.getInstance(this)
+        firebaseAnalytics.logEvent(eventName, bundle)
     }
 
     private fun validateExpiredLogin() {

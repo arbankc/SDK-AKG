@@ -43,7 +43,7 @@ class GameListProductFragment : BaseFragment(), PurchaseSDKCallback, ProductSDKC
     var constraintLayout: ConstraintLayout? = null
     var progressBarPayment: ProgressBar? = null
 
-    val onClickItem: OnClickItem = object : OnClickItem {
+    private val onClickItem: OnClickItem = object : OnClickItem {
         override fun clickItem(pos: Int) {
             val dataPaymentGameProduct = paymentAdapter.skuDetails[pos]
 //            if (typePayment.equals("paymentottopay", ignoreCase = true)) {

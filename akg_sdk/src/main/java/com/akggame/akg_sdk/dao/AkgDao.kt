@@ -15,6 +15,7 @@ import com.akggame.akg_sdk.dao.api.model.request.FacebookAuthRequest
 import com.akggame.akg_sdk.dao.api.model.response.CurrentUserResponse
 import com.akggame.akg_sdk.presenter.InfoPresenter
 import com.akggame.akg_sdk.presenter.ProductPresenter
+import com.akggame.akg_sdk.ui.activity.eula.EulaActivity
 import com.akggame.akg_sdk.ui.adapter.FloatingAdapterListener
 import com.akggame.akg_sdk.ui.component.FloatingButton
 import com.akggame.akg_sdk.ui.dialog.banner.BannerDialog
@@ -47,6 +48,13 @@ class AkgDao : AccountIView {
 
     fun getProducts(application: Application, context: Context, callback: ProductSDKCallback) {
         productPresenter.getProducts(
+            CacheUtil.getPreferenceString(IConfig.SESSION_GAME, context),
+            application, context, callback
+        )
+    }
+
+    fun getProductsGoogle(application: Application, context: Context, callback: ProductSDKCallback) {
+        productPresenter.getProductsGoogle(
             CacheUtil.getPreferenceString(IConfig.SESSION_GAME, context),
             application, context, callback
         )
@@ -99,7 +107,9 @@ class AkgDao : AccountIView {
                     }
                     1 -> callBrowserFanPage(context)
 
-                    2 -> Toast.makeText(context, "eula", Toast.LENGTH_LONG).show()
+                    2 -> {
+                        callDetailEula(context)
+                    }
 
                     3 -> contactUsDialog.show(activity.supportFragmentManager, "contact us")
 
@@ -112,6 +122,13 @@ class AkgDao : AccountIView {
         }
 
         floatingButton.floatingAdapterListener = onItemClickListener
+    }
+
+    private fun callDetailEula(context: Context) {
+        val gameId = Hawk.get<String>("gameId")
+        val intent = Intent(context, EulaActivity::class.java)
+        intent.putExtra("gameId", gameId)
+        context.startActivity(intent)
     }
 
     fun setFloatingButtonItem(
@@ -245,6 +262,8 @@ class AkgDao : AccountIView {
                 activity
             )
         }
+
+
     }
 
     override fun doOnError(message: String?) {
