@@ -39,14 +39,19 @@ class ProductPresenter(val mIView: IView) {
 
         val myListSKU = listOf(janjiDoang, tempeOrek)
 
-        val testListSKU = listOf(testingPurchased, testingCancelled, testingUnavailable)
+        val testListSKU = listOf(
+            testingPurchased,
+            testingCancelled,
+            testingUnavailable,
+            product3,
+            tempeOrek,
+            janjiDoang2
+        )
     }
 
     fun getProducts(
         gameProvider: String?,
-        application: Application,
-        context: Context,
-        callback: ProductSDKCallback
+        context: Context
     ) {
         (mIView as PaymentIView).doShowProgress(true)
         MainDao().onGetProduct(gameProvider, context)
@@ -97,14 +102,12 @@ class ProductPresenter(val mIView: IView) {
                                 object : BillingDao.BillingDaoQuerySKU {
                                     override fun onQuerySKU(skuDetails: MutableList<SkuDetails>) {
                                         println("dataArray sku $$skuDetails")
-//                                    callback.ProductResult(skuDetails)
+                                        callback.ProductResult(skuDetails)
                                     }
                                 }
                             )
                             billingDao.onInitiateBillingClient()
                         }
-
-
                     } else {
                         (mIView as PaymentIView).handleError("Failed for getting products")
                     }

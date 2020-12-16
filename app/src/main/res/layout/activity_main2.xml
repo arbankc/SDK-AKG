@@ -8,14 +8,14 @@
         tools:context=".Main2Activity">
 
     <Button
-            android:id="@+id/btnPayment"
+            android:id="@+id/btnPaymentGoogle"
             android:layout_width="150dp"
             android:layout_height="35dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:background="@drawable/button_selector_tosca"
-            android:text="Pilih Product"
+            android:text="Pilih Google"
             android:textColor="@color/white"
             android:textSize="11dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -25,21 +25,24 @@
             app:layout_constraintTop_toBottomOf="@+id/floatingButton"
             app:layout_constraintVertical_bias="0.203" />
 
+
     <Button
             android:id="@+id/btnPaymentOttoPay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="150dp"
+            android:layout_height="35dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            android:text="Ottopay Payment"
-            android:visibility="gone"
+            android:background="@drawable/button_selector_tosca"
+            android:text="Pilih Otto"
+            android:textColor="@color/white"
+            android:textSize="11dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnPayment"
-            app:layout_constraintVertical_bias="0.1" />
-
+            app:layout_constraintTop_toBottomOf="@+id/floatingButton"
+            app:layout_constraintVertical_bias="0.459" />
 
     <com.akggame.akg_sdk.ui.component.FloatingButton
             android:id="@+id/floatingButton"

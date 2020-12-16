@@ -11,7 +11,9 @@ import com.akggame.akg_sdk.AKG_SDK
 import com.akggame.akg_sdk.MenuSDKCallback
 import com.akggame.akg_sdk.PAYMENT_TYPE
 import com.akggame.akg_sdk.baseextend.BaseActivity
+import com.akggame.akg_sdk.dao.api.model.response.CurrentUserResponse
 import com.akggame.akg_sdk.dao.pojo.PurchaseItem
+import com.akggame.akg_sdk.util.Constants
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_main2.*
 
@@ -23,6 +25,18 @@ class Main2Activity : BaseActivity(), MenuSDKCallback {
 
     override fun onCheckSDK(isUpdated: Boolean) {
 
+    }
+
+    override fun onClickEula(context: Context) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onClickFbPage(context: Context) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onContactUs(context: Context) {
+        TODO("Not yet implemented")
     }
 
     override fun onLogout() {
@@ -42,7 +56,7 @@ class Main2Activity : BaseActivity(), MenuSDKCallback {
         if (!saveBanner.equals("true"))
             callBanner()
 
-        btnPayment.setOnClickListener {
+        btnPaymentGoogle.setOnClickListener {
             AKG_SDK.onSDKPayment(PAYMENT_TYPE.GOOGLE, this)
         }
 
@@ -51,6 +65,39 @@ class Main2Activity : BaseActivity(), MenuSDKCallback {
         }
 
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        val bundle = Bundle()
+        bundle.putString("timestamp", createTimestamp())
+        bundle.putString("uid", getDataLogin()?.data?.id)
+        bundle.putString("udid", deviceIdAndroid())
+
+        hitEventFirebase("session_start", bundle)
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        val bundle = Bundle()
+        bundle.putString("timestamp", createTimestamp())
+        bundle.putString("uid", getDataLogin()?.data?.id)
+        bundle.putString("udid", deviceIdAndroid())
+
+        hitEventFirebase("session_stop", bundle)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        val bundle = Bundle()
+        bundle.putString("timestamp", createTimestamp())
+        bundle.putString("uid", getDataLogin()?.data?.id)
+        bundle.putString("udid", deviceIdAndroid())
+
+        hitEventFirebase("session_stop", bundle)
     }
 
     fun callBanner() {

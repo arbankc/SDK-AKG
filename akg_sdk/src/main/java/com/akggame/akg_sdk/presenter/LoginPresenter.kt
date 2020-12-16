@@ -125,7 +125,7 @@ class LoginPresenter(val mIView: IView) {
                         (mIView as LoginIView).doOnSuccess(
                             t.data?.is_first_login!!,
                             t.data?.token!!,
-                            t.data?.user_id.toString(),
+                            t.data?.id.toString(),
                             typeLogin
                         )
 

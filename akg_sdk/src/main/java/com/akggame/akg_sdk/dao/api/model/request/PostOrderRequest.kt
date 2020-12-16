@@ -16,5 +16,6 @@ data class PostOrderRequest(
     val sku: String,
     val status: String,
     val uid: String?,
-    val username: String?
+    val email: String?,
+    val user_id: String?
 )

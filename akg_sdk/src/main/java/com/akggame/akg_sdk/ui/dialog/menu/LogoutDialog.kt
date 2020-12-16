@@ -124,6 +124,8 @@ class LogoutDialog() : BaseDialogFragment(), LogoutIView {
             "user_id",
             CacheUtil.getPreferenceString(IConfig.SESSION_PIW, requireActivity())
         )
+        bundle.putString("timestamp", createTimestamp())
+
         firebaseAnalytics.logEvent("logout", bundle)
     }
 

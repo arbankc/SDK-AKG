@@ -38,6 +38,7 @@ class OrderPresenter(val mIView: IView) {
                 override fun onError(e: Throwable) {
                     super.onError(e)
                     Log.d("TESTING API", "onError: " + e.toString())
+                    (mIView as OttopayIView).handleError(e.message.toString())
                 }
             })
     }

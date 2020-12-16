@@ -11,11 +11,12 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
 import com.akggame.akg_sdk.*
 import com.akggame.akg_sdk.dao.api.model.FloatingItem
-import com.akggame.akg_sdk.dao.api.model.request.FacebookAuthRequest
 import com.akggame.akg_sdk.dao.api.model.response.CurrentUserResponse
+import com.akggame.akg_sdk.dao.api.model.response.DepositResponse
 import com.akggame.akg_sdk.presenter.InfoPresenter
+import com.akggame.akg_sdk.presenter.OrderPresenter
 import com.akggame.akg_sdk.presenter.ProductPresenter
-import com.akggame.akg_sdk.ui.activity.eula.EulaActivity
+import com.akggame.akg_sdk.ui.activity.OttopayIView
 import com.akggame.akg_sdk.ui.adapter.FloatingAdapterListener
 import com.akggame.akg_sdk.ui.component.FloatingButton
 import com.akggame.akg_sdk.ui.dialog.banner.BannerDialog
@@ -26,14 +27,18 @@ import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.akg_sdk.util.Constants
 import com.akggame.android.sdk.R
 import com.android.billingclient.api.SkuDetails
+import com.clappingape.dplkagent.model.api.request.DepositRequest
 import com.orhanobut.hawk.Hawk
 
 
-class AkgDao : AccountIView {
+class AkgDao : AccountIView, OttopayIView {
 
     private lateinit var customCallback: LoginSDKCallback
+
     private val productPresenter = ProductPresenter(this)
     private val presenter = InfoPresenter(this)
+    lateinit var ottoPaySDKCallback: OttoPaySDKCallback
+
 
     fun callRelaunchDialog(activity: AppCompatActivity, callback: RelaunchSDKCallback) {
         val dialog = RelaunchDialog.newInstance(callback)
@@ -49,11 +54,15 @@ class AkgDao : AccountIView {
     fun getProducts(application: Application, context: Context, callback: ProductSDKCallback) {
         productPresenter.getProducts(
             CacheUtil.getPreferenceString(IConfig.SESSION_GAME, context),
-            application, context, callback
+            context
         )
     }
 
-    fun getProductsGoogle(application: Application, context: Context, callback: ProductSDKCallback) {
+    fun getProductsGoogle(
+        application: Application,
+        context: Context,
+        callback: ProductSDKCallback
+    ) {
         productPresenter.getProductsGoogle(
             CacheUtil.getPreferenceString(IConfig.SESSION_GAME, context),
             application, context, callback
@@ -105,17 +114,27 @@ class AkgDao : AccountIView {
                             accountDialog.show(activity.supportFragmentManager, "account")
                         }
                     }
-                    1 -> callBrowserFanPage(context)
+                    1 -> {
+                        callBrowserFanPage(context)
+//                        menuSDKCallback.onClickFbPage(context)
+                    }
 
                     2 -> {
                         callDetailEula(context)
+//                        menuSDKCallback.onClickEula(context)
                     }
 
                     3 -> contactUsDialog.show(activity.supportFragmentManager, "contact us")
 
-                    4 -> checkVersionDialog.show(activity.supportFragmentManager, "check version")
+                    4 -> {
+                        checkVersionDialog.show(activity.supportFragmentManager, "check version")
+//                        menuSDKCallback.onCheckSDK(true)
+                    }
 
-                    5 -> logoutDialog.show(activity.supportFragmentManager, "logout")
+                    5 -> {
+                        logoutDialog.show(activity.supportFragmentManager, "logout")
+//                        menuSDKCallback.onLogout()
+                    }
 
                 }
             }
@@ -125,9 +144,13 @@ class AkgDao : AccountIView {
     }
 
     private fun callDetailEula(context: Context) {
-        val gameId = Hawk.get<String>("gameId")
-        val intent = Intent(context, EulaActivity::class.java)
-        intent.putExtra("gameId", gameId)
+//        val gameId = Hawk.get<String>("gameId")
+//        val intent = Intent(context, EulaActivity::class.java)
+//        intent.putExtra("gameId", gameId)
+//        context.startActivity(intent)
+
+        val intent =
+            Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://akggames.com/eula/?=GAME_CODE"))
         context.startActivity(intent)
     }
 
@@ -204,6 +227,20 @@ class AkgDao : AccountIView {
         return floatingButton
     }
 
+    fun callPaymentOttoPay(
+        context: Context, userId: String, idProductGame: String,
+        ottoPayCallback: OttoPaySDKCallback
+    ) {
+        val depositRequest = DepositRequest()
+        depositRequest.user_id = userId
+        depositRequest.game_product_id = idProductGame
+
+        OrderPresenter(this)
+            .onCreateDeposit(depositRequest, context)
+        ottoPaySDKCallback = ottoPayCallback
+
+    }
+
     private fun callGetAccount(activity: AppCompatActivity) {
         val idUser = Hawk.get<String>(Constants.DATA_USER_ID)
         InfoPresenter(this).onGetCurrentUser(
@@ -215,10 +252,8 @@ class AkgDao : AccountIView {
 
     fun callLoginDialog(
         activity: AppCompatActivity,
-        gameName: String,
         loginSDKCallback: LoginSDKCallback
     ) {
-        CacheUtil.putPreferenceString(IConfig.SESSION_GAME, gameName, activity)
         if (!CacheUtil.getPreferenceBoolean(IConfig.SESSION_LOGIN, activity)) {
             customCallback = loginSDKCallback
             val loginDialogFragment =
@@ -269,7 +304,12 @@ class AkgDao : AccountIView {
     override fun doOnError(message: String?) {
     }
 
+    override fun doOnSuccessCreateDeposit(data: DepositResponse) {
+        ottoPaySDKCallback?.onSuccessPayment(data)
+    }
+
     override fun handleError(message: String) {
+        ottoPaySDKCallback?.onFailedPayment(message)
     }
 
     override fun handleRetryConnection() {

@@ -1,7 +1,9 @@
 package com.akggame.android;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -12,9 +14,12 @@ import android.os.Bundle;
 
 import com.akggame.akg_sdk.AKG_SDK;
 import com.akggame.akg_sdk.MenuSDKCallback;
+import com.akggame.akg_sdk.OttoPaySDKCallback;
 import com.akggame.akg_sdk.PAYMENT_TYPE;
 import com.akggame.akg_sdk.ProductSDKCallback;
 import com.akggame.akg_sdk.PurchaseSDKCallback;
+import com.akggame.akg_sdk.baseextend.BaseActivity;
+import com.akggame.akg_sdk.dao.api.model.response.DepositResponse;
 import com.akggame.akg_sdk.dao.pojo.PurchaseItem;
 import com.akggame.akg_sdk.ui.component.FloatingButton;
 import com.akggame.akg_sdk.util.CacheUtil;
@@ -24,19 +29,34 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class GameActivity extends AppCompatActivity implements MenuSDKCallback {
+public class GameActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-
         FloatingButton floatingButton = findViewById(R.id.floatingButton);
-        AKG_SDK.INSTANCE.setFloatingButton(this, floatingButton,
+        AKG_SDK.setFloatingButton(this, floatingButton,
                 this, new MenuSDKCallback() {
                     @Override
+                    public void onContactUs(@NotNull Context context) {
+
+                    }
+
+                    @Override
+                    public void onClickFbPage(@NotNull Context context) {
+
+                    }
+
+                    @Override
+                    public void onClickEula(@NotNull Context context) {
+
+                    }
+
+                    @Override
                     public void onCheckSDK(boolean isUpdated) {
+
 
                     }
 
@@ -49,34 +69,63 @@ public class GameActivity extends AppCompatActivity implements MenuSDKCallback {
                     public void onLogout() {
 
                     }
-
-
                 });
 
-        AKG_SDK.INSTANCE.getProducts(getApplication(), this, new ProductSDKCallback() {
+        floatingButton.setFloat();
+
+        Button btnPayment = findViewById(R.id.btnPayment);
+        Button btnOttoPay = findViewById(R.id.btnOttoPay);
+
+        btnPayment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AKG_SDK.onSDKPayment(PAYMENT_TYPE.GOOGLE, GameActivity.this);
+            }
+        });
+
+
+        btnOttoPay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                gotoPaymentOttoPay();
+
+                AKG_SDK.onSDKPayment(PAYMENT_TYPE.OTTOPAY, GameActivity.this);
+
+
+            }
+        });
+    }
+
+    void gotoPaymentOttoPay() {
+        AKG_SDK.onPaymentOttoPay(GameActivity.this,
+                "User Id",
+                "Game Product Id",
+                new OttoPaySDKCallback() {
+                    @Override
+                    public void onFailedPayment(@NotNull String message) {
+
+                    }
+
+                    @Override
+                    public void onSuccessPayment(@org.jetbrains.annotations.Nullable DepositResponse depositResponse) {
+
+                    }
+                });
+    }
+
+    void gotoPaymentGoogle() {
+        AKG_SDK.getProductsGoogle(getApplication(), GameActivity.this, new ProductSDKCallback() {
             @Override
             public void ProductResult(@NotNull List<com.android.billingclient.api.SkuDetails> skuDetails) {
-                AKG_SDK.INSTANCE.launchBilling(GameActivity.this, skuDetails.get(0),
+                AKG_SDK.launchBilling(GameActivity.this, skuDetails.get(0),
                         new PurchaseSDKCallback() {
                             @Override
                             public void onPurchasedItem(@NotNull PurchaseItem purchaseItem) {
-
                             }
                         });
 
             }
         });
-
-
-        Button btnPayment = findViewById(R.id.btnPayment);
-        btnPayment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AKG_SDK.INSTANCE.onSDKPayment(PAYMENT_TYPE.GOOGLE,GameActivity.this);
-            }
-        });
-
-
     }
 
     @Override
@@ -90,18 +139,4 @@ public class GameActivity extends AppCompatActivity implements MenuSDKCallback {
         }
     }
 
-    @Override
-    public void onLogout() {
-
-    }
-
-    @Override
-    public void onSuccessBind(@NotNull String token, @NotNull String loginType) {
-
-    }
-
-    @Override
-    public void onCheckSDK(boolean isUpdated) {
-
-    }
 }

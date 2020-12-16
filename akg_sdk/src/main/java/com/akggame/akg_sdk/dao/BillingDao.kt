@@ -14,9 +14,11 @@ import com.akggame.akg_sdk.dao.api.model.ProductData
 import com.akggame.akg_sdk.dao.api.model.request.PostOrderRequest
 import com.akggame.akg_sdk.presenter.ProductPresenter
 import com.akggame.akg_sdk.util.CacheUtil
+import com.akggame.akg_sdk.util.Constants
 import com.android.billingclient.api.*
 import com.android.billingclient.api.BillingClient.BillingResponseCode.OK
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.orhanobut.hawk.Hawk
 import java.io.IOException
 import java.security.*
 import java.security.spec.InvalidKeySpecException
@@ -94,25 +96,6 @@ class BillingDao(
         skuList: MutableList<String>
     ) {
         val params = SkuDetailsParams.newBuilder()
-
-//        val skuListString = ArrayList<String>()
-//        skuList.forEach {
-//            skuListString.add(it.id.toString())
-//            skuListString.add(it.attributes?.game.toString())
-//            skuListString.add(it.attributes?.name.toString())
-//            skuListString.add(it.attributes?.game_id.toString())
-//            params.setSkusList(skuListString).setType(BillingClient.SkuType.INAPP)
-//        }
-
-//        skuList.add("premium_upgrade")
-//        skuList.add("gas")
-//
-//        skuList.add("hahahaha")
-//        skuList.add("kwkwkw")
-//
-//        skuList.add("cakepss")
-//        skuList.add("hei tayoo")
-
 
         params.setSkusList(skuList).setType(skuType)
         billingClient.querySkuDetailsAsync(
@@ -197,11 +180,11 @@ class BillingDao(
             }
         }
 
-//        val (consumables, nonConsumables) = validPurchases.partition {
-//            listOfSku.contains(it.sku)
-//        }
+        val (consumables, nonConsumables) = validPurchases.partition {
+            listOfSku.contains(it.sku)
+        }
 
-//        handleConsumablePurchasesAsync(consumables)
+        handleConsumablePurchasesAsync(consumables)
 
     }
 
@@ -215,11 +198,13 @@ class BillingDao(
                 .build()
 
             billingClient.consumeAsync(params) { billingResult, purchaseToken ->
+                println("responBiling result ${billingResult.debugMessage} dan ${billingResult.responseCode}")
                 when (billingResult.responseCode) {
                     OK -> {
                         purchaseToken.apply { disburseConsumableEntitlements(it) }
                     }
                     else -> {
+                        hitEventFirebase(it, "purchase_failed")
                         Log.w(LOG_TAG, billingResult.debugMessage)
                     }
                 }
@@ -227,12 +212,12 @@ class BillingDao(
         }
     }
 
-    fun disburseConsumableEntitlements(purchase: Purchase) {
+    private fun disburseConsumableEntitlements(purchase: Purchase) {
         onPaymentSuccess(purchase)
         purchase.sku
     }
 
-    fun handlePurchase(purchase: Purchase) {
+    private fun handlePurchase(purchase: Purchase) {
         if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
 
         } else if (purchase.purchaseState == Purchase.PurchaseState.PENDING) {
@@ -317,23 +302,41 @@ class BillingDao(
 
     fun onPaymentSuccess(purchase: Purchase) {
         setAdjustEventPaymentSuccess(getPrice(productData, purchase.sku), purchase.sku)
+        val idUser = Hawk.get<String>(Constants.DATA_USER_ID)
+
+        hitEventFirebase(purchase, "purchase_success")
         val postOrderRequest = PostOrderRequest(
             "Google Play",
             purchase.purchaseTime,
             CacheUtil.getPreferenceString(IConfig.SESSION_GAME, application)!!,
             purchase.orderId,
             purchase.packageName,
-            3000,
+            getPrice(productData, purchase.sku).toInt(),
             "Android",
             "com.sdkgame.product1",
             purchase.purchaseToken,
             purchase.sku,
             "Success",
             CacheUtil.getPreferenceString(IConfig.SESSION_UID, application),
-            CacheUtil.getPreferenceString(IConfig.SESSION_USERNAME, application)
+            CacheUtil.getPreferenceString(IConfig.SESSION_USERNAME, application),
+            idUser
         )
         presenter.onPostOrder(postOrderRequest, purchase, application)
 
+    }
+
+    private fun hitEventFirebase(purchase: Purchase, eventName: String) {
+        val bundle = Bundle()
+        val tsLong = System.currentTimeMillis() / 1000
+        val timestamp = tsLong.toString()
+        bundle.putString("timestamp", timestamp)
+        bundle.putString("user_id", CacheUtil.getPreferenceString(IConfig.SESSION_UID, application))
+        bundle.putString("item_id", purchase.orderId)
+        bundle.putString("currency", getPrice(productData, purchase.sku).toInt().toString())
+        bundle.putString("channel", "Google Play")
+
+        val firebaseAnalytics = FirebaseAnalytics.getInstance(application)
+        firebaseAnalytics.logEvent(eventName, bundle)
     }
 
     fun setAdjustEventPaymentSuccess(price: Double, sku: String) {

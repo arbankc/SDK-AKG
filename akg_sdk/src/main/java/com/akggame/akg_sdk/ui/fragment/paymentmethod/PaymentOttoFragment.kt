@@ -4,27 +4,24 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log.d
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.akggame.akg_sdk.AKG_SDK
-import com.akggame.akg_sdk.AKG_SDK.launchBilling
+import com.akggame.akg_sdk.AKG_SDK.onSDKPayment
 import com.akggame.akg_sdk.IConfig
-import com.akggame.akg_sdk.ProductSDKCallback
+import com.akggame.akg_sdk.PAYMENT_TYPE
 import com.akggame.akg_sdk.PurchaseSDKCallback
 import com.akggame.akg_sdk.dao.BillingDao
 import com.akggame.akg_sdk.dao.api.model.response.GameProductsResponse
 import com.akggame.akg_sdk.dao.pojo.PurchaseItem
 import com.akggame.akg_sdk.ui.activity.PaymentOttopayActivity
-import com.akggame.akg_sdk.ui.adapter.PaymentAdapter
 import com.akggame.akg_sdk.ui.adapter.PaymentAdapterGoogle
 import com.akggame.akg_sdk.ui.dialog.menu.BindAccountDialog
 import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.akg_sdk.util.Constants
 import com.akggame.android.sdk.R
-import com.android.billingclient.api.SkuDetails
 import com.google.android.gms.wallet.PaymentsClient
 import kotlinx.android.synthetic.main.fragment_payment_otto.*
 
@@ -71,19 +68,7 @@ class PaymentOttoFragment : Fragment(), PurchaseSDKCallback {
         adapter = activity?.let { PaymentAdapterGoogle(it, this) }!!
 
         llPaymentGoogle.setOnClickListener {
-            AKG_SDK.getProductsGoogle(
-                activity!!.application,
-                activity as Context,
-                object : ProductSDKCallback {
-                    override fun ProductResult(skuDetails: MutableList<SkuDetails>) {
-                        println("responArray google $skuDetails")
-                        AKG_SDK.launchBilling(
-                            context as Activity,
-                            skuDetails[0],
-                            this@PaymentOttoFragment
-                        )
-                    }
-                })
+            onSDKPayment(PAYMENT_TYPE.GOOGLE, activity as AppCompatActivity)
         }
 
         llOttoPayPayment.setOnClickListener {

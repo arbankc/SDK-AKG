@@ -68,7 +68,7 @@ class FrameLayoutActivity : BaseActivity() {
             4 -> {
                 gotoFragment(LoginDialogFragment())
             }
-            4 -> {
+            5 -> {
                 gotoFragment(LoginDialogFragment())
             }
         }

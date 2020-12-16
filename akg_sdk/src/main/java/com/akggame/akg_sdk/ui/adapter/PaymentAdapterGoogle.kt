@@ -13,10 +13,11 @@ import com.akggame.android.sdk.R
 import com.android.billingclient.api.SkuDetails
 import kotlinx.android.synthetic.main.item_list_product.view.*
 
-class PaymentAdapterGoogle(val context: Context, val purchaseSDKCallback: PurchaseSDKCallback) :
+class PaymentAdapterGoogle(val context: Context, private val purchaseSDKCallback: PurchaseSDKCallback) :
     RecyclerView.Adapter<PaymentAdapterGoogle.ViewHolder>() {
     lateinit var view: View
     var skuDetails = mutableListOf<SkuDetails>()
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -33,7 +34,7 @@ class PaymentAdapterGoogle(val context: Context, val purchaseSDKCallback: Purcha
     override fun onBindViewHolder(holder: PaymentAdapterGoogle.ViewHolder, position: Int) {
         val data = skuDetails.get(position)
         holder.tvProductName.text = data.title + " : " + data.price
-        holder.tvProductName.setOnClickListener {
+        holder.itemView.setOnClickListener {
             AKG_SDK.launchBilling(context as Activity, data, purchaseSDKCallback)
         }
     }

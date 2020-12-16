@@ -6,11 +6,11 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import com.akggame.akg_sdk.dao.AkgDao
+import com.akggame.akg_sdk.ui.activity.FrameLayoutActivity
 import com.akggame.akg_sdk.ui.component.FloatingButton
 import com.akggame.akg_sdk.util.CacheUtil
-import com.android.billingclient.api.SkuDetails
-import com.akggame.akg_sdk.ui.activity.FrameLayoutActivity
 import com.akggame.akg_sdk.util.Constants
+import com.android.billingclient.api.SkuDetails
 
 enum class PAYMENT_TYPE {
     GOOGLE, OTTOPAY
@@ -52,7 +52,11 @@ object AKG_SDK {
     }
 
     @JvmStatic
-    fun getProductsGoogle(application: Application, context: Context, callback: ProductSDKCallback) {
+    fun getProductsGoogle(
+        application: Application,
+        context: Context,
+        callback: ProductSDKCallback
+    ) {
         AkgDao.getProductsGoogle(application, context, callback)
     }
 
@@ -89,8 +93,18 @@ object AKG_SDK {
     }
 
     @JvmStatic
-    fun onLogin(activity: AppCompatActivity, gameName: String, loginSDKCallback: LoginSDKCallback) {
-        AkgDao.callLoginDialog(activity, "", loginSDKCallback)
+    fun onLogin(activity: AppCompatActivity, loginSDKCallback: LoginSDKCallback) {
+        AkgDao.callLoginDialog(activity, loginSDKCallback)
+    }
+
+    @JvmStatic
+    fun onPaymentOttoPay(
+        activity: AppCompatActivity,
+        userId: String,
+        idProductGame: String,
+        ottoPaySDKCallback: OttoPaySDKCallback
+    ) {
+        AkgDao.callPaymentOttoPay(activity, userId, idProductGame, ottoPaySDKCallback)
     }
 
     @JvmStatic
@@ -105,8 +119,9 @@ object AKG_SDK {
             PAYMENT_TYPE.OTTOPAY -> {
                 val intent = Intent(activity, FrameLayoutActivity::class.java)
                 intent.putExtra(Constants.TYPE_PAYMENT, "paymentottopay")
-                intent.putExtra("pos", 2)
+                intent.putExtra("pos", 1)
                 activity.startActivityForResult(intent, SDK_PAYMENT_CODE)
+
             }
         }
 

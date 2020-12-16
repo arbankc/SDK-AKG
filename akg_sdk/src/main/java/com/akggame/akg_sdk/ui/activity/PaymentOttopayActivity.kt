@@ -27,15 +27,19 @@ class PaymentOttopayActivity : BaseActivity(), OttopayIView {
         idProductGame = intent.getStringExtra(Constants.DATA_GAME_PRODUCT)
 
         val data = DepositRequest()
-        data.user_id = getDataLogin().data?.id.toString()
+        data.user_id = getDataLogin()?.data?.id.toString()
         data.game_product_id = idProductGame.toString()
-        OrderPresenter(this).onCreateDeposit(data, this)
+
+        OrderPresenter(this)
+            .onCreateDeposit(data, this)
     }
 
 
     override fun doOnSuccessCreateDeposit(data: DepositResponse) {
         val bundle = Bundle()
         bundle.putString("User Id", data.data.id)
+
+
 //        bundle.putString("Game Product Id", data.data.)
 
         loadUrl(data.data.endpoint_url)

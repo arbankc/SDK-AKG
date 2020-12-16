@@ -46,7 +46,7 @@ open class MainActivity : AppCompatActivity() {
     }
 
     private fun callLogin() {
-        AKG_SDK.onLogin(this, "", object : LoginSDKCallback {
+        AKG_SDK.onLogin(this, object : LoginSDKCallback {
             override fun onResponseSuccess(token: String, username: String, loginType: String) {
                 Toast.makeText(this@MainActivity, "Success Login $username", Toast.LENGTH_LONG)
                     .show()

@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.text.format.DateFormat
 import android.view.View
 import android.view.Window
@@ -39,6 +40,17 @@ open class BaseActivity : AppCompatActivity() {
 
     }
 
+    fun createTimestamp(): String {
+        val tsLong = System.currentTimeMillis() / 1000
+        return tsLong.toString()
+    }
+
+    fun deviceIdAndroid(): String {
+        return Settings.Secure.getString(
+            contentResolver, Settings.Secure.ANDROID_ID
+        )
+    }
+
     fun hitEventFirebase(eventName: String, bundle: Bundle) {
         val firebaseAnalytics = FirebaseAnalytics.getInstance(this)
         firebaseAnalytics.logEvent(eventName, bundle)
@@ -55,7 +67,7 @@ open class BaseActivity : AppCompatActivity() {
     }
 
 
-    fun getDataLogin(): CurrentUserResponse {
+    fun getDataLogin(): CurrentUserResponse? {
         return Hawk.get(Constants.DATA_LOGIN)
     }
 

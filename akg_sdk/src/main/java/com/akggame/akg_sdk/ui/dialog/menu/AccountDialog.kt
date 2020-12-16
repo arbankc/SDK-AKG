@@ -58,7 +58,6 @@ class AccountDialog() : BaseDialogFragment(), AccountIView {
     }
 
     override fun doOnSuccess(activity: AppCompatActivity, data: CurrentUserResponse) {
-
         if (data.data?.attributes?.email.equals("user@gmail.com")) {
             mView.tvChangePassword.visibility = View.INVISIBLE
             btnBack.text = "Bind Account"

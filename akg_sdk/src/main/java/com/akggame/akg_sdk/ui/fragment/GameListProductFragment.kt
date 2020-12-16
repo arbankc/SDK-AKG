@@ -1,7 +1,6 @@
 package com.akggame.akg_sdk.ui.fragment
 
-//import com.adjust.sdk.Adjust
-//import com.adjust.sdk.AdjustEvent
+import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
@@ -12,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.akggame.akg_sdk.AKG_SDK
 import com.akggame.akg_sdk.IConfig
 import com.akggame.akg_sdk.ProductSDKCallback
@@ -25,6 +25,7 @@ import com.akggame.akg_sdk.presenter.ProductPresenter
 import com.akggame.akg_sdk.ui.activity.FrameLayoutActivity
 import com.akggame.akg_sdk.ui.activity.PaymentIView
 import com.akggame.akg_sdk.ui.adapter.PaymentAdapter
+import com.akggame.akg_sdk.ui.adapter.PaymentAdapterGoogle
 import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.akg_sdk.util.Constants
 import com.akggame.android.sdk.R
@@ -32,10 +33,12 @@ import com.android.billingclient.api.SkuDetails
 import com.google.android.gms.wallet.PaymentsClient
 import kotlinx.android.synthetic.main.activity_payment.*
 
-class GameListProductFragment : BaseFragment(), PurchaseSDKCallback, ProductSDKCallback,
+class GameListProductFragment : BaseFragment(), PurchaseSDKCallback,
     PaymentIView {
     lateinit var mPaymentsClient: PaymentsClient
     lateinit var paymentAdapter: PaymentAdapter
+    lateinit var paymentAdapterGoogle: PaymentAdapterGoogle
+
     lateinit private var billingDao: BillingDao
     lateinit var productData: GameProductsResponse
     var typePayment: String? = null
@@ -43,20 +46,10 @@ class GameListProductFragment : BaseFragment(), PurchaseSDKCallback, ProductSDKC
     var constraintLayout: ConstraintLayout? = null
     var progressBarPayment: ProgressBar? = null
 
+
     private val onClickItem: OnClickItem = object : OnClickItem {
         override fun clickItem(pos: Int) {
             val dataPaymentGameProduct = paymentAdapter.skuDetails[pos]
-//            if (typePayment.equals("paymentottopay", ignoreCase = true)) {
-
-//            }
-//            else {
-////                    AKG_SDK.launchBilling(
-//////                    this@PaymentActivity,
-//////                    dataPaymentGameProduct,
-//////                    this@PaymentActivity
-//////
-//            }
-
             val intent = Intent(activity, FrameLayoutActivity::class.java)
             intent.putExtra(Constants.DATA_GAME_PRODUCT, dataPaymentGameProduct.id.toString())
             intent.putExtra("pos", 3)
@@ -91,12 +84,17 @@ class GameListProductFragment : BaseFragment(), PurchaseSDKCallback, ProductSDKC
 
 //        typePayment = intent.getStringExtra(Constants.TYPE_PAYMENT)
 
-        initial()
+        paymentAdapterGoogle = PaymentAdapterGoogle(activity as Context, this)
+
+        if (typePayment.equals("paymentgoogle", ignoreCase = true))
+            initialListGoogleProduct()
+        else if (typePayment.equals("paymentottopay", ignoreCase = true)) initialListProduct()
+
 
     }
 
 
-    private fun initial() {
+    private fun initialListProduct() {
         initAdapter()
 
         dialogChoicePayment = activity?.let { Dialog(it) }
@@ -106,11 +104,27 @@ class GameListProductFragment : BaseFragment(), PurchaseSDKCallback, ProductSDKC
             ProductPresenter(this)
                 .getProducts(
                     activity?.let { CacheUtil.getPreferenceString(IConfig.SESSION_GAME, it) },
-                    it, activity as Context, this
+                    activity as Context
                 )
         }
     }
 
+    fun initialListGoogleProduct() {
+        AKG_SDK.getProductsGoogle(
+            activity!!.application,
+            activity as Context,
+            object : ProductSDKCallback {
+                override fun ProductResult(skuDetails: MutableList<SkuDetails>) {
+                    paymentAdapterGoogle.setInAppProduct(skuDetails)
+
+                    rvProduct.apply {
+                        adapter = paymentAdapterGoogle
+                        layoutManager = GridLayoutManager(activity, 2)
+                        hasFixedSize()
+                    }
+                }
+            })
+    }
 
     private fun initAdapter() {
         paymentAdapter = PaymentAdapter(activity as Context)
@@ -123,8 +137,12 @@ class GameListProductFragment : BaseFragment(), PurchaseSDKCallback, ProductSDKC
     }
 
     override fun onPurchasedItem(purchaseItem: PurchaseItem) {
-//        setResult(Activity.RESULT_OK, intent.putExtra("orderDetail", purchaseItem))
-//        finish()
+        activity?.setResult(
+            Activity.RESULT_OK,
+            activity?.intent?.putExtra("orderDetail", purchaseItem)
+        )
+        activity?.finish()
+
     }
 
     override fun doOnError(message: String) {
@@ -151,7 +169,4 @@ class GameListProductFragment : BaseFragment(), PurchaseSDKCallback, ProductSDKC
     override fun handleRetryConnection() {
     }
 
-    override fun ProductResult(skuDetails: MutableList<SkuDetails>) {
-
-    }
 }

@@ -24,7 +24,6 @@ import com.akggame.akg_sdk.dao.api.model.response.CurrentUserResponse
 import com.akggame.akg_sdk.dao.api.model.response.DataItemGameList
 import com.akggame.akg_sdk.dao.api.model.response.GameListResponse
 import com.akggame.akg_sdk.presenter.GamePresenter
-import com.akggame.akg_sdk.presenter.InfoPresenter
 import com.akggame.akg_sdk.presenter.LoginPresenter
 import com.akggame.akg_sdk.ui.adapter.GameListAdapter
 import com.akggame.akg_sdk.ui.dialog.BaseDialogFragment
@@ -46,7 +45,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -79,6 +77,7 @@ class LoginDialogFragment() : BaseDialogFragment(), LoginIView, GameListIView {
     var emailFb: String? = null
     var nameFb: String? = null
     var tokenFb: String? = null
+    var idFb: String? = null
 
     val accountIView: AccountIView = (object : AccountIView {
         override fun doOnSuccess(activity: AppCompatActivity, data: CurrentUserResponse) {
@@ -172,16 +171,9 @@ class LoginDialogFragment() : BaseDialogFragment(), LoginIView, GameListIView {
         mLoginCallback.onResponseSuccess(token, "", typeLogin)
         CacheUtil.putPreferenceString(IConfig.SESSION_PIW, "", requireActivity())
         SocmedDao.setAdjustEventLogin(isFirstLogin, requireActivity())
+        Hawk.put(Constants.DATA_USER_ID, userId)
         dismiss()
         showDialogLoading(false)
-        Hawk.put(Constants.DATA_USER_ID, userId)
-//
-//        val idUser = Hawk.get<String>(Constants.DATA_USER_ID)
-//        InfoPresenter(accountIView).onGetCurrentUser(
-//            idUser,
-//            requireActivity() as AppCompatActivity,
-//            activity as Context
-//        )
 
     }
 
@@ -235,6 +227,8 @@ class LoginDialogFragment() : BaseDialogFragment(), LoginIView, GameListIView {
                 emailFb = response.jsonObject.getString("email")
                 nameFb = response.jsonObject.getString("first_name")
                 tokenFb = loginResult.accessToken.toString()
+                idFb = response.jsonObject.getString("id")
+
 
                 val lastName = response.jsonObject.getString("last_name")
                 var profileURL = ""
@@ -247,9 +241,11 @@ class LoginDialogFragment() : BaseDialogFragment(), LoginIView, GameListIView {
                 }
 
                 statusLogin = "facebook"
+                hitLogEventRegister("register_success", statusLogin!!)
                 activity?.let { presenterGame.onGameList(it) }
             } catch (e: JSONException) {
                 d { "respon Error ${e.message}" }
+                hitLogEventRegister("register_failed", statusLogin!!)
             }
         }
         val parameters = Bundle()
@@ -330,10 +326,12 @@ class LoginDialogFragment() : BaseDialogFragment(), LoginIView, GameListIView {
                         // Sign in success, update UI with the signed-in user's information
                         val user = auth?.currentUser
                         statusLogin = "guest"
+                        hitLogEventRegister("register_success", statusLogin!!)
                         activity?.let { presenterGame.onGameList(it) }
                     } else {
                         // If sign in fails, display a message to the user.
                         showToast("Gagal geuest")
+                        hitLogEventRegister("register_failed", statusLogin!!)
                     }
 
                 }
@@ -369,10 +367,11 @@ class LoginDialogFragment() : BaseDialogFragment(), LoginIView, GameListIView {
                     currentUser = auth?.currentUser
                     d { "respon Login succes ${currentUser?.email}" }
                     statusLogin = "google"
+                    hitLogEventRegister("register_success", statusLogin!!)
                     activity?.let { presenterGame.onGameList(it) }
                 } else {
                     d { "respon Login failed " }
-
+                    hitLogEventRegister("register_failed", statusLogin!!)
                 }
             }
 
@@ -399,8 +398,11 @@ class LoginDialogFragment() : BaseDialogFragment(), LoginIView, GameListIView {
             hasFixedSize()
         }
         gameListAdapter.onClickItem = onClickItem
+
         productCodeGame =
             gameListAdapter.dataItemGameList?.get(0)?.attributes?.productCode.toString()
+        gameIdProduct = gameListAdapter.dataItemGameList?.get(0)?.id.toString()
+
 
         btnStart?.setOnClickListener {
             if (productCodeGame?.isNotEmpty()!!) {
@@ -485,24 +487,39 @@ class LoginDialogFragment() : BaseDialogFragment(), LoginIView, GameListIView {
 
         dialogListGame?.dismiss()
 
-        hitLogEvent(typeLogin.toString(), model)
+        hitLogEventLogin(typeLogin.toString(), model)
 
         LoginPresenter(this@LoginDialogFragment)
             .upsertUser(model, requireActivity(), typeLogin.toString())
     }
 
-    private fun hitLogEvent(typeLogin: String, model: FacebookAuthRequest) {
+    private fun hitLogEventRegister(eventName: String, statusLogin: String) {
+        val bundle = Bundle()
+
+
+        if (statusLogin == "facebook") bundle.putString("UID", idFb)
+        else bundle.putString("UID", currentUser?.uid)
+
+        bundle.putString("Timestamp", createTimestamp())
+        bundle.putString("tipe_register", statusLogin)
+
+        hitEventFirebase(eventName, bundle)
+    }
+
+    private fun hitLogEventLogin(typeLogin: String, model: FacebookAuthRequest) {
         val bundle = Bundle()
 
         bundle.putString("UID", model.device_id)
         bundle.putString("Email", model.email)
         bundle.putString("Name", model.name)
-        bundle.putString("Phone Number", model.phone_number)
-        bundle.putString("Game Provider", model.game_provider)
-        bundle.putString("Model Phone", model.phone_model)
-        bundle.putString("Operating System", model.operating_system)
+        bundle.putString("Timestamp", createTimestamp())
+        bundle.putString("Type_Login", typeLogin)
+        bundle.putString("Phone_Number", model.phone_number)
+        bundle.putString("Game_Provider", model.game_provider)
+        bundle.putString("Model_Phone", model.phone_model)
+        bundle.putString("Operating_System", model.operating_system)
 
-        hitEventFirebase("Login $typeLogin", bundle)
+        hitEventFirebase("Login", bundle)
     }
 
     private fun typeLogin(typeLogin: String?) {

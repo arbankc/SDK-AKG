@@ -2,8 +2,6 @@ package com.akggame.akg_sdk.ui.dialog
 
 import android.app.Dialog
 import android.content.DialogInterface
-import android.content.Intent
-import android.content.res.Configuration
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
@@ -55,6 +53,11 @@ open class BaseDialogFragment() : DialogFragment(), IView {
         activity!!.finish()
         Hawk.deleteAll()
         CacheUtil.clearPreference(activity!!)
+    }
+
+    fun createTimestamp(): String {
+        val tsLong = System.currentTimeMillis() / 1000
+        return tsLong.toString()
     }
 
     override fun onStart() {
