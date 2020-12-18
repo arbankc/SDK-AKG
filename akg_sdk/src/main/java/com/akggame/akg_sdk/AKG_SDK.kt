@@ -5,9 +5,18 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentManager
 import com.akggame.akg_sdk.dao.AkgDao
+import com.akggame.akg_sdk.dao.api.model.request.FacebookAuthRequest
+import com.akggame.akg_sdk.dao.api.model.response.DataItemGameList
+import com.akggame.akg_sdk.presenter.LoginPresenter
+import com.akggame.akg_sdk.rx.IView
 import com.akggame.akg_sdk.ui.activity.FrameLayoutActivity
 import com.akggame.akg_sdk.ui.component.FloatingButton
+import com.akggame.akg_sdk.ui.dialog.GameListDialogFragment
+import com.akggame.akg_sdk.ui.dialog.banner.BannerDialog
+import com.akggame.akg_sdk.ui.dialog.login.LoginDialogFragment
+import com.akggame.akg_sdk.ui.dialog.menu.GameListIView
 import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.akg_sdk.util.Constants
 import com.android.billingclient.api.SkuDetails
@@ -29,6 +38,9 @@ object AKG_SDK {
     const val LOGIN_FACEBOOK = "loginFacebook"
     const val LOGIN_PHONE = "loginPhone"
 
+    var startGameSDKCallback: StartGameSDKCallback? = null
+
+
     @JvmStatic
     fun checkIsLogin(context: Context): Boolean {
         return CacheUtil.getPreferenceBoolean(IConfig.SESSION_LOGIN, context)
@@ -37,6 +49,11 @@ object AKG_SDK {
     @JvmStatic
     fun getMenuCallback(): MenuSDKCallback {
         return menuCallback
+    }
+
+    @JvmStatic
+    fun getStartSdkCallback(): StartGameSDKCallback? {
+        return startGameSDKCallback
     }
 
     @JvmStatic
@@ -50,6 +67,7 @@ object AKG_SDK {
     fun getProducts(application: Application, context: Context, callback: ProductSDKCallback) {
         AkgDao.getProducts(application, context, callback)
     }
+
 
     @JvmStatic
     fun getProductsGoogle(
@@ -74,6 +92,7 @@ object AKG_SDK {
     fun setRelauchDialog(activity: AppCompatActivity, callback: RelaunchSDKCallback) {
         AkgDao.callRelaunchDialog(activity, callback)
     }
+
 
     @JvmStatic
     fun resetFloatingButton(activity: AppCompatActivity) {
@@ -126,4 +145,32 @@ object AKG_SDK {
         }
 
     }
+
+    @JvmStatic
+    fun callStartUpsert(
+        mIView: IView,
+        context: Context,
+        facebookAuthRequest: FacebookAuthRequest,
+        typeLogin: String,
+        startSDK: StartSDKCallback
+    ) {
+        LoginPresenter(mIView)
+            .upsertUser(facebookAuthRequest, context, typeLogin)
+    }
+
+    @JvmStatic
+    fun callStartGame(fragmentManager: FragmentManager, startGame: StartGameSDKCallback) {
+        startGameSDKCallback = startGame
+        val banner = GameListDialogFragment()
+        val ftransaction = fragmentManager.beginTransaction()
+        ftransaction.addToBackStack("gamedialog")
+        banner.show(ftransaction, "gamedialog")
+    }
+
+
+    @JvmStatic
+    fun callListGame(context: Context, iView: IView) {
+        AkgDao.callListGame(iView, context)
+    }
+
 }

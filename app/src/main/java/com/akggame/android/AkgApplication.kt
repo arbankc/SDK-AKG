@@ -8,7 +8,6 @@ class AkgApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-//        AKG_SDK.registerAdjustOnAKG("mobile-legend", this)
 
         Hawk.init(this)
             .build()

@@ -35,8 +35,8 @@ import io.reactivex.disposables.Disposable
 class InfoPresenter(val mIView: IView) {
 
 
-    fun onGetCurrentUser(email: String, activity: AppCompatActivity, context: Context) {
-        MainDao().onCheckCurrentUser(email, context)
+    fun onGetCurrentUser(userId: String?, activity: AppCompatActivity, context: Context) {
+        MainDao().onCheckCurrentUser(userId.toString(), context)
             .subscribe(object : RxObserver<CurrentUserResponse>(mIView, "") {
                 override fun onNext(t: BaseResponse) {
                     super.onNext(t)

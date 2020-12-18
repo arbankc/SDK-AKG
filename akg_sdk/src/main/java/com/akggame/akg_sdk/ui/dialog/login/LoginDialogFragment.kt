@@ -5,33 +5,25 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.akggame.akg_sdk.IConfig
 import com.akggame.akg_sdk.LoginSDKCallback
-import com.akggame.akg_sdk.`interface`.OnClickItem
+import com.akggame.akg_sdk.StartGameSDKCallback
 import com.akggame.akg_sdk.dao.SocmedDao
-import com.akggame.akg_sdk.dao.api.model.request.FacebookAuthRequest
 import com.akggame.akg_sdk.dao.api.model.response.CurrentUserResponse
 import com.akggame.akg_sdk.dao.api.model.response.DataItemGameList
-import com.akggame.akg_sdk.dao.api.model.response.GameListResponse
 import com.akggame.akg_sdk.presenter.GamePresenter
 import com.akggame.akg_sdk.presenter.LoginPresenter
-import com.akggame.akg_sdk.ui.adapter.GameListAdapter
 import com.akggame.akg_sdk.ui.dialog.BaseDialogFragment
+import com.akggame.akg_sdk.ui.dialog.GameListDialogFragment
 import com.akggame.akg_sdk.ui.dialog.PhoneLoginDialogFragment
 import com.akggame.akg_sdk.ui.dialog.menu.AccountIView
-import com.akggame.akg_sdk.ui.dialog.menu.GameListIView
 import com.akggame.akg_sdk.util.CacheUtil
-import com.akggame.akg_sdk.util.Constants
 import com.akggame.akg_sdk.util.DeviceUtil
 import com.akggame.android.sdk.R
 import com.facebook.*
@@ -49,16 +41,16 @@ import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
-import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.content_dialog_login.*
 import kotlinx.android.synthetic.main.content_dialog_login.view.*
 import org.json.JSONException
 
 
-class LoginDialogFragment() : BaseDialogFragment(), LoginIView, GameListIView {
+class LoginDialogFragment() : BaseDialogFragment() {
 
     lateinit var mView: View
     lateinit var callbackManager: CallbackManager
+    lateinit var startGameSDKCallback: StartGameSDKCallback
     lateinit var mGoogleSignInClient: GoogleSignInClient
     val presenter = LoginPresenter(this@LoginDialogFragment)
     val presenterGame = GamePresenter(this@LoginDialogFragment)
@@ -72,8 +64,7 @@ class LoginDialogFragment() : BaseDialogFragment(), LoginIView, GameListIView {
 
     var dialogListGame: Dialog? = null
     var dataItemGameList: List<DataItemGameList>? = null
-    var productCodeGame: String? = null
-    var gameIdProduct: String? = null
+
     var emailFb: String? = null
     var nameFb: String? = null
     var tokenFb: String? = null
@@ -161,27 +152,6 @@ class LoginDialogFragment() : BaseDialogFragment(), LoginIView, GameListIView {
     }
 
 
-    override fun doOnSuccess(
-        isFirstLogin: Boolean,
-        token: String,
-        userId: String,
-        typeLogin: String
-    ) {
-//        val id = DeviceUtil.decoded(token).toObject<UserData>()
-        mLoginCallback.onResponseSuccess(token, "", typeLogin)
-        CacheUtil.putPreferenceString(IConfig.SESSION_PIW, "", requireActivity())
-        SocmedDao.setAdjustEventLogin(isFirstLogin, requireActivity())
-        Hawk.put(Constants.DATA_USER_ID, userId)
-        dismiss()
-        showDialogLoading(false)
-
-    }
-
-    override fun doOnError(message: String) {
-        mLoginCallback.onResponseFailed(message)
-        customDismiss()
-        clearBackStack()
-    }
 
     /*
      * Facebook SIGN IN----------------------------------------->
@@ -242,7 +212,16 @@ class LoginDialogFragment() : BaseDialogFragment(), LoginIView, GameListIView {
 
                 statusLogin = "facebook"
                 hitLogEventRegister("register_success", statusLogin!!)
-                activity?.let { presenterGame.onGameList(it) }
+                val gameListDialogFragment =
+                    currentUser?.let {
+                        GameListDialogFragment.newInstance(
+                            statusLogin, emailFb,
+                            mLoginCallback,
+                            nameFb,
+                            it
+                        )
+                    }
+                gameListDialogFragment?.show(fragmentManager!!, "")
             } catch (e: JSONException) {
                 d { "respon Error ${e.message}" }
                 hitLogEventRegister("register_failed", statusLogin!!)
@@ -327,7 +306,16 @@ class LoginDialogFragment() : BaseDialogFragment(), LoginIView, GameListIView {
                         val user = auth?.currentUser
                         statusLogin = "guest"
                         hitLogEventRegister("register_success", statusLogin!!)
-                        activity?.let { presenterGame.onGameList(it) }
+                        val gameListDialogFragment =
+                            currentUser?.let {
+                                GameListDialogFragment.newInstance(
+                                    statusLogin, emailFb,
+                                    mLoginCallback,
+                                    nameFb,
+                                    it
+                                )
+                            }
+                        gameListDialogFragment?.show(fragmentManager!!, "")
                     } else {
                         // If sign in fails, display a message to the user.
                         showToast("Gagal geuest")
@@ -368,7 +356,16 @@ class LoginDialogFragment() : BaseDialogFragment(), LoginIView, GameListIView {
                     d { "respon Login succes ${currentUser?.email}" }
                     statusLogin = "google"
                     hitLogEventRegister("register_success", statusLogin!!)
-                    activity?.let { presenterGame.onGameList(it) }
+                    val gameListDialogFragment =
+                        currentUser?.let {
+                            GameListDialogFragment.newInstance(
+                                statusLogin, emailFb,
+                                mLoginCallback,
+                                nameFb,
+                                it
+                            )
+                        }
+                    gameListDialogFragment?.show(fragmentManager!!, "")
                 } else {
                     d { "respon Login failed " }
                     hitLogEventRegister("register_failed", statusLogin!!)
@@ -377,64 +374,6 @@ class LoginDialogFragment() : BaseDialogFragment(), LoginIView, GameListIView {
 
     }
 
-    val onClickItem: OnClickItem = object : OnClickItem {
-        override fun clickItem(pos: Int) {
-            val itemGameList = dataItemGameList?.get(pos)
-            productCodeGame = itemGameList?.attributes?.productCode
-            gameIdProduct = itemGameList?.id.toString()
-        }
-    }
-
-    private fun showDialogListGame(dataItemGameList: List<DataItemGameList>?) {
-        val rvGameList = dialogListGame?.findViewById<RecyclerView>(R.id.rvListGame)
-        val btnStart = dialogListGame?.findViewById<Button>(R.id.btnStartGame)
-        dialogListGame?.show()
-
-        val gameListAdapter = GameListAdapter()
-        gameListAdapter.dataItemGameList = dataItemGameList as MutableList<DataItemGameList>?
-        rvGameList?.apply {
-            adapter = gameListAdapter
-            layoutManager = GridLayoutManager(activity, 3)
-            hasFixedSize()
-        }
-        gameListAdapter.onClickItem = onClickItem
-
-        productCodeGame =
-            gameListAdapter.dataItemGameList?.get(0)?.attributes?.productCode.toString()
-        gameIdProduct = gameListAdapter.dataItemGameList?.get(0)?.id.toString()
-
-
-        btnStart?.setOnClickListener {
-            if (productCodeGame?.isNotEmpty()!!) {
-                when {
-                    statusLogin.equals("facebook", ignoreCase = true) -> {
-                        hitLogin(
-                            emailFb,
-                            nameFb,
-                            tokenFb,
-                            statusLogin
-                        )
-                    }
-                    statusLogin.equals("google", ignoreCase = true) -> {
-                        hitLogin(
-                            currentUser?.email,
-                            currentUser?.displayName,
-                            idToken.toString(),
-                            statusLogin
-                        )
-                    }
-
-                    statusLogin.equals("guest", ignoreCase = true) -> {
-                        hitLogin("user@gmail.com", "user-guest", "", statusLogin)
-                    }
-
-
-                }
-            } else showToast("Silahkan pilih game dahulu")
-
-
-        }
-    }
 
     override fun onResume() {
         super.onResume()
@@ -453,50 +392,8 @@ class LoginDialogFragment() : BaseDialogFragment(), LoginIView, GameListIView {
     }
 
 
-    private fun hitLogin(email: String?, name: String?, accesToken: String?, typeLogin: String?) {
-        showDialogLoading(true)
-        val model = FacebookAuthRequest()
-        model.email = email
-        model.access_token = accesToken
-        model.name = name
-        model.phone_number = "-"
-        model.auth_provider = "akg"
-
-        val android_id: String = Settings.Secure.getString(
-            activity?.contentResolver,
-            Settings.Secure.ANDROID_ID
-        )
-
-        model.device_id = android_id
-        model.game_provider = productCodeGame
-        model.operating_system = "Android"
-        model.phone_model = DeviceUtil.getDeviceName()
-        model.login_type = typeLogin
-
-        activity?.let {
-            CacheUtil.putPreferenceString(
-                IConfig.SESSION_GAME, productCodeGame.toString(),
-                it
-            )
-        }
-
-        typeLogin(typeLogin)
-
-        Hawk.put(Constants.DATA_UPSERT, model)
-        Hawk.put("gameId", gameIdProduct)
-
-        dialogListGame?.dismiss()
-
-        hitLogEventLogin(typeLogin.toString(), model)
-
-        LoginPresenter(this@LoginDialogFragment)
-            .upsertUser(model, requireActivity(), typeLogin.toString())
-    }
-
     private fun hitLogEventRegister(eventName: String, statusLogin: String) {
         val bundle = Bundle()
-
-
         if (statusLogin == "facebook") bundle.putString("UID", idFb)
         else bundle.putString("UID", currentUser?.uid)
 
@@ -504,65 +401,6 @@ class LoginDialogFragment() : BaseDialogFragment(), LoginIView, GameListIView {
         bundle.putString("tipe_register", statusLogin)
 
         hitEventFirebase(eventName, bundle)
-    }
-
-    private fun hitLogEventLogin(typeLogin: String, model: FacebookAuthRequest) {
-        val bundle = Bundle()
-
-        bundle.putString("UID", model.device_id)
-        bundle.putString("Email", model.email)
-        bundle.putString("Name", model.name)
-        bundle.putString("Timestamp", createTimestamp())
-        bundle.putString("Type_Login", typeLogin)
-        bundle.putString("Phone_Number", model.phone_number)
-        bundle.putString("Game_Provider", model.game_provider)
-        bundle.putString("Model_Phone", model.phone_model)
-        bundle.putString("Operating_System", model.operating_system)
-
-        hitEventFirebase("Login", bundle)
-    }
-
-    private fun typeLogin(typeLogin: String?) {
-        when {
-            typeLogin.equals("facebook", ignoreCase = true) -> {
-                CacheUtil.putPreferenceString(
-                    IConfig.LOGIN_TYPE,
-                    IConfig.LOGIN_FACEBOOK,
-                    activity!!
-                )
-            }
-
-            typeLogin.equals("google", ignoreCase = true) -> {
-                CacheUtil.putPreferenceString(
-                    IConfig.LOGIN_TYPE,
-                    IConfig.LOGIN_GOOGLE,
-                    activity!!
-                )
-            }
-            typeLogin.equals("guest", ignoreCase = true) -> {
-                CacheUtil.putPreferenceString(
-                    IConfig.LOGIN_TYPE,
-                    IConfig.LOGIN_GUEST,
-                    activity!!
-                )
-            }
-        }
-    }
-
-
-    override fun doOnSuccessGameList(gameListResponse: GameListResponse) {
-        dataItemGameList = gameListResponse.data as List<DataItemGameList>?
-        showDialogListGame(dataItemGameList)
-
-    }
-
-    override fun doOnErrorGameList(message: String?) {
-        d { "respon Error gamelist $message" }
-        showDialogLoading(false)
-    }
-
-    override fun doOnLoadingGameList(isShow: Boolean) {
-        showDialogLoading(isShow)
     }
 
 

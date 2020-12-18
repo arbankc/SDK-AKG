@@ -51,7 +51,7 @@ class AccountDialog() : BaseDialogFragment(), AccountIView {
         initialize()
         val idUser = Hawk.get<String>(Constants.DATA_USER_ID)
         presenter.onGetCurrentUser(
-            idUser,
+            idUser.toString(),
             requireActivity() as AppCompatActivity,
             requireActivity()
         )

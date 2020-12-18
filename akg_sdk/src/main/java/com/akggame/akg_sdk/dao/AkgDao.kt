@@ -13,9 +13,11 @@ import com.akggame.akg_sdk.*
 import com.akggame.akg_sdk.dao.api.model.FloatingItem
 import com.akggame.akg_sdk.dao.api.model.response.CurrentUserResponse
 import com.akggame.akg_sdk.dao.api.model.response.DepositResponse
+import com.akggame.akg_sdk.presenter.GamePresenter
 import com.akggame.akg_sdk.presenter.InfoPresenter
 import com.akggame.akg_sdk.presenter.OrderPresenter
 import com.akggame.akg_sdk.presenter.ProductPresenter
+import com.akggame.akg_sdk.rx.IView
 import com.akggame.akg_sdk.ui.activity.OttopayIView
 import com.akggame.akg_sdk.ui.adapter.FloatingAdapterListener
 import com.akggame.akg_sdk.ui.component.FloatingButton
@@ -38,7 +40,7 @@ class AkgDao : AccountIView, OttopayIView {
     private val productPresenter = ProductPresenter(this)
     private val presenter = InfoPresenter(this)
     lateinit var ottoPaySDKCallback: OttoPaySDKCallback
-
+    var idUser: String? = null
 
     fun callRelaunchDialog(activity: AppCompatActivity, callback: RelaunchSDKCallback) {
         val dialog = RelaunchDialog.newInstance(callback)
@@ -143,6 +145,7 @@ class AkgDao : AccountIView, OttopayIView {
         floatingButton.floatingAdapterListener = onItemClickListener
     }
 
+
     private fun callDetailEula(context: Context) {
 //        val gameId = Hawk.get<String>("gameId")
 //        val intent = Intent(context, EulaActivity::class.java)
@@ -242,12 +245,17 @@ class AkgDao : AccountIView, OttopayIView {
     }
 
     private fun callGetAccount(activity: AppCompatActivity) {
-        val idUser = Hawk.get<String>(Constants.DATA_USER_ID)
+        idUser = Hawk.get<String>(Constants.DATA_USER_ID)
         InfoPresenter(this).onGetCurrentUser(
-            idUser,
+            idUser.toString(),
             activity,
             activity
         )
+    }
+
+    fun callListGame(iView: IView, context: Context) {
+        GamePresenter(iView)
+            .onGameList(context)
     }
 
     fun callLoginDialog(
@@ -305,11 +313,11 @@ class AkgDao : AccountIView, OttopayIView {
     }
 
     override fun doOnSuccessCreateDeposit(data: DepositResponse) {
-        ottoPaySDKCallback?.onSuccessPayment(data)
+        ottoPaySDKCallback.onSuccessPayment(data)
     }
 
     override fun handleError(message: String) {
-        ottoPaySDKCallback?.onFailedPayment(message)
+        ottoPaySDKCallback.onFailedPayment(message)
     }
 
     override fun handleRetryConnection() {

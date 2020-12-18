@@ -110,12 +110,14 @@ class GameListProductFragment : BaseFragment(), PurchaseSDKCallback,
     }
 
     fun initialListGoogleProduct() {
+        progressBarPayment?.let { showView(it) }
         AKG_SDK.getProductsGoogle(
             activity!!.application,
             activity as Context,
             object : ProductSDKCallback {
                 override fun ProductResult(skuDetails: MutableList<SkuDetails>) {
                     paymentAdapterGoogle.setInAppProduct(skuDetails)
+                    progressBarPayment?.let { hideView(it) }
 
                     rvProduct.apply {
                         adapter = paymentAdapterGoogle

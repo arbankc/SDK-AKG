@@ -18,10 +18,15 @@ import com.akggame.akg_sdk.OttoPaySDKCallback;
 import com.akggame.akg_sdk.PAYMENT_TYPE;
 import com.akggame.akg_sdk.ProductSDKCallback;
 import com.akggame.akg_sdk.PurchaseSDKCallback;
+import com.akggame.akg_sdk.StartGameSDKCallback;
 import com.akggame.akg_sdk.baseextend.BaseActivity;
+import com.akggame.akg_sdk.dao.api.model.response.DataItemGameList;
 import com.akggame.akg_sdk.dao.api.model.response.DepositResponse;
+import com.akggame.akg_sdk.dao.api.model.response.GameListResponse;
 import com.akggame.akg_sdk.dao.pojo.PurchaseItem;
+import com.akggame.akg_sdk.rx.IView;
 import com.akggame.akg_sdk.ui.component.FloatingButton;
+import com.akggame.akg_sdk.ui.dialog.menu.GameListIView;
 import com.akggame.akg_sdk.util.CacheUtil;
 import com.akggame.akg_sdk.util.DeviceUtil;
 
@@ -74,7 +79,7 @@ public class GameActivity extends BaseActivity {
         floatingButton.setFloat();
 
         Button btnPayment = findViewById(R.id.btnPayment);
-        Button btnOttoPay = findViewById(R.id.btnOttoPay);
+        final Button btnOttoPay = findViewById(R.id.btnOttoPay);
 
         btnPayment.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,12 +93,20 @@ public class GameActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
 //                gotoPaymentOttoPay();
-
-                AKG_SDK.onSDKPayment(PAYMENT_TYPE.OTTOPAY, GameActivity.this);
-
+//                AKG_SDK.onSDKPayment(PAYMENT_TYPE.OTTOPAY, GameActivity.this);
 
             }
         });
+
+
+        AKG_SDK.callStartGame(getSupportFragmentManager(), new StartGameSDKCallback() {
+            @Override
+            public void onStartGame(@NotNull DataItemGameList dataItemGameList) {
+                //get data response for game list
+            }
+        });
+
+
     }
 
     void gotoPaymentOttoPay() {
@@ -138,5 +151,6 @@ public class GameActivity extends BaseActivity {
             }
         }
     }
+
 
 }
