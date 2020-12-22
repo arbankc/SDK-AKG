@@ -341,6 +341,8 @@ class LoginDialogFragment() : BaseDialogFragment() {
             val account = completedTask.getResult(ApiException::class.java)
             idToken = account?.idToken
             d { "respon Login account ${account?.idToken}" }
+
+
             firebaseAuthWithGoogle(account?.idToken.toString())
         } catch (e: ApiException) {
             Log.w("FRAGMENT_GOOGLE", "signInResult:failed code=" + e.statusCode)

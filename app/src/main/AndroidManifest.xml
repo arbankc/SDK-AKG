@@ -32,9 +32,9 @@
             <!--            </intent-filter>-->
         </activity>
 
-        <activity android:name=".GameActivity" />
+        <activity android:name=".MainActivity" />
         <activity
-                android:name=".MainActivity"
+                android:name=".GameActivity"
                 android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

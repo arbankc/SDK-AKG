@@ -109,24 +109,24 @@ class AkgDao : AccountIView, OttopayIView {
                 when (position) {
                     0 -> {
                         if (CacheUtil.getPreferenceString(IConfig.LOGIN_TYPE, activity)
-                                ?.equals(IConfig.LOGIN_GUEST)!!
-                        ) {
-                            bindAccountDialog.show(activity.supportFragmentManager, "bind account")
-                        } else {
-                            accountDialog.show(activity.supportFragmentManager, "account")
-                        }
+                                ?.equals(IConfig.LOGIN_GUEST)!!) { bindAccountDialog.show(activity.supportFragmentManager, "bind account") } else {
+                            accountDialog.show(activity.supportFragmentManager, "account")}
                     }
                     1 -> {
-                        callBrowserFanPage(context)
-//                        menuSDKCallback.onClickFbPage(context)
+//                        callBrowserFanPage(context)
+                        menuSDKCallback.onClickFbPage(context)
                     }
 
                     2 -> {
-                        callDetailEula(context)
-//                        menuSDKCallback.onClickEula(context)
+//                        callDetailEula(context)
+                        menuSDKCallback.onClickEula(context)
+
                     }
 
-                    3 -> contactUsDialog.show(activity.supportFragmentManager, "contact us")
+                    3 -> {
+//                        contactUsDialog.show(activity.supportFragmentManager, "contact us")
+                        menuSDKCallback.onClickEula(context)
+                    }
 
                     4 -> {
                         checkVersionDialog.show(activity.supportFragmentManager, "check version")

@@ -93,19 +93,18 @@ public class GameActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
 //                gotoPaymentOttoPay();
-//                AKG_SDK.onSDKPayment(PAYMENT_TYPE.OTTOPAY, GameActivity.this);
+                AKG_SDK.onSDKPayment(PAYMENT_TYPE.OTTOPAY, GameActivity.this);
 
             }
         });
 
 
-        AKG_SDK.callStartGame(getSupportFragmentManager(), new StartGameSDKCallback() {
-            @Override
-            public void onStartGame(@NotNull DataItemGameList dataItemGameList) {
-                //get data response for game list
-            }
-        });
-
+//        AKG_SDK.callStartGame(getSupportFragmentManager(), new StartGameSDKCallback() {
+//            @Override
+//            public void onStartGame(@NotNull DataItemGameList dataItemGameList) {
+//                //get data response for game list
+//            }
+//        });
 
     }
 
