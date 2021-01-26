@@ -21,7 +21,7 @@ class EulaPresenter(val ImView: IView) {
 
                 override fun onError(e: Throwable) {
                     super.onError(e)
-                    (ImView as EulaIView).onErrorEula(e.message.toString())
+                    (ImView as EulaIView).handleError(e.message.toString())
 
                 }
             })

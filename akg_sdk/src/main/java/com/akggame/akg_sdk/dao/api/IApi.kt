@@ -73,11 +73,13 @@ interface IApi {
 
     @GET("auth/current_user/{idUser}")
     fun callGetCurrentUser(
+        @HeaderMap map: Map<String, String>,
         @Path("idUser") idUser: String?
     ): Observable<CurrentUserResponse>
 
     @PUT("auth/update_user/{idUser}")
     fun callUpdateUpsert(
+        @HeaderMap map: Map<String, String>,
         @Path("idUser") idUser: String?,
         @Body facebookAuthRequest: FacebookAuthRequest
     ): Observable<FacebookAuthResponse>
@@ -104,8 +106,10 @@ interface IApi {
             Observable<BaseResponse>
 
     @POST("order/transactions")
-    fun callPostOrder(@HeaderMap map: Map<String, String>, @Body body: PostOrderRequest):
-            Observable<BaseResponse>
+    fun callPostOrder(
+        @HeaderMap map: Map<String, String>,
+        @Body body: PostOrderRequest
+    ): Observable<BaseResponse>
 
     @GET("/banners/android/{game-provider}")
     fun callGetBanner(
@@ -116,17 +120,20 @@ interface IApi {
 
     @GET("/games")
     fun callGameList(
+        @HeaderMap map: Map<String, String>,
         @Query("platform") platform: String?
     ): Observable<GameListResponse>
 
 
     @POST("/v1/orders")
     fun createDeposit(
+        @HeaderMap map: Map<String, String>,
         @Body data: DepositRequest
     ): Observable<DepositResponse>
 
     @GET("/end-user-license-agreements")
     fun callEula(
+        @HeaderMap map: Map<String, String>,
         @Query("game_id") gameId: String
     ): Observable<EulaResponse>
 }

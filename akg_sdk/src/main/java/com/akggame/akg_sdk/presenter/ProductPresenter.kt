@@ -11,11 +11,13 @@ import com.akggame.akg_sdk.dao.BillingDao
 import com.akggame.akg_sdk.dao.MainDao
 import com.akggame.akg_sdk.dao.api.model.request.PostOrderRequest
 import com.akggame.akg_sdk.dao.api.model.response.BaseResponse
+import com.akggame.akg_sdk.dao.api.model.response.EulaResponse
 import com.akggame.akg_sdk.dao.api.model.response.GameProductsResponse
 import com.akggame.akg_sdk.dao.pojo.PurchaseItem
 import com.akggame.akg_sdk.rx.IView
 import com.akggame.akg_sdk.rx.RxObserver
 import com.akggame.akg_sdk.ui.activity.PaymentIView
+import com.akggame.akg_sdk.ui.activity.eula.EulaIView
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.SkuDetails
 
@@ -76,6 +78,7 @@ class ProductPresenter(val mIView: IView) {
                 }
             })
     }
+
 
     fun getProductsGoogle(
         gameProvider: String?,

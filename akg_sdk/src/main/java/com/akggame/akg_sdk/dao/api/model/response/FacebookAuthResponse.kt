@@ -30,7 +30,9 @@ class FacebookAuthResponse : BaseResponse() {
             var game_provider: String? = null
             var last_login: String? = null
             var register_time: String? = null
-
+            var event_name: String? = null
+            var banned_based_on: String? = null
+            var banned_message: String? = null
         }
     }
 

@@ -12,6 +12,7 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
+import com.akggame.akg_sdk.IConfig
 import com.akggame.akg_sdk.rx.IView
 import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.android.sdk.R
@@ -58,6 +59,10 @@ open class BaseDialogFragment() : DialogFragment(), IView {
     fun createTimestamp(): String {
         val tsLong = System.currentTimeMillis() / 1000
         return tsLong.toString()
+    }
+
+    fun getAccessToken(): String {
+        return Hawk.get<String>(IConfig.SESSION_TOKEN)
     }
 
     override fun onStart() {

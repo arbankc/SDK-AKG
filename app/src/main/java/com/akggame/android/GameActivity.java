@@ -45,6 +45,16 @@ public class GameActivity extends BaseActivity {
         AKG_SDK.setFloatingButton(this, floatingButton,
                 this, new MenuSDKCallback() {
                     @Override
+                    public void onBindAccount(@NotNull Context context) {
+
+                    }
+
+                    @Override
+                    public void onClickEula(@NotNull Context context, @NotNull String idGame) {
+
+                    }
+
+                    @Override
                     public void onContactUs(@NotNull Context context) {
 
                     }
@@ -54,10 +64,6 @@ public class GameActivity extends BaseActivity {
 
                     }
 
-                    @Override
-                    public void onClickEula(@NotNull Context context) {
-
-                    }
 
                     @Override
                     public void onCheckSDK(boolean isUpdated) {
@@ -65,10 +71,6 @@ public class GameActivity extends BaseActivity {
 
                     }
 
-                    @Override
-                    public void onSuccessBind(@NotNull String token, @NotNull String loginType) {
-
-                    }
 
                     @Override
                     public void onLogout() {

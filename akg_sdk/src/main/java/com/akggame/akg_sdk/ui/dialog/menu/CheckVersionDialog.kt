@@ -17,12 +17,16 @@ import com.akggame.android.sdk.BuildConfig
 import com.fasterxml.jackson.databind.util.ClassUtil.getPackageName
 
 
-class CheckVersionDialog:BaseDialogFragment(),CheckVersionIView {
+class CheckVersionDialog : BaseDialogFragment(), CheckVersionIView {
 
     lateinit var mView: View
-    var presenter= InfoPresenter(this)
+    var presenter = InfoPresenter(this)
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         mView = inflater.inflate(R.layout.content_dialog_version, container, true)
         return mView
     }
@@ -33,21 +37,25 @@ class CheckVersionDialog:BaseDialogFragment(),CheckVersionIView {
         initialize()
     }
 
-    fun initialize(){
+    fun initialize() {
         mView.ivClose.setOnClickListener {
             this.dismiss()
         }
         mView.btnNext.setOnClickListener {
             this.dismiss()
         }
+
+        mView.btnNext.text = "Kembali"
     }
 
     override fun doOnSuccess(data: SDKVersionResponse) {
-        if(mView.tvVersion!=null){
-            if(data.data?.attributes?.version_number==BuildConfig.VERSION_CODE){
-                mView.tvVersion.text = resources.getString(R.string.check_update_desc,BuildConfig.VERSION_NAME)
-            }else{
-                mView.tvVersion.text = resources.getString(R.string.update_sdk_version,BuildConfig.VERSION_NAME)
+        if (mView.tvVersion != null) {
+            if (data.data?.attributes?.version_number == BuildConfig.VERSION_CODE) {
+                mView.tvVersion.text =
+                    resources.getString(R.string.check_update_desc, BuildConfig.VERSION_NAME)
+            } else {
+                mView.tvVersion.text =
+                    resources.getString(R.string.update_sdk_version, BuildConfig.VERSION_NAME)
             }
         }
     }

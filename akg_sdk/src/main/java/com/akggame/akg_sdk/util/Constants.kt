@@ -7,5 +7,8 @@ object Constants {
     const val TYPE_PAYMENT = "TYPE_PAYMENT"
     const val DATA_GAME_PRODUCT = "DATA_GAME_PRODUCT"
     const val DATA_USER_ID = "DATA_USER_ID"
+    const val ID_GAME = "ID_GAME"
+    const val PURCHASE_SUKSES = "purchase_success"
+    const val PURCHASE_FAILED = "purchase_failed"
 
 }

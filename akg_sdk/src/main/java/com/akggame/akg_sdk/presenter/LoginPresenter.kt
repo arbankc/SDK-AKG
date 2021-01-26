@@ -4,14 +4,11 @@ import android.content.Context
 import android.util.Log
 import com.akggame.akg_sdk.IConfig
 import com.akggame.akg_sdk.IConfig.Companion.LOGIN_FACEBOOK
-import com.akggame.akg_sdk.IConfig.Companion.LOGIN_GOOGLE
-import com.akggame.akg_sdk.IConfig.Companion.LOGIN_GUEST
 import com.akggame.akg_sdk.IConfig.Companion.LOGIN_PHONE
 import com.akggame.akg_sdk.IConfig.Companion.LOGIN_TYPE
 import com.akggame.akg_sdk.IConfig.Companion.SESSION_TOKEN
 import com.akggame.akg_sdk.dao.MainDao
 import com.akggame.akg_sdk.dao.api.model.request.FacebookAuthRequest
-import com.akggame.akg_sdk.dao.api.model.request.GuestLoginRequest
 import com.akggame.akg_sdk.dao.api.model.request.PhoneAuthRequest
 import com.akggame.akg_sdk.dao.api.model.response.BaseResponse
 import com.akggame.akg_sdk.dao.api.model.response.FacebookAuthResponse
@@ -24,49 +21,6 @@ import com.akggame.akg_sdk.util.CacheUtil
 import io.reactivex.disposables.Disposable
 
 class LoginPresenter(val mIView: IView) {
-
-    fun guestLogin(model: GuestLoginRequest, context: Context) {
-        MainDao().onGuestAuth(model, context).subscribe(object : RxObserver<BaseResponse>(
-            mIView,
-            ""
-        ) {
-            override fun onSubscribe(d: Disposable) {
-                super.onSubscribe(d)
-                Log.d("TESTING API", "onSubscribe")
-            }
-
-            override fun onComplete() {
-                super.onComplete()
-                Log.d("TESTING API", "onComplete")
-            }
-
-            override fun onNext(t: BaseResponse) {
-                super.onNext(t)
-                t as PhoneAuthResponse
-
-                Log.d("TESTING API", "onNext")
-                if (t.meta?.code == 200) {
-                    (mIView as LoginIView).doOnSuccess(
-                        t.data?.is_first_login!!,
-                        t.data?.token!!,
-                        LOGIN_GUEST,
-                        ""
-                    )
-                    CacheUtil.putPreferenceString(LOGIN_TYPE, LOGIN_GUEST, context)
-                    CacheUtil.putPreferenceString(SESSION_TOKEN, t.data?.token!!, context)
-                    CacheUtil.putPreferenceBoolean(IConfig.SESSION_LOGIN, true, context)
-
-                } else {
-                    (mIView as LoginIView).doOnError(t.data?.message!!)
-                }
-            }
-
-            override fun onError(e: Throwable) {
-                super.onError(e)
-                Log.d("TESTING API", "onError : " + e.toString())
-            }
-        })
-    }
 
     fun phoneLogin(model: PhoneAuthRequest, context: Context) {
         MainDao().onPhoneAuth(model).subscribe(object : RxObserver<PhoneAuthResponse>(mIView, "") {
@@ -86,12 +40,12 @@ class LoginPresenter(val mIView: IView) {
 
                 Log.d("TESTING API", "onNext")
                 if (t.meta?.code == 200) {
-                    (mIView as LoginIView).doOnSuccess(
-                        t.data?.is_first_login!!,
-                        t.data?.token!!,
-                        LOGIN_PHONE,
-                        ""
-                    )
+//                    (mIView as LoginIView).doOnSuccess(
+//                        t.data?.is_first_login!!,
+//                        t.data?.token!!,
+//                        LOGIN_PHONE,
+//                        ""
+//                    )
                     CacheUtil.putPreferenceString(LOGIN_TYPE, LOGIN_PHONE, context)
                     CacheUtil.putPreferenceString(SESSION_TOKEN, t.data?.token!!, context)
                     CacheUtil.putPreferenceBoolean(IConfig.SESSION_LOGIN, true, context)
@@ -109,7 +63,7 @@ class LoginPresenter(val mIView: IView) {
     }
 
     fun upsertUser(model: FacebookAuthRequest, context: Context, typeLogin: String) {
-        MainDao().onAuthUpsert(model)
+        MainDao().onAuthUpsert(context, model)
             .subscribe(object : RxObserver<FacebookAuthResponse>(mIView, "") {
                 override fun onSubscribe(d: Disposable) {
                     super.onSubscribe(d)
@@ -123,13 +77,13 @@ class LoginPresenter(val mIView: IView) {
                     Log.d("TESTING API", "onNext")
                     if (t.meta?.code == 200) {
                         (mIView as LoginIView).doOnSuccess(
+                            t.data,
                             t.data?.is_first_login!!,
                             t.data?.token!!,
                             t.data?.id.toString(),
                             typeLogin
                         )
 
-//                        CacheUtil.putPreferenceString(LOGIN_TYPE, LOGIN_GOOGLE, context)
                         CacheUtil.putPreferenceString(SESSION_TOKEN, t.data?.token!!, context)
                         CacheUtil.putPreferenceBoolean(IConfig.SESSION_LOGIN, true, context)
 
@@ -147,7 +101,7 @@ class LoginPresenter(val mIView: IView) {
     }
 
     fun facebookLogin(model: FacebookAuthRequest, context: Context) {
-        MainDao().onAuthUpsert(model)
+        MainDao().onAuthUpsert(context, model)
             .subscribe(object : RxObserver<FacebookAuthResponse>(mIView, "") {
                 override fun onSubscribe(d: Disposable) {
                     super.onSubscribe(d)
@@ -165,6 +119,7 @@ class LoginPresenter(val mIView: IView) {
                     Log.d("TESTING API", "onNext")
                     if (t.meta?.code == 200) {
                         (mIView as LoginIView).doOnSuccess(
+                            t.data,
                             t.data!!.is_first_login,
                             t.data?.token!!,
                             LOGIN_FACEBOOK,

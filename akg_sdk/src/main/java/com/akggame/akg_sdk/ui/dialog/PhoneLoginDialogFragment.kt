@@ -9,16 +9,15 @@ import androidx.fragment.app.FragmentManager
 import com.akggame.akg_sdk.IConfig
 import com.akggame.akg_sdk.LoginSDKCallback
 import com.akggame.akg_sdk.dao.api.model.request.PhoneAuthRequest
+import com.akggame.akg_sdk.dao.api.model.response.FacebookAuthResponse
 import com.akggame.akg_sdk.dao.pojo.UserData
 import com.akggame.akg_sdk.presenter.LoginPresenter
 import com.akggame.akg_sdk.ui.dialog.forget.ForgetDialog
-import com.akggame.akg_sdk.ui.dialog.login.LoginDialogFragment
 import com.akggame.akg_sdk.ui.dialog.login.LoginIView
 import com.akggame.akg_sdk.ui.dialog.register.OTPDialog
 import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.akg_sdk.util.DeviceUtil
 import com.akggame.android.sdk.R
-import com.google.gson.Gson
 import kotlinx.android.synthetic.main.content_dialog_login_phone.*
 import kotlinx.android.synthetic.main.content_dialog_login_phone.view.*
 
@@ -65,6 +64,7 @@ class PhoneLoginDialogFragment() : BaseDialogFragment(), LoginIView {
     }
 
     override fun doOnSuccess(
+        facebookAuthResponse: FacebookAuthResponse.DataBean?,
         isFirstLogin: Boolean,
         token: String,
         userId: String,
@@ -73,6 +73,7 @@ class PhoneLoginDialogFragment() : BaseDialogFragment(), LoginIView {
         val id = DeviceUtil.decoded(token).toObject<UserData>()
         mLoginCallback.onResponseSuccess(token, id.id, typeLogin)
     }
+
 
 
     override fun doOnError(message: String) {

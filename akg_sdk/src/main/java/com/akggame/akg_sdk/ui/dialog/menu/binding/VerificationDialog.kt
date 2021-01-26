@@ -61,7 +61,7 @@ class VerificationDialog() :BaseDialogFragment(),SetPasswordIView {
 
     override fun doOnSuccess(data: BaseResponse) {
         CacheUtil.putPreferenceString(IConfig.LOGIN_TYPE,IConfig.LOGIN_PHONE,requireActivity())
-        AKG_SDK.getMenuCallback().onSuccessBind(data.BaseDataResponse!!.token!!,AKG_SDK.LOGIN_PHONE)
+//        AKG_SDK.getMenuCallback().onSuccessBind(data.BaseDataResponse!!.token!!,AKG_SDK.LOGIN_PHONE)
         AKG_SDK.resetFloatingButton(requireActivity() as AppCompatActivity)
         customDismiss()
         clearBackStack()

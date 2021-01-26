@@ -8,12 +8,14 @@ import com.akggame.akg_sdk.baseextend.BaseActivity
 import com.akggame.akg_sdk.dao.api.model.response.DepositResponse
 import com.akggame.akg_sdk.presenter.OrderPresenter
 import com.akggame.akg_sdk.util.Constants
+import com.akggame.akg_sdk.util.JSBridge
 import com.akggame.android.sdk.R
 import com.clappingape.dplkagent.model.api.request.DepositRequest
 import kotlinx.android.synthetic.main.activity_payment_ottopay.*
 
 class PaymentOttopayActivity : BaseActivity(), OttopayIView {
     var idProductGame: String? = null
+    val data = DepositRequest()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +28,6 @@ class PaymentOttopayActivity : BaseActivity(), OttopayIView {
     private fun initial() {
         idProductGame = intent.getStringExtra(Constants.DATA_GAME_PRODUCT)
 
-        val data = DepositRequest()
         data.user_id = getDataLogin()?.data?.id.toString()
         data.game_product_id = idProductGame.toString()
 
@@ -38,9 +39,6 @@ class PaymentOttopayActivity : BaseActivity(), OttopayIView {
     override fun doOnSuccessCreateDeposit(data: DepositResponse) {
         val bundle = Bundle()
         bundle.putString("User Id", data.data.id)
-
-
-//        bundle.putString("Game Product Id", data.data.)
 
         loadUrl(data.data.endpoint_url)
 
@@ -59,8 +57,9 @@ class PaymentOttopayActivity : BaseActivity(), OttopayIView {
         paymentView.settings.userAgentString = MyUA
         paymentView.settings.domStorageEnabled = true
         paymentView.isVerticalScrollBarEnabled = true
-        paymentView.addJavascriptInterface(this, "Android")
         paymentView.requestFocus()
+        val jsBridge = JSBridge(this, getDataLogin()?.data?.id.toString(), idProductGame.toString())
+        paymentView.addJavascriptInterface(jsBridge, "Android")
 
         paymentView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {

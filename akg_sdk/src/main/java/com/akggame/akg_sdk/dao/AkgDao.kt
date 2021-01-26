@@ -8,17 +8,15 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
 import com.akggame.akg_sdk.*
 import com.akggame.akg_sdk.dao.api.model.FloatingItem
 import com.akggame.akg_sdk.dao.api.model.response.CurrentUserResponse
 import com.akggame.akg_sdk.dao.api.model.response.DepositResponse
-import com.akggame.akg_sdk.presenter.GamePresenter
-import com.akggame.akg_sdk.presenter.InfoPresenter
-import com.akggame.akg_sdk.presenter.OrderPresenter
-import com.akggame.akg_sdk.presenter.ProductPresenter
+import com.akggame.akg_sdk.dao.api.model.response.EulaResponse
+import com.akggame.akg_sdk.presenter.*
 import com.akggame.akg_sdk.rx.IView
 import com.akggame.akg_sdk.ui.activity.OttopayIView
+import com.akggame.akg_sdk.ui.activity.eula.EulaIView
 import com.akggame.akg_sdk.ui.adapter.FloatingAdapterListener
 import com.akggame.akg_sdk.ui.component.FloatingButton
 import com.akggame.akg_sdk.ui.dialog.banner.BannerDialog
@@ -33,13 +31,16 @@ import com.clappingape.dplkagent.model.api.request.DepositRequest
 import com.orhanobut.hawk.Hawk
 
 
-class AkgDao : AccountIView, OttopayIView {
+class AkgDao : AccountIView, OttopayIView, EulaIView {
 
     private lateinit var customCallback: LoginSDKCallback
 
     private val productPresenter = ProductPresenter(this)
+    private val eulaPresenter = EulaPresenter(this)
     private val presenter = InfoPresenter(this)
     lateinit var ottoPaySDKCallback: OttoPaySDKCallback
+    lateinit var eulaSdkCallBack: EulaSdkCallBack
+
     var idUser: String? = null
 
     fun callRelaunchDialog(activity: AppCompatActivity, callback: RelaunchSDKCallback) {
@@ -71,10 +72,10 @@ class AkgDao : AccountIView, OttopayIView {
         )
     }
 
-    fun callBrowserFanPage(context: Context) {
-        val url = "https://www.facebook.com/akggames/"
+    fun callBrowserFanPage(context: Context, urlString: String) {
+//        val url = "https://www.facebook.com/akggames/"
         val i = Intent(Intent.ACTION_VIEW)
-        i.data = Uri.parse(url)
+        i.data = Uri.parse(urlString)
         context.startActivity(i)
     }
 
@@ -89,6 +90,11 @@ class AkgDao : AccountIView, OttopayIView {
         banner.show(ftransaction, "banner")
     }
 
+    fun callApiWebviewEula(context: Context, idGame: String, eulaSdkCallBackEula: EulaSdkCallBack) {
+        eulaSdkCallBack = eulaSdkCallBackEula
+        eulaPresenter.onGetEula(context, idGame)
+    }
+
     fun setFloatingButtonListener(
         activity: AppCompatActivity,
         floatingButton: FloatingButton,
@@ -97,6 +103,7 @@ class AkgDao : AccountIView, OttopayIView {
     ) {
         val onItemClickListener: FloatingAdapterListener = object : FloatingAdapterListener {
             override fun onItemClick(position: Int, floatingItem: FloatingItem) {
+                val idGame = Hawk.get<String>(Constants.ID_GAME)
                 val contactUsDialog = InfoDialog()
                 val checkVersionDialog = CheckVersionDialog()
                 val bindAccountDialog = BindAccountDialog.newInstance(
@@ -109,23 +116,25 @@ class AkgDao : AccountIView, OttopayIView {
                 when (position) {
                     0 -> {
                         if (CacheUtil.getPreferenceString(IConfig.LOGIN_TYPE, activity)
-                                ?.equals(IConfig.LOGIN_GUEST)!!) { bindAccountDialog.show(activity.supportFragmentManager, "bind account") } else {
-                            accountDialog.show(activity.supportFragmentManager, "account")}
+                                ?.equals(IConfig.LOGIN_GUEST)!!
+                        ) {
+                            bindAccountDialog.show(activity.supportFragmentManager, "bind account")
+                        } else {
+                            accountDialog.show(activity.supportFragmentManager, "account")
+                        }
                     }
                     1 -> {
 //                        callBrowserFanPage(context)
                         menuSDKCallback.onClickFbPage(context)
                     }
-
                     2 -> {
 //                        callDetailEula(context)
-                        menuSDKCallback.onClickEula(context)
-
+                        menuSDKCallback.onClickEula(context, idGame)
                     }
 
                     3 -> {
-//                        contactUsDialog.show(activity.supportFragmentManager, "contact us")
-                        menuSDKCallback.onClickEula(context)
+                        contactUsDialog.show(activity.supportFragmentManager, "contact us")
+//                        menuSDKCallback.onContactUs(context)
                     }
 
                     4 -> {
@@ -146,14 +155,9 @@ class AkgDao : AccountIView, OttopayIView {
     }
 
 
-    private fun callDetailEula(context: Context) {
-//        val gameId = Hawk.get<String>("gameId")
-//        val intent = Intent(context, EulaActivity::class.java)
-//        intent.putExtra("gameId", gameId)
-//        context.startActivity(intent)
-
+    fun callDetailEula(context: Context, urlString: String) {
         val intent =
-            Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://akggames.com/eula/?=GAME_CODE"))
+            Intent(Intent.ACTION_VIEW).setData(Uri.parse(urlString))
         context.startActivity(intent)
     }
 
@@ -316,8 +320,13 @@ class AkgDao : AccountIView, OttopayIView {
         ottoPaySDKCallback.onSuccessPayment(data)
     }
 
+    override fun onSuccesEula(eulaReponse: EulaResponse) {
+        eulaSdkCallBack.onSuccesEula(eulaReponse)
+    }
+
     override fun handleError(message: String) {
         ottoPaySDKCallback.onFailedPayment(message)
+        eulaSdkCallBack.onErrorEula(message)
     }
 
     override fun handleRetryConnection() {

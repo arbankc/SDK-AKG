@@ -17,8 +17,11 @@ class MainDao() {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun onAuthUpsert(model: FacebookAuthRequest): Observable<FacebookAuthResponse> {
-        return Api.onUpsert(model)
+    fun onAuthUpsert(
+        context: Context,
+        model: FacebookAuthRequest
+    ): Observable<FacebookAuthResponse> {
+        return Api.onUpsert(context, model)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
@@ -94,6 +97,7 @@ class MainDao() {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
+
     fun onBindProduct(body: BindSocMedRequest, context: Context): Observable<BaseResponse> {
         return Api.onBindAccount(body, context)
             .subscribeOn(Schedulers.io())
@@ -118,8 +122,8 @@ class MainDao() {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun onGetSDKConfig(gameProvider: String?): Observable<SDKConfigResponse> {
-        return Api.onCallGetSDKConfig(gameProvider)
+    fun onGetSDKConfig(context: Context, gameProvider: String?): Observable<SDKConfigResponse> {
+        return Api.onCallGetSDKConfig(context, gameProvider)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
@@ -142,8 +146,10 @@ class MainDao() {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun onGetEula(context: Context, gameId: String): Observable<EulaResponse> {
-        return Api.onCallEulaDetail(gameId)
+    fun onGetEula(
+        context: Context, gameId: String
+    ): Observable<EulaResponse> {
+        return Api.onCallEulaDetail(context, gameId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }

@@ -31,6 +31,9 @@ data class DataEula(
 @Parcelize
 data class AttributesEula(
 
+	@field:JsonProperty("url")
+	val url: String? = null,
+
 	@field:JsonProperty("game_name")
 	val gameName: String? = null,
 

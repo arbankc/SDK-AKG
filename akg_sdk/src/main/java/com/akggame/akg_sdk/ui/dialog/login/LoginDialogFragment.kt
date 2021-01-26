@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import com.akggame.akg_sdk.IConfig
+import com.akggame.akg_sdk.IConfig.Companion.SESSION_TOKEN
 import com.akggame.akg_sdk.LoginSDKCallback
 import com.akggame.akg_sdk.StartGameSDKCallback
 import com.akggame.akg_sdk.dao.SocmedDao
@@ -37,10 +38,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.EmailAuthProvider
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.*
+import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.content_dialog_login.*
 import kotlinx.android.synthetic.main.content_dialog_login.view.*
 import org.json.JSONException
@@ -69,6 +68,7 @@ class LoginDialogFragment() : BaseDialogFragment() {
     var nameFb: String? = null
     var tokenFb: String? = null
     var idFb: String? = null
+
 
     val accountIView: AccountIView = (object : AccountIView {
         override fun doOnSuccess(activity: AppCompatActivity, data: CurrentUserResponse) {
@@ -105,7 +105,7 @@ class LoginDialogFragment() : BaseDialogFragment() {
 
 
     companion object {
-        private lateinit var mLoginCallback: LoginSDKCallback
+        var mLoginCallback: LoginSDKCallback? = null
         fun newInstance(
             mFragmentManager: FragmentManager,
             loginCallback: LoginSDKCallback
@@ -124,7 +124,6 @@ class LoginDialogFragment() : BaseDialogFragment() {
         mView =
             LayoutInflater.from(requireActivity() as Context)
                 .inflate(R.layout.content_dialog_login, null, false)
-
         return mView
     }
 
@@ -144,13 +143,7 @@ class LoginDialogFragment() : BaseDialogFragment() {
         initialize()
 
         currentUser = auth?.currentUser
-
-//        if (currentUser != null) {
-////            showToast("onContinue")
-//        } else showToast("Belun login")
-
     }
-
 
 
     /*
@@ -199,7 +192,6 @@ class LoginDialogFragment() : BaseDialogFragment() {
                 tokenFb = loginResult.accessToken.toString()
                 idFb = response.jsonObject.getString("id")
 
-
                 val lastName = response.jsonObject.getString("last_name")
                 var profileURL = ""
                 if (Profile.getCurrentProfile() != null) {
@@ -211,22 +203,25 @@ class LoginDialogFragment() : BaseDialogFragment() {
                 }
 
                 statusLogin = "facebook"
-                hitLogEventRegister("register_success", statusLogin!!)
+                getTokenClientAuth(currentUser, statusLogin.toString())
+
+
+            } catch (e: JSONException) {
+                d { "respon Error ${e.message}" }
                 val gameListDialogFragment =
                     currentUser?.let {
                         GameListDialogFragment.newInstance(
                             statusLogin, emailFb,
-                            mLoginCallback,
+                            mLoginCallback!!,
                             nameFb,
+                            "failed",
                             it
                         )
                     }
-                gameListDialogFragment?.show(fragmentManager!!, "")
-            } catch (e: JSONException) {
-                d { "respon Error ${e.message}" }
-                hitLogEventRegister("register_failed", statusLogin!!)
             }
+
         }
+
         val parameters = Bundle()
         parameters.putString("fields", "id,email,first_name,last_name")
         request.parameters = parameters
@@ -276,7 +271,6 @@ class LoginDialogFragment() : BaseDialogFragment() {
             if (DeviceUtil.getImei(requireActivity()).isNotEmpty()) {
 //
                 loginGuestFirebase()
-//                loginUpdateGuestFirebase()
             }
 
         }
@@ -305,21 +299,21 @@ class LoginDialogFragment() : BaseDialogFragment() {
                         // Sign in success, update UI with the signed-in user's information
                         val user = auth?.currentUser
                         statusLogin = "guest"
-                        hitLogEventRegister("register_success", statusLogin!!)
+                        getTokenClientAuth(user, statusLogin.toString())
+
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        showToast("Gagal geuest")
                         val gameListDialogFragment =
                             currentUser?.let {
                                 GameListDialogFragment.newInstance(
                                     statusLogin, emailFb,
-                                    mLoginCallback,
+                                    mLoginCallback!!,
                                     nameFb,
+                                    "failed",
                                     it
                                 )
                             }
-                        gameListDialogFragment?.show(fragmentManager!!, "")
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        showToast("Gagal geuest")
-                        hitLogEventRegister("register_failed", statusLogin!!)
                     }
 
                 }
@@ -329,7 +323,7 @@ class LoginDialogFragment() : BaseDialogFragment() {
     private fun changeToPhoneLogin() {
         if (myFragmentManager != null) {
             val phoneLoginDialogFragment =
-                PhoneLoginDialogFragment.newInstance(myFragmentManager, mLoginCallback)
+                PhoneLoginDialogFragment.newInstance(myFragmentManager, mLoginCallback!!)
             val ftransaction = myFragmentManager!!.beginTransaction()
             ftransaction.addToBackStack("phone")
             phoneLoginDialogFragment.show(ftransaction, "phone")
@@ -341,12 +335,69 @@ class LoginDialogFragment() : BaseDialogFragment() {
             val account = completedTask.getResult(ApiException::class.java)
             idToken = account?.idToken
             d { "respon Login account ${account?.idToken}" }
-
-
             firebaseAuthWithGoogle(account?.idToken.toString())
         } catch (e: ApiException) {
             Log.w("FRAGMENT_GOOGLE", "signInResult:failed code=" + e.statusCode)
         }
+    }
+
+    fun getTokenClientAuth(user: FirebaseUser?, typeLogin: String) {
+        user!!.getIdToken(true)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    val idToken: String = it.result?.token.toString()
+                    Log.d("Get token ", "+ $idToken")
+                    CacheUtil.putPreferenceString(SESSION_TOKEN, idToken, activity as Context)
+                    Hawk.put(SESSION_TOKEN, idToken)
+
+                    when {
+                        typeLogin.equals("google", ignoreCase = true) -> {
+                            val gameListDialogFragment =
+                                currentUser?.let {
+                                    GameListDialogFragment.newInstance(
+                                        statusLogin, emailFb,
+                                        mLoginCallback!!,
+                                        nameFb,
+                                        "sukses",
+                                        it
+                                    )
+                                }
+                            gameListDialogFragment?.show(fragmentManager!!, "")
+                        }
+                        typeLogin.equals("facebook", ignoreCase = true) -> {
+                            val gameListDialogFragment =
+                                currentUser?.let {
+                                    GameListDialogFragment.newInstance(
+                                        statusLogin, emailFb,
+                                        mLoginCallback!!,
+                                        nameFb,
+                                        "sukses",
+                                        it
+                                    )
+                                }
+                            gameListDialogFragment?.show(fragmentManager!!, "")
+                        }
+                        typeLogin.equals("guest", ignoreCase = true) -> {
+                            val gameListDialogFragment =
+                                currentUser?.let {
+                                    GameListDialogFragment.newInstance(
+                                        statusLogin, emailFb,
+                                        mLoginCallback!!,
+                                        nameFb,
+                                        "sukses",
+                                        it
+                                    )
+                                }
+
+                            gameListDialogFragment?.show(fragmentManager!!, "")
+                        }
+                    }
+                } else {
+                    // Handle error -> task.getException();
+                    showToast("gagal token ")
+                }
+            }
+
     }
 
     private fun firebaseAuthWithGoogle(idToken: String) {
@@ -355,22 +406,20 @@ class LoginDialogFragment() : BaseDialogFragment() {
             ?.addOnCompleteListener {
                 if (it.isSuccessful) {
                     currentUser = auth?.currentUser
-                    d { "respon Login succes ${currentUser?.email}" }
                     statusLogin = "google"
-                    hitLogEventRegister("register_success", statusLogin!!)
+                    getTokenClientAuth(currentUser, statusLogin.toString())
+
+                } else {
                     val gameListDialogFragment =
                         currentUser?.let {
                             GameListDialogFragment.newInstance(
                                 statusLogin, emailFb,
-                                mLoginCallback,
+                                mLoginCallback!!,
                                 nameFb,
+                                "failed",
                                 it
                             )
                         }
-                    gameListDialogFragment?.show(fragmentManager!!, "")
-                } else {
-                    d { "respon Login failed " }
-                    hitLogEventRegister("register_failed", statusLogin!!)
                 }
             }
 
@@ -391,18 +440,6 @@ class LoginDialogFragment() : BaseDialogFragment() {
 
             }
         }
-    }
-
-
-    private fun hitLogEventRegister(eventName: String, statusLogin: String) {
-        val bundle = Bundle()
-        if (statusLogin == "facebook") bundle.putString("UID", idFb)
-        else bundle.putString("UID", currentUser?.uid)
-
-        bundle.putString("Timestamp", createTimestamp())
-        bundle.putString("tipe_register", statusLogin)
-
-        hitEventFirebase(eventName, bundle)
     }
 
 

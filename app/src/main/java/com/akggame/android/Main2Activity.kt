@@ -6,42 +6,64 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.util.Log
 import android.widget.Toast
 import com.akggame.akg_sdk.AKG_SDK
+import com.akggame.akg_sdk.EulaSdkCallBack
 import com.akggame.akg_sdk.MenuSDKCallback
 import com.akggame.akg_sdk.PAYMENT_TYPE
 import com.akggame.akg_sdk.baseextend.BaseActivity
 import com.akggame.akg_sdk.dao.api.model.response.CurrentUserResponse
+import com.akggame.akg_sdk.dao.api.model.response.EulaResponse
 import com.akggame.akg_sdk.dao.pojo.PurchaseItem
+import com.akggame.akg_sdk.ui.activity.eula.EulaIView
 import com.akggame.akg_sdk.util.Constants
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_main2.*
 
 class Main2Activity : BaseActivity(), MenuSDKCallback {
     var saveBanner: String? = null
-    override fun onSuccessBind(token: String, loginType: String) {
-
-    }
 
     override fun onCheckSDK(isUpdated: Boolean) {
 
     }
 
-    override fun onClickEula(context: Context) {
-        TODO("Not yet implemented")
+    override fun onClickEula(context: Context, idGame: String) {
+        AKG_SDK.callEulaWebview(
+            this,
+            "6122bb1e-e189-4b0d-bfbe-cb2c4180d878",
+            object : EulaSdkCallBack { // calling webview with api
+                override fun onSuccesEula(eulaReponse: EulaResponse) {
+                    Log.d("Respon url", " ${eulaReponse.data?.attributes?.url}")
+                    AKG_SDK.callEula(
+                        this@Main2Activity,
+                        eulaReponse.data?.attributes?.url.toString()
+                    ) //call webview with url
+                }
+
+                override fun onErrorEula(message: String) {
+
+                }
+
+            })
+
     }
 
     override fun onClickFbPage(context: Context) {
-        TODO("Not yet implemented")
+        AKG_SDK.callFbFanPage(this, "https://www.facebook.com/akggames/") //calling webview with url
     }
 
     override fun onContactUs(context: Context) {
-        TODO("Not yet implemented")
+
     }
 
     override fun onLogout() {
         startActivity(Intent(this@Main2Activity, MainActivity::class.java))
         finish()
+    }
+
+    override fun onBindAccount(context: Context) {
+
     }
 
     val displayMetrics = DisplayMetrics();
@@ -64,7 +86,6 @@ class Main2Activity : BaseActivity(), MenuSDKCallback {
             AKG_SDK.onSDKPayment(PAYMENT_TYPE.OTTOPAY, this)
         }
 
-
     }
 
     override fun onStart() {
@@ -85,7 +106,6 @@ class Main2Activity : BaseActivity(), MenuSDKCallback {
         bundle.putString("timestamp", createTimestamp())
         bundle.putString("uid", getDataLogin()?.data?.id)
         bundle.putString("udid", deviceIdAndroid())
-
         hitEventFirebase("session_stop", bundle)
     }
 
@@ -100,7 +120,7 @@ class Main2Activity : BaseActivity(), MenuSDKCallback {
         hitEventFirebase("session_stop", bundle)
     }
 
-    fun callBanner() {
+    private fun callBanner() {
         AKG_SDK.callBannerDialog(this)
     }
 

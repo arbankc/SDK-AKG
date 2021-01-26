@@ -7,6 +7,7 @@ import com.akggame.akg_sdk.dao.api.model.request.*
 import com.akggame.akg_sdk.dao.api.model.response.*
 import com.akggame.akg_sdk.util.CacheUtil
 import com.clappingape.dplkagent.model.api.request.DepositRequest
+import com.orhanobut.hawk.Hawk
 import io.reactivex.Observable
 import java.util.HashMap
 
@@ -23,10 +24,9 @@ class Api {
         }
 
         private fun initHeader(context: Context): Map<String, String> {
+            val getToken = Hawk.get<String>(IConfig.SESSION_TOKEN)
             val map = HashMap<String, String>()
-            map["Authorization"] =
-                CacheUtil.getPreferenceString(IConfig.SESSION_TOKEN, context).toString()
-            map["Platform"] = "website"
+            map["Authorization"] = getToken
             map["Cache-Control"] = "no-store"
             map["Content-Type"] = "application/json"
 
@@ -63,13 +63,18 @@ class Api {
         }
 
         @Synchronized
-        fun onUpsert(model: FacebookAuthRequest): Observable<FacebookAuthResponse> {
-            return initApiDomain().callUpsert(initHeader(), model)
+        fun onUpsert(
+            context: Context,
+            model: FacebookAuthRequest
+        ): Observable<FacebookAuthResponse> {
+            return initApiDomain().callUpsert(initHeader(context), model)
         }
 
         @Synchronized
-        fun onCallGameList(context: Context): Observable<GameListResponse> {
-            return initApiDomain().callGameList("android")
+        fun onCallGameList(
+            context: Context
+        ): Observable<GameListResponse> {
+            return initApiDomain().callGameList(initHeader(context), "android")
         }
 
         @Synchronized
@@ -112,7 +117,7 @@ class Api {
 
         @Synchronized
         fun onGetCurrentUser(idUser: String, context: Context): Observable<CurrentUserResponse> {
-            return initApiDomain().callGetCurrentUser(idUser)
+            return initApiDomain().callGetCurrentUser(initHeader(context), idUser)
         }
 
         @Synchronized
@@ -121,7 +126,11 @@ class Api {
             context: Context,
             facebookAuthRequest: FacebookAuthRequest
         ): Observable<FacebookAuthResponse> {
-            return initApiDomain().callUpdateUpsert(idUser, facebookAuthRequest)
+            return initApiDomain().callUpdateUpsert(
+                initHeader(context),
+                idUser,
+                facebookAuthRequest
+            )
         }
 
         @Synchronized
@@ -161,33 +170,39 @@ class Api {
         @Synchronized
         fun onCallGetSDKVersion(context: Context): Observable<SDKVersionResponse> {
             return initApiDomain().callGetSDKVersion(
-                initHeader(),
+                initHeader(context),
                 CacheUtil.getPreferenceString(IConfig.SESSION_GAME, context)
             )
         }
 
         @Synchronized
-        fun onCallGetSDKConfig(gameProvider: String?): Observable<SDKConfigResponse> {
-            return initApiDomain().callGetSDKConfig(initHeader(), gameProvider)
+        fun onCallGetSDKConfig(
+            context: Context,
+            gameProvider: String?
+        ): Observable<SDKConfigResponse> {
+            return initApiDomain().callGetSDKConfig(initHeader(context), gameProvider)
         }
 
         @Synchronized
         fun onGetBanner(context: Context): Observable<BannerResponse> {
             return initApiDomain().callGetBanner(
-                initHeader(),
+                initHeader(context),
                 CacheUtil.getPreferenceString(IConfig.SESSION_GAME, context)
             )
         }
 
         @Synchronized
-        fun onCreateDeposit(body: DepositRequest, context: Context): Observable<DepositResponse> {
-            return initApiDomainOttopay().createDeposit(body)
+        fun onCreateDeposit(
+            body: DepositRequest,
+            context: Context
+        ): Observable<DepositResponse> {
+            return initApiDomainOttopay().createDeposit(initHeader(context), body)
         }
 
 
         @Synchronized
-        fun onCallEulaDetail(gameId: String?): Observable<EulaResponse> {
-            return initApiDomain().callEula(gameId.toString())
+        fun onCallEulaDetail(context: Context, gameId: String?): Observable<EulaResponse> {
+            return initApiDomain().callEula(initHeader(context), gameId.toString())
         }
     }
 }

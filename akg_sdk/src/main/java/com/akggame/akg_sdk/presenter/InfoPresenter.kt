@@ -34,7 +34,6 @@ import io.reactivex.disposables.Disposable
 
 class InfoPresenter(val mIView: IView) {
 
-
     fun onGetCurrentUser(userId: String?, activity: AppCompatActivity, context: Context) {
         MainDao().onCheckCurrentUser(userId.toString(), context)
             .subscribe(object : RxObserver<CurrentUserResponse>(mIView, "") {
@@ -99,7 +98,7 @@ class InfoPresenter(val mIView: IView) {
     }
 
     fun onGetSDKConf(gameProvider: String, application: Application, context: Context) {
-        MainDao().onGetSDKConfig(gameProvider)
+        MainDao().onGetSDKConfig(context, gameProvider)
             .subscribe(object : RxObserver<SDKConfigResponse>(mIView, "") {
                 override fun onNext(t: BaseResponse) {
                     super.onNext(t)

@@ -8,15 +8,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import com.akggame.akg_sdk.dao.AkgDao
 import com.akggame.akg_sdk.dao.api.model.request.FacebookAuthRequest
-import com.akggame.akg_sdk.dao.api.model.response.DataItemGameList
 import com.akggame.akg_sdk.presenter.LoginPresenter
 import com.akggame.akg_sdk.rx.IView
 import com.akggame.akg_sdk.ui.activity.FrameLayoutActivity
+import com.akggame.akg_sdk.ui.activity.eula.EulaIView
 import com.akggame.akg_sdk.ui.component.FloatingButton
 import com.akggame.akg_sdk.ui.dialog.GameListDialogFragment
-import com.akggame.akg_sdk.ui.dialog.banner.BannerDialog
-import com.akggame.akg_sdk.ui.dialog.login.LoginDialogFragment
-import com.akggame.akg_sdk.ui.dialog.menu.GameListIView
 import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.akg_sdk.util.Constants
 import com.android.billingclient.api.SkuDetails
@@ -39,7 +36,7 @@ object AKG_SDK {
     const val LOGIN_PHONE = "loginPhone"
 
     var startGameSDKCallback: StartGameSDKCallback? = null
-
+    var eulaIView: EulaIView? = null
 
     @JvmStatic
     fun checkIsLogin(context: Context): Boolean {
@@ -84,6 +81,15 @@ object AKG_SDK {
     }
 
     @JvmStatic
+    fun callEulaWebview(
+        activity: AppCompatActivity,
+        idGame: String,
+        eulaSdkCallBack: EulaSdkCallBack
+    ) {
+        AkgDao.callApiWebviewEula(activity, idGame, eulaSdkCallBack)
+    }
+
+    @JvmStatic
     fun launchBilling(activity: Activity, skuDetails: SkuDetails, callback: PurchaseSDKCallback) {
         AkgDao.launchBilling(activity, skuDetails, callback)
     }
@@ -93,6 +99,16 @@ object AKG_SDK {
         AkgDao.callRelaunchDialog(activity, callback)
     }
 
+
+    @JvmStatic
+    fun callFbFanPage(activity: AppCompatActivity, url: String) {
+        AkgDao.callBrowserFanPage(activity, url)
+    }
+
+    @JvmStatic
+    fun callEula(activity: AppCompatActivity, url: String) {
+        AkgDao.callDetailEula(activity, url)
+    }
 
     @JvmStatic
     fun resetFloatingButton(activity: AppCompatActivity) {

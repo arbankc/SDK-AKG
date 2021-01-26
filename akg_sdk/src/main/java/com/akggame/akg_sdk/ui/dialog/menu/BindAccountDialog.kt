@@ -37,6 +37,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.content_dialog_bind_account.*
@@ -54,7 +55,12 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
     val presenter = BindAccountPresenter(this)
     val presenterGame = GamePresenter(this)
     var auth: FirebaseAuth? = null
+    var currentUser: FirebaseUser? = null
 
+    var emailAuth: String? = null
+    var nameAuth: String? = null
+    var tokenFb: String? = null
+    var idFb: String? = null
 
     companion object {
         fun newInstance(
@@ -89,6 +95,7 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         auth = FirebaseAuth.getInstance()
+        currentUser = auth?.currentUser
     }
 
     override fun onStart() {
@@ -122,6 +129,7 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
     fun initialize() {
         setFacebookLogin()
         setGoogleLogin()
+
         mView.ivClose.setOnClickListener {
             this.dismiss()
         }
@@ -202,9 +210,9 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
         ) { _, response ->
             try {
                 d { " responData Fb $response" }
-                val emailFb = response.jsonObject.getString("email")
-                val nameFb = response.jsonObject.getString("first_name")
-                val tokenFb = loginResult.accessToken.toString()
+                emailAuth = response.jsonObject.getString("email")
+                nameAuth = response.jsonObject.getString("first_name")
+                tokenFb = loginResult.accessToken.toString()
 
                 val lastName = response.jsonObject.getString("last_name")
                 var profileURL = ""
@@ -215,8 +223,7 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
                         400
                     ).toString()
                 }
-
-                hitLoginBindAccount(emailFb, nameFb, "facebook")
+                getTokenClientAuth(currentUser, "facebook")
 
             } catch (e: JSONException) {
                 d { "respon Error ${e.message}" }
@@ -245,40 +252,15 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
             val account = completedTask.getResult(ApiException::class.java)
 
             auth?.let { firebaseAuthWithGoogle(account?.idToken.toString(), it) }
-
-            hitLoginBindAccount(account?.email, account?.displayName, "google")
+            nameAuth = account?.displayName
+            emailAuth = account?.email
+            firebaseAuthWithGoogle(account?.idToken.toString(), auth!!)
 
         } catch (e: ApiException) {
             Log.w("FRAGMENT_GOOGLE", "signInResult:failed code=" + e.statusCode)
         }
     }
 
-
-    private fun hitLoginBindAccount(email: String?, name: String?, typeLogin: String?) {
-        showDialogLoading(true)
-        val getChaceLogin = Hawk.get<FacebookAuthRequest>(Constants.DATA_UPSERT)
-        val idUser = Hawk.get<String>(Constants.DATA_USER_ID)
-
-        val model = FacebookAuthRequest()
-        model.email = email
-        model.access_token = getChaceLogin.access_token
-        model.name = name
-        model.phone_number = "-"
-        model.auth_provider = "akg"
-
-        model.device_id = getChaceLogin.device_id
-        model.game_provider = getChaceLogin.game_provider
-        model.operating_system = "Android"
-        model.phone_model = getChaceLogin.phone_model
-        model.login_type = typeLogin
-
-        typeLogin(typeLogin)
-        hitEvent(model)
-
-        Hawk.put(Constants.DATA_UPSERT, model)
-        presenter.updateUpsertUser(model, idUser, requireActivity(), typeLogin.toString())
-
-    }
 
     fun hitEvent(model: FacebookAuthRequest) {
         val bundle = Bundle()
@@ -329,7 +311,8 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
             .addOnCompleteListener {
                 if (it.isSuccessful) {
 //                    activity?.let { presenterGame.onGameList(it) }
-
+                    currentUser = auth.currentUser
+                    getTokenClientAuth(currentUser, "google")
                 } else {
                     d { "respon Login failed " }
 
@@ -337,4 +320,53 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
             }
 
     }
+
+    fun getTokenClientAuth(user: FirebaseUser?, typeLogin: String?) {
+        user!!.getIdToken(true)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    val idToken: String = it.result?.token.toString()
+                    // Send token to your backend via HTTPS
+                    // ...
+                    Log.d("Get token ", "+ $idToken")
+                    Hawk.put(IConfig.SESSION_TOKEN, idToken)
+
+                    if (typeLogin.equals("facebook", ignoreCase = true))
+                        hitLoginBindAccount(emailAuth, nameAuth, "facebook")
+                    else if (typeLogin.equals("google", ignoreCase = true))
+                        hitLoginBindAccount(emailAuth, nameAuth, "google")
+                } else {
+                    // Handle error -> task.getException();
+                    showToast("gagal token ")
+                }
+            }
+
+    }
+
+    private fun hitLoginBindAccount(email: String?, name: String?, typeLogin: String?) {
+        showDialogLoading(true)
+        val getChaceLogin = Hawk.get<FacebookAuthRequest>(Constants.DATA_UPSERT)
+        val idUser = Hawk.get<String>(Constants.DATA_USER_ID)
+
+        val model = FacebookAuthRequest()
+        model.email = email
+        model.access_token = getChaceLogin.access_token
+        model.name = name
+        model.phone_number = "-"
+        model.auth_provider = "akg"
+
+        model.device_id = getChaceLogin.device_id
+        model.game_provider = getChaceLogin.game_provider
+        model.operating_system = "Android"
+        model.phone_model = getChaceLogin.phone_model
+        model.login_type = typeLogin
+
+        typeLogin(typeLogin)
+        hitEvent(model)
+
+        Hawk.put(Constants.DATA_UPSERT, model)
+        presenter.updateUpsertUser(model, idUser, requireActivity(), typeLogin.toString())
+
+    }
+
 }

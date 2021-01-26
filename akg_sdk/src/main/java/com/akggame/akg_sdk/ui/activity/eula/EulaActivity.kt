@@ -31,10 +31,6 @@ class EulaActivity : BaseActivity(), EulaIView {
         tvDetailEula.text = eulaReponse.data?.attributes?.contents
     }
 
-    override fun onErrorEula(message: String) {
-        println("Error eula $message")
-    }
-
     override fun handleError(message: String) {
 
     }

@@ -1,6 +1,8 @@
 package com.akggame.akg_sdk.ui.dialog
 
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -15,11 +17,11 @@ import com.akggame.akg_sdk.`interface`.OnClickItem
 import com.akggame.akg_sdk.dao.SocmedDao
 import com.akggame.akg_sdk.dao.api.model.request.FacebookAuthRequest
 import com.akggame.akg_sdk.dao.api.model.response.DataItemGameList
+import com.akggame.akg_sdk.dao.api.model.response.FacebookAuthResponse
 import com.akggame.akg_sdk.dao.api.model.response.GameListResponse
 import com.akggame.akg_sdk.presenter.GamePresenter
 import com.akggame.akg_sdk.presenter.LoginPresenter
 import com.akggame.akg_sdk.ui.adapter.GameListAdapter
-import com.akggame.akg_sdk.ui.dialog.login.LoginDialogFragment
 import com.akggame.akg_sdk.ui.dialog.login.LoginIView
 import com.akggame.akg_sdk.ui.dialog.menu.GameListIView
 import com.akggame.akg_sdk.util.CacheUtil
@@ -49,7 +51,6 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
     var statusLogin: String? = null
 
 
-
     var emailFb: String? = null
     var nameFb: String? = null
     var tokenFb: String? = null
@@ -57,6 +58,7 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
 
     var firebaseUser: FirebaseUser? = null
     var firebaseAuth: FirebaseAuth? = null
+    var statusAuth: String? = null
 
     val onClickItem: OnClickItem = object : OnClickItem {
         override fun clickItem(pos: Int) {
@@ -113,8 +115,7 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
         productCodeGame =
             gameListAdapter.dataItemGameList?.get(0)?.attributes?.productCode.toString()
         gameIdProduct = gameListAdapter.dataItemGameList?.get(0)?.id.toString()
-
-
+        Hawk.put(Constants.ID_GAME, gameIdProduct)
         btnStartGame?.setOnClickListener {
             if (productCodeGame?.isNotEmpty()!!) {
                 when {
@@ -183,7 +184,6 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
             AKG_SDK.getStartSdkCallback()?.onStartGame(it1)
         }
 
-        hitLogEventLogin(typeLogin.toString(), model)
 
         LoginPresenter(this)
             .upsertUser(model, requireActivity(), typeLogin.toString())
@@ -217,20 +217,20 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
     }
 
 
-    private fun hitLogEventLogin(typeLogin: String, model: FacebookAuthRequest) {
+    private fun hitLogEventFirebase(
+        eventName: String,
+        typeLogin: String,
+        userId: String,
+        uid: String
+    ) {
         val bundle = Bundle()
 
-        bundle.putString("UID", model.device_id)
-        bundle.putString("Email", model.email)
-        bundle.putString("Name", model.name)
+        bundle.putString("UID", uid)
+        bundle.putString("UserId", userId)
         bundle.putString("Timestamp", createTimestamp())
         bundle.putString("Type_Login", typeLogin)
-        bundle.putString("Phone_Number", model.phone_number)
-        bundle.putString("Game_Provider", model.game_provider)
-        bundle.putString("Model_Phone", model.phone_model)
-        bundle.putString("Operating_System", model.operating_system)
 
-        hitEventFirebase("Login", bundle)
+        hitEventFirebase(eventName, bundle)
     }
 
     companion object {
@@ -245,6 +245,7 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
             emailFb: String?,
             loginCallback: LoginSDKCallback,
             namaFb: String?,
+            statusSucces: String?,
             firebaseUser: FirebaseUser
         ): GameListDialogFragment {
             val fragment = GameListDialogFragment()
@@ -252,6 +253,7 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
             fragment.emailFb = emailFb
             fragment.nameFb = namaFb
             fragment.firebaseUser = firebaseUser
+            fragment.statusAuth = statusSucces
             val args = Bundle()
             mLoginCallback = loginCallback
             fragment.arguments = args
@@ -274,19 +276,68 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
     }
 
     override fun doOnSuccess(
+        facebookAuthResponse: FacebookAuthResponse.DataBean?,
         isFirstLogin: Boolean,
         token: String,
         userId: String,
         typeLogin: String
     ) {
-//        val id = DeviceUtil.decoded(token).toObject<UserData>()
-        mLoginCallback.onResponseSuccess(token, "", typeLogin)
-        CacheUtil.putPreferenceString(IConfig.SESSION_PIW, "", requireActivity())
-        SocmedDao.setAdjustEventLogin(isFirstLogin, requireActivity())
-        Hawk.put(Constants.DATA_USER_ID, userId)
+
+        val baseOnBanned = facebookAuthResponse?.attributes?.banned_based_on
+
+        if (baseOnBanned != null) {
+            val alertDialog = AlertDialog.Builder(activity)
+            alertDialog.setMessage(facebookAuthResponse.attributes!!.banned_message)
+            alertDialog.setPositiveButton(
+                "Ok"
+            ) { p0, p1 -> p0?.dismiss() }
+            alertDialog.create().show()
+        } else {
+            mLoginCallback.onResponseSuccess(token, "", typeLogin)
+            CacheUtil.putPreferenceString(IConfig.SESSION_PIW, "", requireActivity())
+            SocmedDao.setAdjustEventLogin(isFirstLogin, requireActivity())
+            Hawk.put(Constants.DATA_USER_ID, userId)
+            facebookAuthResponse?.let { validateEventNameType(it, typeLogin) }
+        }
+
         dismiss()
         showDialogLoading(false)
 
+    }
+
+    private fun validateEventNameType(
+        facebookAuthResponse: FacebookAuthResponse.DataBean,
+        typeLogin: String
+    ) {
+        val eventName = facebookAuthResponse?.attributes?.event_name.toString()
+        if (statusAuth.equals("sukses", ignoreCase = true)
+        ) {
+            if (eventName.equals("login", ignoreCase = true)) {
+                hitLogEventFirebase(
+                    eventName,
+                    typeLogin,
+                    facebookAuthResponse?.id.toString(),
+                    facebookAuthResponse?.attributes?.uid.toString()
+                )
+            } else if (eventName.equals("register", ignoreCase = true)) {
+                hitLogEventFirebase(
+                    "register_succes",
+                    typeLogin,
+                    facebookAuthResponse?.id.toString(),
+                    facebookAuthResponse?.attributes?.uid.toString()
+                )
+            }
+        } else if (statusAuth.equals("failed", ignoreCase = true)) {
+            if (eventName.equals("register", ignoreCase = true)) {
+                hitLogEventFirebase(
+                    "register_failed",
+                    typeLogin,
+                    facebookAuthResponse?.id.toString(),
+                    facebookAuthResponse?.attributes?.uid.toString()
+                )
+            }
+
+        }
     }
 
     override fun doOnError(message: String) {
