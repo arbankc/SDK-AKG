@@ -31,14 +31,18 @@ class Main2Activity : BaseActivity(), MenuSDKCallback {
     override fun onClickEula(context: Context, idGame: String) {
         AKG_SDK.callEulaWebview(
             this,
-            "6122bb1e-e189-4b0d-bfbe-cb2c4180d878",
+//            "6122bb1e-e189-4b0d-bfbe-cb2c4180d878", //harcode
+            idGame,
             object : EulaSdkCallBack { // calling webview with api
                 override fun onSuccesEula(eulaReponse: EulaResponse) {
-                    Log.d("Respon url", " ${eulaReponse.data?.attributes?.url}")
-                    AKG_SDK.callEula(
-                        this@Main2Activity,
-                        eulaReponse.data?.attributes?.url.toString()
-                    ) //call webview with url
+                    if (eulaReponse.meta?.code == 404) {
+                        showToast(eulaReponse.data?.message)
+                    } else {
+                        AKG_SDK.callEula(
+                            this@Main2Activity,
+                            eulaReponse.data?.attributes?.url.toString()
+                        ) //call webview with url
+                    }
                 }
 
                 override fun onErrorEula(message: String) {

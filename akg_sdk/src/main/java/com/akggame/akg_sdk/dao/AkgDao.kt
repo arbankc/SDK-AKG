@@ -303,9 +303,9 @@ class AkgDao : AccountIView, OttopayIView, EulaIView {
                 )
             }
         }
-        if (data.data?.attributes?.uid != null) {
+        if (data.data?.attributes?.firebase_id != null) {
             CacheUtil.putPreferenceString(
-                IConfig.SESSION_UID, data.data?.attributes?.uid!!,
+                IConfig.SESSION_UID, data.data?.attributes?.firebase_id!!,
                 activity
             )
         }

@@ -1,6 +1,6 @@
 package com.akggame.akg_sdk.ui.dialog.menu
 
-import android.content.Intent
+import android.opengl.Visibility
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,9 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import com.akggame.akg_sdk.IConfig
-import com.akggame.akg_sdk.dao.api.model.request.FacebookAuthRequest
 import com.akggame.akg_sdk.dao.api.model.response.CurrentUserResponse
-import com.akggame.akg_sdk.dao.api.model.response.FacebookAuthResponse
 import com.akggame.akg_sdk.presenter.InfoPresenter
 import com.akggame.akg_sdk.ui.dialog.BaseDialogFragment
 import com.akggame.akg_sdk.ui.dialog.login.LoginDialogFragment
@@ -59,7 +57,6 @@ class AccountDialog() : BaseDialogFragment(), AccountIView {
 
     override fun doOnSuccess(activity: AppCompatActivity, data: CurrentUserResponse) {
         if (data.data?.attributes?.email.equals("user@gmail.com")) {
-            mView.tvChangePassword.visibility = View.INVISIBLE
             btnBack.text = "Bind Account"
             CacheUtil.putPreferenceString(IConfig.LOGIN_TYPE, IConfig.LOGIN_GUEST, requireContext())
         }
@@ -75,7 +72,7 @@ class AccountDialog() : BaseDialogFragment(), AccountIView {
         }
 
         if (etNewPassword != null) {
-            etNewPassword.text = data.data?.attributes?.uid
+            etNewPassword.text = data.data?.attributes?.firebase_id
         }
     }
 
@@ -88,6 +85,7 @@ class AccountDialog() : BaseDialogFragment(), AccountIView {
             customDismiss()
         }
 
+        mView.tvChangePassword.visibility = View.GONE
         mView.tvChangePassword.setOnClickListener {
             if (myFragmentManager != null) {
                 val changePasswordDialog = ChangePasswordDialog.newInstance(myFragmentManager)

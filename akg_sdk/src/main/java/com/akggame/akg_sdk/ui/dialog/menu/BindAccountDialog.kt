@@ -251,7 +251,6 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
         try {
             val account = completedTask.getResult(ApiException::class.java)
 
-            auth?.let { firebaseAuthWithGoogle(account?.idToken.toString(), it) }
             nameAuth = account?.displayName
             emailAuth = account?.email
             firebaseAuthWithGoogle(account?.idToken.toString(), auth!!)
@@ -310,12 +309,10 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
         auth.signInWithCredential(credential)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
-//                    activity?.let { presenterGame.onGameList(it) }
                     currentUser = auth.currentUser
                     getTokenClientAuth(currentUser, "google")
                 } else {
                     d { "respon Login failed " }
-
                 }
             }
 
@@ -349,6 +346,7 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
         val idUser = Hawk.get<String>(Constants.DATA_USER_ID)
 
         val model = FacebookAuthRequest()
+        model.firebase_id = currentUser?.uid
         model.email = email
         model.access_token = getChaceLogin.access_token
         model.name = name

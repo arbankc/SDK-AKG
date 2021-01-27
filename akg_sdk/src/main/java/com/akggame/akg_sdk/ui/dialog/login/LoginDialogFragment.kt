@@ -70,35 +70,6 @@ class LoginDialogFragment() : BaseDialogFragment() {
     var idFb: String? = null
 
 
-    val accountIView: AccountIView = (object : AccountIView {
-        override fun doOnSuccess(activity: AppCompatActivity, data: CurrentUserResponse) {
-            val bundle = Bundle()
-            bundle.putString("UID", data.data?.id)
-            bundle.putString("Email", data.data?.attributes?.email)
-            bundle.putString("Phone Number", data.data?.attributes?.phone_number)
-            bundle.putString("Auth Provider ", data.data?.attributes?.auth_provider)
-//            bundle.putString("Game Id", data.data?.attributes?.game_provider)
-            bundle.putString("Last Login", data.data?.attributes?.last_login)
-            bundle.putString("Register Time", data.data?.attributes?.register_time)
-            bundle.putString("Game Provider number", data.data?.attributes?.game_provider)
-            hitEventFirebase("Info Login User", bundle)
-        }
-
-        override fun doOnError(message: String?) {
-            TODO("Not yet implemented")
-        }
-
-        override fun handleError(message: String) {
-            TODO("Not yet implemented")
-        }
-
-        override fun handleRetryConnection() {
-            TODO("Not yet implemented")
-        }
-
-
-    })
-
     constructor(fm: FragmentManager?) : this() {
         myFragmentManager = fm
     }

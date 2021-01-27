@@ -24,6 +24,9 @@ data class DataEula(
 	@field:JsonProperty("id")
 	val id: String? = null,
 
+	@field:JsonProperty("message")
+	val message: String? = null,
+
 	@field:JsonProperty("type")
 	val type: String? = null
 ) : Parcelable
