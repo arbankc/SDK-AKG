@@ -30,4 +30,7 @@ class FacebookAuthRequest : Parcelable, BaseResponse() {
     var expires_in: Int? = 0
     var refresh_token: String? = null
     var login_type: String? = null
+    var banned_message: String? = null
+    var firebase_id: String? = null
+
 }

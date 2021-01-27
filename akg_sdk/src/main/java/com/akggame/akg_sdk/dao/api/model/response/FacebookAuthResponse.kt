@@ -33,6 +33,7 @@ class FacebookAuthResponse : BaseResponse() {
             var event_name: String? = null
             var banned_based_on: String? = null
             var banned_message: String? = null
+            var has_banned: Boolean? = null
         }
     }
 

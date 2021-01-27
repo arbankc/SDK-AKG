@@ -48,9 +48,9 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
 
     var dataItemGameList: List<DataItemGameList>? = null
     var itemGameList: DataItemGameList? = null
+
+    var uidFirebase: String? = null
     var statusLogin: String? = null
-
-
     var emailFb: String? = null
     var nameFb: String? = null
     var tokenFb: String? = null
@@ -150,6 +150,7 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
     private fun hitLogin(email: String?, name: String?, accesToken: String?, typeLogin: String?) {
         showDialogLoading(true)
         val model = FacebookAuthRequest()
+        model.firebase_id = uidFirebase
         model.email = email
         model.access_token = accesToken
         model.name = name
@@ -241,6 +242,7 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
         private lateinit var mLoginCallback: LoginSDKCallback
 
         fun newInstance(
+            uidFirebaseAuth: String?,
             statusLogin: String?,
             emailFb: String?,
             loginCallback: LoginSDKCallback,
@@ -249,6 +251,7 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
             firebaseUser: FirebaseUser
         ): GameListDialogFragment {
             val fragment = GameListDialogFragment()
+            fragment.uidFirebase = uidFirebaseAuth
             fragment.statusLogin = statusLogin
             fragment.emailFb = emailFb
             fragment.nameFb = namaFb
@@ -283,9 +286,9 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
         typeLogin: String
     ) {
 
-        val baseOnBanned = facebookAuthResponse?.attributes?.banned_based_on
+        val baseOnBanned = facebookAuthResponse?.attributes?.has_banned
 
-        if (baseOnBanned != null) {
+        if (baseOnBanned!!) {
             val alertDialog = AlertDialog.Builder(activity)
             alertDialog.setMessage(facebookAuthResponse.attributes!!.banned_message)
             alertDialog.setPositiveButton(
@@ -297,7 +300,7 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
             CacheUtil.putPreferenceString(IConfig.SESSION_PIW, "", requireActivity())
             SocmedDao.setAdjustEventLogin(isFirstLogin, requireActivity())
             Hawk.put(Constants.DATA_USER_ID, userId)
-            facebookAuthResponse?.let { validateEventNameType(it, typeLogin) }
+            validateEventNameType(facebookAuthResponse, typeLogin)
         }
 
         dismiss()

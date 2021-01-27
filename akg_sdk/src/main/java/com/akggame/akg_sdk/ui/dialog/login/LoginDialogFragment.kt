@@ -205,12 +205,12 @@ class LoginDialogFragment() : BaseDialogFragment() {
                 statusLogin = "facebook"
                 getTokenClientAuth(currentUser, statusLogin.toString())
 
-
             } catch (e: JSONException) {
                 d { "respon Error ${e.message}" }
                 val gameListDialogFragment =
                     currentUser?.let {
                         GameListDialogFragment.newInstance(
+                            currentUser!!.uid,
                             statusLogin, emailFb,
                             mLoginCallback!!,
                             nameFb,
@@ -307,6 +307,7 @@ class LoginDialogFragment() : BaseDialogFragment() {
                         val gameListDialogFragment =
                             currentUser?.let {
                                 GameListDialogFragment.newInstance(
+                                    currentUser!!.uid,
                                     statusLogin, emailFb,
                                     mLoginCallback!!,
                                     nameFb,
@@ -349,12 +350,12 @@ class LoginDialogFragment() : BaseDialogFragment() {
                     Log.d("Get token ", "+ $idToken")
                     CacheUtil.putPreferenceString(SESSION_TOKEN, idToken, activity as Context)
                     Hawk.put(SESSION_TOKEN, idToken)
-
                     when {
                         typeLogin.equals("google", ignoreCase = true) -> {
                             val gameListDialogFragment =
                                 currentUser?.let {
                                     GameListDialogFragment.newInstance(
+                                        currentUser!!.uid,
                                         statusLogin, emailFb,
                                         mLoginCallback!!,
                                         nameFb,
@@ -368,6 +369,7 @@ class LoginDialogFragment() : BaseDialogFragment() {
                             val gameListDialogFragment =
                                 currentUser?.let {
                                     GameListDialogFragment.newInstance(
+                                        currentUser!!.uid,
                                         statusLogin, emailFb,
                                         mLoginCallback!!,
                                         nameFb,
@@ -381,6 +383,7 @@ class LoginDialogFragment() : BaseDialogFragment() {
                             val gameListDialogFragment =
                                 currentUser?.let {
                                     GameListDialogFragment.newInstance(
+                                        currentUser!!.uid,
                                         statusLogin, emailFb,
                                         mLoginCallback!!,
                                         nameFb,
@@ -413,6 +416,7 @@ class LoginDialogFragment() : BaseDialogFragment() {
                     val gameListDialogFragment =
                         currentUser?.let {
                             GameListDialogFragment.newInstance(
+                                currentUser!!.uid,
                                 statusLogin, emailFb,
                                 mLoginCallback!!,
                                 nameFb,
