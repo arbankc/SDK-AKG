@@ -1,14 +1,14 @@
 package com.akggame.akg_sdk.dao
 
+//import android.widget.Toast
+//import com.adjust.sdk.Adjust
+//import com.adjust.sdk.AdjustEvent
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Base64
 import android.util.Log
-//import android.widget.Toast
-//import com.adjust.sdk.Adjust
-//import com.adjust.sdk.AdjustEvent
 import com.akggame.akg_sdk.IConfig
 import com.akggame.akg_sdk.dao.api.model.ProductData
 import com.akggame.akg_sdk.dao.api.model.request.PostOrderRequest
@@ -23,7 +23,7 @@ import java.io.IOException
 import java.security.*
 import java.security.spec.InvalidKeySpecException
 import java.security.spec.X509EncodedKeySpec
-import java.util.HashSet
+import java.util.*
 
 class BillingDao(
     private val listOfSku: List<String>,
@@ -43,6 +43,8 @@ class BillingDao(
     private val KEY_FACTORY_ALGORITHM = "RSA"
     private val SIGNATURE_ALGORITHM = "SHA1withRSA"
     private val TAG = "VERIFY PAYMENT"
+    var skuDetails: SkuDetails? = null
+
     private val firebaseAnalytics by lazy {
         FirebaseAnalytics.getInstance(application)
     }
@@ -112,10 +114,11 @@ class BillingDao(
         }
     }
 
-    fun lauchBillingFlow(activity: Activity, skuDetails: SkuDetails) {
+    fun lauchBillingFlow(activity: Activity, skuDetail: SkuDetails) {
         val billingFlowParams = BillingFlowParams.newBuilder()
-            .setSkuDetails(skuDetails)
+            .setSkuDetails(skuDetail)
             .build()
+        skuDetails = skuDetail
         billingClient.launchBillingFlow(activity, billingFlowParams)
     }
 
@@ -165,8 +168,6 @@ class BillingDao(
             }
         } else if (billingResult?.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
 
-        } else {
-
         }
     }
 
@@ -180,12 +181,10 @@ class BillingDao(
             }
         }
 
-        val (consumables, nonConsumables) = validPurchases.partition {
+        val (consumables, _) = validPurchases.partition {
             listOfSku.contains(it.sku)
         }
-
         handleConsumablePurchasesAsync(consumables)
-
     }
 
     private fun handleConsumablePurchasesAsync(consumables: List<Purchase>) {
@@ -201,7 +200,9 @@ class BillingDao(
                 println("responBiling result ${billingResult.debugMessage} dan ${billingResult.responseCode}")
                 when (billingResult.responseCode) {
                     OK -> {
-                        purchaseToken.apply { disburseConsumableEntitlements(it) }
+                        purchaseToken.apply {
+                            disburseConsumableEntitlements(it)
+                        }
                     }
                     else -> {
                         hitEventFirebase(it, "purchase_failed")
@@ -287,22 +288,24 @@ class BillingDao(
         }
     }
 
-    fun getPrice(datas: List<ProductData>?, sku: String): Double {
-        datas?.forEach {
-            if (it.attributes?.product_code.equals(sku)) {
-                return it.attributes?.price!!.toDouble()
-            }
-        }
-        return 0.0
-    }
+//    fun getPrice(datas: List<ProductData>?, sku: String): Double {
+//        datas?.forEach {
+//            if (it.attributes?.price.equals(sku)) {
+//                return it.attributes?.price!!.toDouble()
+//            }
+//        }
+//        return 0.0
+//    }
 
-    fun onPaymentFailed() {
-//        setAdjustEventPaymentFailed()
-    }
 
     fun onPaymentSuccess(purchase: Purchase) {
-        setAdjustEventPaymentSuccess(getPrice(productData, purchase.sku), purchase.sku)
         val idUser = Hawk.get<String>(Constants.DATA_USER_ID)
+        val firebaseId = Hawk.get<String>(Constants.FIREBASE_ID)
+        val replacePrice = skuDetails!!.price
+            .replace("\\s".toRegex(), "")
+            .replace("Rp", "")
+            .replace(".", "")
+            .replace(",", "")
 
         hitEventFirebase(purchase, "purchase_success")
         val postOrderRequest = PostOrderRequest(
@@ -311,18 +314,16 @@ class BillingDao(
             CacheUtil.getPreferenceString(IConfig.SESSION_GAME, application)!!,
             purchase.orderId,
             purchase.packageName,
-            getPrice(productData, purchase.sku).toInt(),
+            replacePrice.toInt(),
             "Android",
-            "com.sdkgame.product1",
+            purchase.sku,
             purchase.purchaseToken,
             purchase.sku,
             "Success",
-            CacheUtil.getPreferenceString(IConfig.SESSION_UID, application),
             CacheUtil.getPreferenceString(IConfig.SESSION_USERNAME, application),
-            idUser
+            firebaseId
         )
         presenter.onPostOrder(postOrderRequest, purchase, application)
-
     }
 
     private fun hitEventFirebase(purchase: Purchase, eventName: String) {
@@ -332,49 +333,10 @@ class BillingDao(
         bundle.putString("timestamp", timestamp)
         bundle.putString("user_id", CacheUtil.getPreferenceString(IConfig.SESSION_UID, application))
         bundle.putString("item_id", purchase.orderId)
-        bundle.putString("currency", getPrice(productData, purchase.sku).toInt().toString())
+        bundle.putString("currency", skuDetails!!.price)
         bundle.putString("channel", "Google Play")
 
         val firebaseAnalytics = FirebaseAnalytics.getInstance(application)
         firebaseAnalytics.logEvent(eventName, bundle)
-    }
-
-    fun setAdjustEventPaymentSuccess(price: Double, sku: String) {
-        if (CacheUtil.getPreferenceString(IConfig.ADJUST_PAYMENT_SUCCESS, application) != null) {
-//            val adjustEvent =
-//                AdjustEvent(
-//                    CacheUtil.getPreferenceString(
-//                        IConfig.ADJUST_PAYMENT_SUCCESS,
-//                        application
-//                    )
-//                )
-//            adjustEvent.setRevenue(price, "IDR")
-//            adjustEvent.setOrderId(sku)
-//            adjustEvent.addCallbackParameter("user_id",CacheUtil.getPreferenceString(IConfig.SESSION_PIW,application))
-//            Adjust.trackEvent(adjustEvent)
-
-            val bundle = Bundle()
-            bundle.putString(FirebaseAnalytics.Param.CURRENCY, "IDR")
-            bundle.putString(FirebaseAnalytics.Param.ITEM_ID, sku)
-            bundle.putString(
-                "user_id",
-                CacheUtil.getPreferenceString(IConfig.SESSION_PIW, application)
-            )
-            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.ECOMMERCE_PURCHASE, bundle)
-        }
-    }
-
-    fun setAdjustEventPaymentFailed(sku: String) {
-//        if (CacheUtil.getPreferenceString(IConfig.ADJUST_PAYMENT_FAILED, application) != null) {
-//            val adjustEvent = AdjustEvent(CacheUtil.getPreferenceString(IConfig.ADJUST_PAYMENT_FAILED, application))
-//            adjustEvent.addCallbackParameter("user_id",CacheUtil.getPreferenceString(IConfig.SESSION_PIW,application))
-//            Adjust.trackEvent(adjustEvent)
-//
-//        }
-        val bundle = Bundle()
-        bundle.putString(FirebaseAnalytics.Param.CURRENCY, "IDR")
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, sku)
-        bundle.putString("user_id", CacheUtil.getPreferenceString(IConfig.SESSION_PIW, application))
-        firebaseAnalytics.logEvent("purchase_failed", bundle)
     }
 }

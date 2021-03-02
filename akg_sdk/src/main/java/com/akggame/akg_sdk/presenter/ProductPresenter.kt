@@ -37,10 +37,6 @@ class ProductPresenter(val mIView: IView) {
         val testingCancelled = "android.test.canceled"
         val testingUnavailable = "android.test.item_unavailable"
 
-        val myTestListSKU = listOf(janjiDoang2, tempeOrek2, product3)
-
-        val myListSKU = listOf(janjiDoang, tempeOrek)
-
         val testListSKU = listOf(
             testingPurchased,
             testingCancelled,
@@ -139,6 +135,35 @@ class ProductPresenter(val mIView: IView) {
                         purchaseItem.product_id = purchase.sku
                         purchaseItem.product_name = purchase.packageName
                         purchaseSDKCallback.onPurchasedItem(purchaseItem)
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Error: " + t.BaseDataResponse?.message,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+
+                override fun onComplete() {
+                    super.onComplete()
+                }
+
+                override fun onError(e: Throwable) {
+                    super.onError(e)
+                    Log.d("TESTING API", "onError : " + e.toString())
+
+                }
+            })
+    }
+
+
+    fun onPostOrderOttoPay(body: PostOrderRequest, context: Context) {
+        MainDao().onPostOrder(body, context)
+            .subscribe(object : RxObserver<BaseResponse>(mIView, "") {
+                override fun onNext(t: BaseResponse) {
+                    super.onNext(t)
+                    if (t.BaseMetaResponse?.code == 200) {
+                        println("respon Sukses")
                     } else {
                         Toast.makeText(
                             context,

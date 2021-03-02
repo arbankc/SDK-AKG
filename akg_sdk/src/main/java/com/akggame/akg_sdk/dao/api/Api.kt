@@ -26,7 +26,7 @@ class Api {
         private fun initHeader(context: Context): Map<String, String> {
             val getToken = Hawk.get<String>(IConfig.SESSION_TOKEN)
             val map = HashMap<String, String>()
-            map["Authorization"] = getToken
+            map["Authorization"] = "Bearer $getToken"
             map["Cache-Control"] = "no-store"
             map["Content-Type"] = "application/json"
 

@@ -41,11 +41,17 @@ class InfoPresenter(val mIView: IView) {
                     super.onNext(t)
                     Log.d("TESTING API", "onNext")
                     t as CurrentUserResponse
-                    if (t.meta?.code == 200) {
-                        (mIView as AccountIView).doOnSuccess(activity, t)
-                        Hawk.put(Constants.DATA_LOGIN, t)
-                    } else {
-                        (mIView as AccountIView).doOnError(t.data?.message)
+                    when (t.meta?.code) {
+                        200 -> {
+                            (mIView as AccountIView).doOnSuccess(activity, t)
+                            Hawk.put(Constants.DATA_LOGIN, t)
+                        }
+                        401 -> {
+                            (mIView as AccountIView).doOnSuccess(activity, t)
+                        }
+                        else -> {
+                            (mIView as AccountIView).doOnError(t.data?.message)
+                        }
                     }
                 }
 

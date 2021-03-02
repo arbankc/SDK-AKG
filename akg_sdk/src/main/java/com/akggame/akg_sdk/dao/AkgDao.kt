@@ -15,6 +15,7 @@ import com.akggame.akg_sdk.dao.api.model.response.DepositResponse
 import com.akggame.akg_sdk.dao.api.model.response.EulaResponse
 import com.akggame.akg_sdk.presenter.*
 import com.akggame.akg_sdk.rx.IView
+import com.akggame.akg_sdk.ui.activity.FrameLayoutActivity
 import com.akggame.akg_sdk.ui.activity.OttopayIView
 import com.akggame.akg_sdk.ui.activity.eula.EulaIView
 import com.akggame.akg_sdk.ui.adapter.FloatingAdapterListener
@@ -73,7 +74,6 @@ class AkgDao : AccountIView, OttopayIView, EulaIView {
     }
 
     fun callBrowserFanPage(context: Context, urlString: String) {
-//        val url = "https://www.facebook.com/akggames/"
         val i = Intent(Intent.ACTION_VIEW)
         i.data = Uri.parse(urlString)
         context.startActivity(i)
@@ -249,7 +249,7 @@ class AkgDao : AccountIView, OttopayIView, EulaIView {
     }
 
     private fun callGetAccount(activity: AppCompatActivity) {
-        idUser = Hawk.get<String>(Constants.DATA_USER_ID)
+        idUser = Hawk.get<String>(Constants.FIREBASE_ID)
         InfoPresenter(this).onGetCurrentUser(
             idUser.toString(),
             activity,
@@ -261,6 +261,7 @@ class AkgDao : AccountIView, OttopayIView, EulaIView {
         GamePresenter(iView)
             .onGameList(context)
     }
+
 
     fun callLoginDialog(
         activity: AppCompatActivity,
@@ -303,11 +304,20 @@ class AkgDao : AccountIView, OttopayIView, EulaIView {
                 )
             }
         }
-        if (data.data?.attributes?.firebase_id != null) {
+        if (data.data?.attributes?.uid != null) {
             CacheUtil.putPreferenceString(
-                IConfig.SESSION_UID, data.data?.attributes?.firebase_id!!,
+                IConfig.SESSION_UID, data.data?.attributes?.uid!!,
                 activity
             )
+        }
+
+        if (data.meta?.code == 401) {
+            Hawk.deleteAll()
+            CacheUtil.clearPreference(activity)
+            val loginDialogFragment = LoginDialogFragment()
+            val ftransaction = activity.supportFragmentManager.beginTransaction()
+            ftransaction.addToBackStack("login")
+            loginDialogFragment.show(ftransaction, "login")
         }
 
 

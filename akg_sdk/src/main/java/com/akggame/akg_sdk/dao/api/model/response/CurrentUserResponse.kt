@@ -23,6 +23,7 @@ class CurrentUserResponse : BaseResponse() {
         @Keep
         @JsonIgnoreProperties(ignoreUnknown = true)
         class AttributesBean {
+            var uid: String? = null
             var firebase_id: String? = null
             var email: String? = null
             var phone_number: String? = null

@@ -15,7 +15,6 @@ class LogoutPresenter(val mIView: IView) {
 
     fun logout(context: Context){
         MainDao().onLogout(context).subscribe(object: RxObserver<BaseResponse>(mIView,""){
-
             override fun onNext(t: BaseResponse) {
                 super.onNext(t)
                 if (t.BaseMetaResponse?.code == 200 || t.BaseDataResponse?.message.equals("success")) {

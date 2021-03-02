@@ -25,6 +25,7 @@ import com.akggame.akg_sdk.ui.dialog.GameListDialogFragment
 import com.akggame.akg_sdk.ui.dialog.PhoneLoginDialogFragment
 import com.akggame.akg_sdk.ui.dialog.menu.AccountIView
 import com.akggame.akg_sdk.util.CacheUtil
+import com.akggame.akg_sdk.util.Constants
 import com.akggame.akg_sdk.util.DeviceUtil
 import com.akggame.android.sdk.R
 import com.facebook.*
@@ -52,7 +53,6 @@ class LoginDialogFragment() : BaseDialogFragment() {
     lateinit var startGameSDKCallback: StartGameSDKCallback
     lateinit var mGoogleSignInClient: GoogleSignInClient
     val presenter = LoginPresenter(this@LoginDialogFragment)
-    val presenterGame = GamePresenter(this@LoginDialogFragment)
     var mDismissed: Boolean = true
     var mShownByMe = false
     var onViewDestroyed = true
@@ -110,9 +110,7 @@ class LoginDialogFragment() : BaseDialogFragment() {
         onViewDestroyed = false
 
         AppEventsLogger.activateApp(requireActivity().application)
-
         initialize()
-
         currentUser = auth?.currentUser
     }
 
@@ -271,7 +269,6 @@ class LoginDialogFragment() : BaseDialogFragment() {
                         val user = auth?.currentUser
                         statusLogin = "guest"
                         getTokenClientAuth(user, statusLogin.toString())
-
                     } else {
                         // If sign in fails, display a message to the user.
                         showToast("Gagal geuest")
@@ -319,6 +316,7 @@ class LoginDialogFragment() : BaseDialogFragment() {
                 if (it.isSuccessful) {
                     val idToken: String = it.result?.token.toString()
                     Log.d("Get token ", "+ $idToken")
+                    Hawk.put(Constants.FIREBASE_ID, currentUser?.uid.toString())
                     CacheUtil.putPreferenceString(SESSION_TOKEN, idToken, activity as Context)
                     Hawk.put(SESSION_TOKEN, idToken)
                     when {
@@ -382,7 +380,6 @@ class LoginDialogFragment() : BaseDialogFragment() {
                     currentUser = auth?.currentUser
                     statusLogin = "google"
                     getTokenClientAuth(currentUser, statusLogin.toString())
-
                 } else {
                     val gameListDialogFragment =
                         currentUser?.let {

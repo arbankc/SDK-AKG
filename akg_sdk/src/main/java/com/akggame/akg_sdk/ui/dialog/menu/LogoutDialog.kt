@@ -100,7 +100,6 @@ class LogoutDialog() : BaseDialogFragment(), LogoutIView {
         activity?.let {
             mGoogleSignInClient.signOut().addOnCompleteListener(it) {
                 showDialogLoading(false)
-                setAdjustEventLogout()
                 Hawk.deleteAll()
                 CacheUtil.clearPreference(activity!!)
 

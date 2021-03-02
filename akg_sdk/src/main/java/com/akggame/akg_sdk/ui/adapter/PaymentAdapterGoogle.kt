@@ -24,7 +24,7 @@ class PaymentAdapterGoogle(
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): PaymentAdapterGoogle.ViewHolder {
+    ): ViewHolder {
         view = LayoutInflater.from(context).inflate(R.layout.item_list_product, null)
 
         return ViewHolder(view)
@@ -34,7 +34,7 @@ class PaymentAdapterGoogle(
         return skuDetails.size
     }
 
-    override fun onBindViewHolder(holder: PaymentAdapterGoogle.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val data = skuDetails.get(position)
         holder.tvProductName.text = data.title
         holder.btnHarga.text = data.price

@@ -47,7 +47,7 @@ class AccountDialog() : BaseDialogFragment(), AccountIView {
     override fun onStart() {
         super.onStart()
         initialize()
-        val idUser = Hawk.get<String>(Constants.DATA_USER_ID)
+        val idUser = Hawk.get<String>(Constants.FIREBASE_ID)
         presenter.onGetCurrentUser(
             idUser.toString(),
             requireActivity() as AppCompatActivity,
@@ -72,7 +72,7 @@ class AccountDialog() : BaseDialogFragment(), AccountIView {
         }
 
         if (etNewPassword != null) {
-            etNewPassword.text = data.data?.attributes?.firebase_id
+            etNewPassword.text = data.data?.attributes?.uid
         }
     }
 

@@ -6,7 +6,7 @@ import com.akggame.akg_sdk.rx.IView
 interface LoginIView : IView {
 
     fun doOnSuccess(
-        facebookAuthResponse: FacebookAuthResponse.DataBean?,
+        facebookAuthResponse: FacebookAuthResponse?,
         isFirstLogin: Boolean,
         token: String,
         userId: String,

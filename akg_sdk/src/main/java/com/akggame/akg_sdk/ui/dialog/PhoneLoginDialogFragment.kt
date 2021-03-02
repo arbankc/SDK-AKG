@@ -64,7 +64,7 @@ class PhoneLoginDialogFragment() : BaseDialogFragment(), LoginIView {
     }
 
     override fun doOnSuccess(
-        facebookAuthResponse: FacebookAuthResponse.DataBean?,
+        facebookAuthResponse: FacebookAuthResponse?,
         isFirstLogin: Boolean,
         token: String,
         userId: String,

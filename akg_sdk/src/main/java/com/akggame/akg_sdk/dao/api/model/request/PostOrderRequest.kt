@@ -15,7 +15,6 @@ data class PostOrderRequest(
     val purchase_token: String,
     val sku: String,
     val status: String,
-    val uid: String?,
     val email: String?,
     val user_id: String?
 )

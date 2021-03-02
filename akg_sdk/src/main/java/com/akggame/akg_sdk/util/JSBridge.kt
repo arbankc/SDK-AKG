@@ -3,14 +3,15 @@ package com.akggame.akg_sdk.util
 import android.app.Activity
 import android.os.Bundle
 import android.webkit.JavascriptInterface
+import com.akggame.akg_sdk.IConfig
 import com.akggame.akg_sdk.baseextend.BaseActivity
+import com.akggame.akg_sdk.dao.api.model.request.PostOrderRequest
 
 class JSBridge(
     val activity: Activity,
     val userId: String,
     val gameProductId: String
-) :
-    BaseActivity() {
+) : BaseActivity() {
 
     @JavascriptInterface
     fun closeWindow(status: String) {

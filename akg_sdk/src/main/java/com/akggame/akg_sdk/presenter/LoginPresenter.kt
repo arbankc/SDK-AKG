@@ -75,21 +75,19 @@ class LoginPresenter(val mIView: IView) {
                     t as FacebookAuthResponse
 
                     Log.d("TESTING API", "onNext")
-                    if (t.meta?.code == 200) {
-                        (mIView as LoginIView).doOnSuccess(
-                            t.data,
-                            t.data?.is_first_login!!,
-                            t.data?.token!!,
-                            t.data?.id.toString(),
-                            typeLogin
-                        )
-
-                        CacheUtil.putPreferenceString(SESSION_TOKEN, t.data?.token!!, context)
-                        CacheUtil.putPreferenceBoolean(IConfig.SESSION_LOGIN, true, context)
-
-                    } else {
-                        (mIView as LoginIView).doOnError(t.data?.message!!)
-                    }
+//                    if (t.meta?.code == 200) {
+                    (mIView as LoginIView).doOnSuccess(
+                        t,
+                        t.data?.is_first_login!!,
+                        t.data?.token!!,
+                        t.data?.id.toString(),
+                        typeLogin
+                    )
+                    CacheUtil.putPreferenceString(SESSION_TOKEN, t.data?.token!!, context)
+                    CacheUtil.putPreferenceBoolean(IConfig.SESSION_LOGIN, true, context)
+//                    } else {
+//                        (mIView as LoginIView).doOnError(t.data?.message!!)
+//                    }
                 }
 
                 override fun onError(e: Throwable) {
@@ -99,46 +97,5 @@ class LoginPresenter(val mIView: IView) {
                 }
             })
     }
-
-    fun facebookLogin(model: FacebookAuthRequest, context: Context) {
-        MainDao().onAuthUpsert(context, model)
-            .subscribe(object : RxObserver<FacebookAuthResponse>(mIView, "") {
-                override fun onSubscribe(d: Disposable) {
-                    super.onSubscribe(d)
-                    Log.d("TESTING API", "onSubscribe")
-                }
-
-                override fun onComplete() {
-                    super.onComplete()
-                    Log.d("TESTING API", "onComplete")
-                }
-
-                override fun onNext(t: BaseResponse) {
-                    super.onNext(t)
-                    t as FacebookAuthResponse
-                    Log.d("TESTING API", "onNext")
-                    if (t.meta?.code == 200) {
-                        (mIView as LoginIView).doOnSuccess(
-                            t.data,
-                            t.data!!.is_first_login,
-                            t.data?.token!!,
-                            LOGIN_FACEBOOK,
-                            ""
-                        )
-                        CacheUtil.putPreferenceString(LOGIN_TYPE, LOGIN_FACEBOOK, context)
-                        CacheUtil.putPreferenceString(SESSION_TOKEN, t.data?.token!!, context)
-                        CacheUtil.putPreferenceBoolean(IConfig.SESSION_LOGIN, true, context)
-                    } else {
-                        (mIView as LoginIView).doOnError(t.data?.message!!)
-                    }
-                }
-
-                override fun onError(e: Throwable) {
-                    super.onError(e)
-                    Log.d("TESTING API", "onError")
-                }
-            })
-    }
-
 
 }

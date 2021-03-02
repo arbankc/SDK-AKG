@@ -1,9 +1,7 @@
 package com.akggame.android
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -12,9 +10,6 @@ import com.akggame.akg_sdk.LoginSDKCallback
 import com.akggame.akg_sdk.RelaunchSDKCallback
 import com.crashlytics.android.Crashlytics
 import io.fabric.sdk.android.Fabric
-import kotlinx.android.synthetic.main.activity_main.*
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
 
 
 open class MainActivity : AppCompatActivity() {
@@ -41,8 +36,6 @@ open class MainActivity : AppCompatActivity() {
         } else {
             callLogin() //441
         }
-
-
     }
 
     private fun callLogin() {

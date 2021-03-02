@@ -1,5 +1,6 @@
 package com.akggame.akg_sdk.ui.dialog.login
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -9,23 +10,24 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.akggame.akg_sdk.IConfig
 import com.akggame.akg_sdk.RelaunchSDKCallback
-import com.akggame.akg_sdk.dao.SocmedDao
-import com.akggame.akg_sdk.presenter.LogoutPresenter
 import com.akggame.akg_sdk.ui.activity.FrameLayoutActivity
 import com.akggame.akg_sdk.ui.dialog.BaseDialogFragment
 import com.akggame.akg_sdk.ui.dialog.menu.LogoutIView
 import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.android.sdk.R
 import com.github.ajalt.timberkt.d
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.content_dialog_relaunch.*
 import kotlinx.android.synthetic.main.content_dialog_relaunch.view.*
 
 
 class RelaunchDialog : BaseDialogFragment(), LogoutIView {
     lateinit var mView: View
-    private val presenter = LogoutPresenter(this)
     lateinit var countDown: CountDownTimer
     var timeMilis: Long = 10000
+    var firebaseUser: FirebaseUser? = null
 
     companion object {
         lateinit var callback: RelaunchSDKCallback
@@ -65,6 +67,7 @@ class RelaunchDialog : BaseDialogFragment(), LogoutIView {
     }
 
     fun initialize() {
+        firebaseUser = FirebaseAuth.getInstance().currentUser
         tvPhoneNumber.text =
             "Welcome " + CacheUtil.getPreferenceString(IConfig.SESSION_USERNAME, requireActivity())
         tvUID.text =
@@ -80,14 +83,6 @@ class RelaunchDialog : BaseDialogFragment(), LogoutIView {
         startCountDown()
 
         mView.btnRelogin.setOnClickListener {
-//            val loginType = CacheUtil.getPreferenceString(IConfig.LOGIN_TYPE, requireActivity())
-//            when (loginType) {
-//                IConfig.LOGIN_PHONE -> SocmedDao.logoutPhone(requireActivity(), this, presenter)
-//                IConfig.LOGIN_GUEST -> SocmedDao.logoutGuest(requireActivity(), this, presenter)
-//                IConfig.LOGIN_GOOGLE -> SocmedDao.logoutGoogle(requireActivity(), this, presenter)
-//                IConfig.LOGIN_FACEBOOK -> SocmedDao.logoutFacebook(requireActivity(), this, presenter)
-//            }
-
             deleteLogin()
             countDown.cancel()
             val intent = Intent(activity, FrameLayoutActivity::class.java)
@@ -96,6 +91,17 @@ class RelaunchDialog : BaseDialogFragment(), LogoutIView {
             context?.startActivity(intent)
             activity!!.finish()
         }
+
+        firebaseUser?.getIdToken(true)?.addOnSuccessListener {
+            val idToken = it.token
+            CacheUtil.putPreferenceString(
+                IConfig.SESSION_TOKEN,
+                idToken.toString(),
+                activity as Context
+            )
+            Hawk.put(IConfig.SESSION_TOKEN, idToken)
+        }
+
     }
 
     fun startCountDown() {
@@ -123,12 +129,4 @@ class RelaunchDialog : BaseDialogFragment(), LogoutIView {
         d { "respon Time milis $timeMilis" }
     }
 
-
-//    override fun onActivityCreated(savedInstanceState: Bundle?) {
-//        super.onActivityCreated(savedInstanceState)
-//        timeMilis = savedInstanceState!!.getLong("timeRunning")
-//
-//        d { "respon Time milis get $timeMilis" }
-//
-//    }
 }
