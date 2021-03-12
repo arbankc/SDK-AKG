@@ -30,6 +30,5 @@ class JSBridge(
             bundle.putString("status", "failed")
             hitEventFirebase(Constants.PURCHASE_FAILED, bundle)
         }
-
     }
 }

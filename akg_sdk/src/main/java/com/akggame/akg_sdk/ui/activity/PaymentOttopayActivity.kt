@@ -58,6 +58,7 @@ class PaymentOttopayActivity : BaseActivity(), OttopayIView {
         paymentView.settings.domStorageEnabled = true
         paymentView.isVerticalScrollBarEnabled = true
         paymentView.requestFocus()
+        
         val jsBridge = JSBridge(this, getDataLogin()?.data?.id.toString(), idProductGame.toString())
         paymentView.addJavascriptInterface(jsBridge, "Android")
 
