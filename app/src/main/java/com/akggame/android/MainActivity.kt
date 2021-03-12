@@ -19,7 +19,6 @@ open class MainActivity : AppCompatActivity() {
         Fabric.with(this, Crashlytics())
         setContentView(R.layout.activity_main)
         Log.d("Density", resources.displayMetrics.widthPixels.toString())
-
         if (AKG_SDK.checkIsLogin(this)) {
             AKG_SDK.setRelauchDialog(this, object : RelaunchSDKCallback {
                 override fun onContinue() {

@@ -100,14 +100,6 @@ public class GameActivity extends BaseActivity {
             }
         });
 
-
-//        AKG_SDK.callStartGame(getSupportFragmentManager(), new StartGameSDKCallback() {
-//            @Override
-//            public void onStartGame(@NotNull DataItemGameList dataItemGameList) {
-//                //get data response for game list
-//            }
-//        });
-
     }
 
     void gotoPaymentOttoPay() {

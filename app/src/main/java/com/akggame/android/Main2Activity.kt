@@ -3,21 +3,15 @@ package com.akggame.android
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.DisplayMetrics
-import android.util.Log
 import android.widget.Toast
 import com.akggame.akg_sdk.AKG_SDK
 import com.akggame.akg_sdk.EulaSdkCallBack
 import com.akggame.akg_sdk.MenuSDKCallback
 import com.akggame.akg_sdk.PAYMENT_TYPE
 import com.akggame.akg_sdk.baseextend.BaseActivity
-import com.akggame.akg_sdk.dao.api.model.response.CurrentUserResponse
 import com.akggame.akg_sdk.dao.api.model.response.EulaResponse
 import com.akggame.akg_sdk.dao.pojo.PurchaseItem
-import com.akggame.akg_sdk.ui.activity.eula.EulaIView
-import com.akggame.akg_sdk.util.Constants
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_main2.*
 
@@ -72,6 +66,8 @@ class Main2Activity : BaseActivity(), MenuSDKCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
+
+        //setfloating button
         AKG_SDK.setFloatingButton(this, floatingButton, this, this)
         floatingButton.setFloat()
 
@@ -117,11 +113,11 @@ class Main2Activity : BaseActivity(), MenuSDKCallback {
         bundle.putString("timestamp", createTimestamp())
         bundle.putString("uid", getDataLogin()?.data?.id)
         bundle.putString("udid", deviceIdAndroid())
-
         hitEventFirebase("session_stop", bundle)
     }
 
     private fun callBanner() {
+        //callBanner
         AKG_SDK.callBannerDialog(this)
     }
 
