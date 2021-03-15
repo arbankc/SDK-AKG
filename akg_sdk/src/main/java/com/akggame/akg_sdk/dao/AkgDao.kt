@@ -8,6 +8,7 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentManager
 import com.akggame.akg_sdk.*
 import com.akggame.akg_sdk.dao.api.model.FloatingItem
 import com.akggame.akg_sdk.dao.api.model.response.CurrentUserResponse
@@ -104,15 +105,12 @@ class AkgDao : AccountIView, OttopayIView, EulaIView {
         val onItemClickListener: FloatingAdapterListener = object : FloatingAdapterListener {
             override fun onItemClick(position: Int, floatingItem: FloatingItem) {
                 val idGame = Hawk.get<String>(Constants.ID_GAME)
-                val contactUsDialog = InfoDialog()
-                val checkVersionDialog = CheckVersionDialog()
+                val accountDialog = AccountDialog.newInstance(activity.supportFragmentManager)
                 val bindAccountDialog = BindAccountDialog.newInstance(
                     activity.supportFragmentManager,
                     floatingButton,
                     menuSDKCallback
                 )
-                val logoutDialog = LogoutDialog.newInstance(menuSDKCallback)
-                val accountDialog = AccountDialog.newInstance(activity.supportFragmentManager)
                 when (position) {
                     0 -> {
                         if (CacheUtil.getPreferenceString(IConfig.LOGIN_TYPE, activity)
@@ -133,18 +131,16 @@ class AkgDao : AccountIView, OttopayIView, EulaIView {
                     }
 
                     3 -> {
-                        contactUsDialog.show(activity.supportFragmentManager, "contact us")
-//                        menuSDKCallback.onContactUs(context)
+//                        callContactDialog(activity.supportFragmentManager)
+                        menuSDKCallback.onContactUs(context)
                     }
 
                     4 -> {
-                        checkVersionDialog.show(activity.supportFragmentManager, "check version")
-//                        menuSDKCallback.onCheckSDK(true)
+//                        callCheckVersionDialog(activity.supportFragmentManager)
+                        menuSDKCallback.onCheckSDK(true)
                     }
-
                     5 -> {
-                        logoutDialog.show(activity.supportFragmentManager, "logout")
-//                        menuSDKCallback.onLogout()
+                        menuSDKCallback.onLogout()
                     }
 
                 }
@@ -154,6 +150,22 @@ class AkgDao : AccountIView, OttopayIView, EulaIView {
         floatingButton.floatingAdapterListener = onItemClickListener
     }
 
+
+    fun callLogoutDialog(menuSDKCallback: MenuSDKCallback, fragmentManager: FragmentManager) {
+        val logoutDialog = LogoutDialog.newInstance(menuSDKCallback)
+        logoutDialog.show(fragmentManager, "logout")
+    }
+
+
+    fun callContactDialog(fragmentManager: FragmentManager) {
+        val contactUsDialog = InfoDialog()
+        contactUsDialog.show(fragmentManager, "contact us")
+    }
+
+    fun callCheckVersionDialog(fragmentManager: FragmentManager) {
+        val checkVersionDialog = CheckVersionDialog()
+        checkVersionDialog.show(fragmentManager, "check version")
+    }
 
     fun callDetailEula(context: Context, urlString: String) {
         val intent =

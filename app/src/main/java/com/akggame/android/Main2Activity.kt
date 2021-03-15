@@ -19,7 +19,7 @@ class Main2Activity : BaseActivity(), MenuSDKCallback {
     var saveBanner: String? = null
 
     override fun onCheckSDK(isUpdated: Boolean) {
-
+        AKG_SDK.setCallCheckSdkDialog(supportFragmentManager)
     }
 
     override fun onClickEula(context: Context, idGame: String) {
@@ -51,12 +51,11 @@ class Main2Activity : BaseActivity(), MenuSDKCallback {
     }
 
     override fun onContactUs(context: Context) {
-
+        AKG_SDK.setCallContactDialog(supportFragmentManager)
     }
 
     override fun onLogout() {
-        startActivity(Intent(this@Main2Activity, MainActivity::class.java))
-        finish()
+        AKG_SDK.setCallLogoutDialog(supportFragmentManager, this)
     }
 
     override fun onBindAccount(context: Context) {

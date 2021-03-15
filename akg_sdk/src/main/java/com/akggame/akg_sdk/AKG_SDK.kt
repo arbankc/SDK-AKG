@@ -99,6 +99,21 @@ object AKG_SDK {
         AkgDao.callRelaunchDialog(activity, callback)
     }
 
+    @JvmStatic
+    fun setCallContactDialog(fragmentManager: FragmentManager) {
+        AkgDao.callContactDialog(fragmentManager)
+    }
+
+
+    @JvmStatic
+    fun setCallCheckSdkDialog(fragmentManager: FragmentManager) {
+        AkgDao.callCheckVersionDialog(fragmentManager)
+    }
+
+    @JvmStatic
+    fun setCallLogoutDialog(fragmentManager: FragmentManager, menuSDKCallback: MenuSDKCallback) {
+        AkgDao.callLogoutDialog(menuSDKCallback, fragmentManager)
+    }
 
     @JvmStatic
     fun callFbFanPage(activity: AppCompatActivity, url: String) {
