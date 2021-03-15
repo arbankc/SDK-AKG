@@ -5,10 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import com.akggame.akg_sdk.AKG_SDK
-import com.akggame.akg_sdk.EulaSdkCallBack
-import com.akggame.akg_sdk.MenuSDKCallback
-import com.akggame.akg_sdk.PAYMENT_TYPE
+import com.akggame.akg_sdk.*
 import com.akggame.akg_sdk.baseextend.BaseActivity
 import com.akggame.akg_sdk.dao.api.model.response.EulaResponse
 import com.akggame.akg_sdk.dao.pojo.PurchaseItem
@@ -43,7 +40,6 @@ class Main2Activity : BaseActivity(), MenuSDKCallback {
                 }
 
             })
-
     }
 
     override fun onClickFbPage(context: Context) {
@@ -55,7 +51,11 @@ class Main2Activity : BaseActivity(), MenuSDKCallback {
     }
 
     override fun onLogout() {
-        AKG_SDK.setCallLogoutDialog(supportFragmentManager, this)
+        AKG_SDK.setCallLogoutDialog(supportFragmentManager, object : LogoutSdkCallback {
+            override fun onSuccesLogout() {
+                intentPageFlags(MainActivity::class.java)
+            }
+        })
     }
 
     override fun onBindAccount(context: Context) {

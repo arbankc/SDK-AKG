@@ -111,7 +111,7 @@ object AKG_SDK {
     }
 
     @JvmStatic
-    fun setCallLogoutDialog(fragmentManager: FragmentManager, menuSDKCallback: MenuSDKCallback) {
+    fun setCallLogoutDialog(fragmentManager: FragmentManager, menuSDKCallback: LogoutSdkCallback) {
         AkgDao.callLogoutDialog(menuSDKCallback, fragmentManager)
     }
 

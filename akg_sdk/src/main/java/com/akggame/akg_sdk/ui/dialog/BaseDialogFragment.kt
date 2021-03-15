@@ -21,7 +21,7 @@ import com.google.gson.Gson
 import com.orhanobut.hawk.Hawk
 
 
-open class BaseDialogFragment() : DialogFragment(), IView {
+open class BaseDialogFragment : DialogFragment(), IView {
 
     var dialogLoading: Dialog? = null
 
@@ -144,13 +144,20 @@ open class BaseDialogFragment() : DialogFragment(), IView {
         }
     }
 
+    fun clearBackStackNew(fragmentManager: FragmentManager) {
+        val count = fragmentManager.backStackEntryCount
+        for (i in 0 until count) {
+            fragmentManager.popBackStack()
+        }
+    }
+
     fun restartBackStack() {
         customDismiss()
         val backStackSize = myFragmentManager?.backStackEntryCount
         if (backStackSize != null) {
             if (backStackSize > 0) {
                 val backEntry = myFragmentManager?.getBackStackEntryAt(0)
-                val count = myFragmentManager?.getBackStackEntryCount()!!
+                val count = myFragmentManager?.backStackEntryCount!!
                 if (count > 0) {
                     for (i in 0 until count - 1) {
                         myFragmentManager?.popBackStack()

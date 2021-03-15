@@ -1,7 +1,6 @@
 package com.akggame.akg_sdk.ui.dialog.login
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
@@ -10,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.akggame.akg_sdk.IConfig
 import com.akggame.akg_sdk.RelaunchSDKCallback
-import com.akggame.akg_sdk.ui.activity.FrameLayoutActivity
 import com.akggame.akg_sdk.ui.dialog.BaseDialogFragment
 import com.akggame.akg_sdk.ui.dialog.menu.LogoutIView
 import com.akggame.akg_sdk.util.CacheUtil
@@ -85,11 +83,7 @@ class RelaunchDialog : BaseDialogFragment(), LogoutIView {
         mView.btnRelogin.setOnClickListener {
             deleteLogin()
             countDown.cancel()
-            val intent = Intent(activity, FrameLayoutActivity::class.java)
-            intent.putExtra("pos", 4)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            context?.startActivity(intent)
-            activity!!.finish()
+            callback.onReLogin()
         }
 
         firebaseUser?.getIdToken(true)?.addOnSuccessListener {

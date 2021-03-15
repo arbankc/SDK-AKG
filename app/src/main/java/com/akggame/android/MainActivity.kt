@@ -8,11 +8,12 @@ import androidx.appcompat.app.AppCompatActivity
 import com.akggame.akg_sdk.AKG_SDK
 import com.akggame.akg_sdk.LoginSDKCallback
 import com.akggame.akg_sdk.RelaunchSDKCallback
+import com.akggame.akg_sdk.baseextend.BaseActivity
 import com.crashlytics.android.Crashlytics
 import io.fabric.sdk.android.Fabric
 
 
-open class MainActivity : AppCompatActivity() {
+open class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +30,7 @@ open class MainActivity : AppCompatActivity() {
 
                 override fun onReLogin() {
                     Toast.makeText(this@MainActivity, "onRelogin", Toast.LENGTH_LONG).show()
-                    callLogin()
+                    intentPageFlags(MainActivity::class.java)
                 }
             })
         } else {
@@ -51,5 +52,4 @@ open class MainActivity : AppCompatActivity() {
             }
         })
     }
-
 }

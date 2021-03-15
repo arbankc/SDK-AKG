@@ -16,7 +16,6 @@ import com.akggame.akg_sdk.dao.api.model.response.DepositResponse
 import com.akggame.akg_sdk.dao.api.model.response.EulaResponse
 import com.akggame.akg_sdk.presenter.*
 import com.akggame.akg_sdk.rx.IView
-import com.akggame.akg_sdk.ui.activity.FrameLayoutActivity
 import com.akggame.akg_sdk.ui.activity.OttopayIView
 import com.akggame.akg_sdk.ui.activity.eula.EulaIView
 import com.akggame.akg_sdk.ui.adapter.FloatingAdapterListener
@@ -151,7 +150,7 @@ class AkgDao : AccountIView, OttopayIView, EulaIView {
     }
 
 
-    fun callLogoutDialog(menuSDKCallback: MenuSDKCallback, fragmentManager: FragmentManager) {
+    fun callLogoutDialog(menuSDKCallback: LogoutSdkCallback, fragmentManager: FragmentManager) {
         val logoutDialog = LogoutDialog.newInstance(menuSDKCallback)
         logoutDialog.show(fragmentManager, "logout")
     }
@@ -287,7 +286,6 @@ class AkgDao : AccountIView, OttopayIView, EulaIView {
                     customCallback
                 )
             val ftransaction = activity.supportFragmentManager.beginTransaction()
-            loginDialogFragment.clearBackStack()
             ftransaction.addToBackStack("login")
             loginDialogFragment.show(ftransaction, "login")
         } else {

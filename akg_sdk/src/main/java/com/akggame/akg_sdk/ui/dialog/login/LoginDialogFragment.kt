@@ -9,21 +9,17 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import com.akggame.akg_sdk.IConfig
 import com.akggame.akg_sdk.IConfig.Companion.SESSION_TOKEN
 import com.akggame.akg_sdk.LoginSDKCallback
 import com.akggame.akg_sdk.StartGameSDKCallback
 import com.akggame.akg_sdk.dao.SocmedDao
-import com.akggame.akg_sdk.dao.api.model.response.CurrentUserResponse
 import com.akggame.akg_sdk.dao.api.model.response.DataItemGameList
-import com.akggame.akg_sdk.presenter.GamePresenter
 import com.akggame.akg_sdk.presenter.LoginPresenter
 import com.akggame.akg_sdk.ui.dialog.BaseDialogFragment
 import com.akggame.akg_sdk.ui.dialog.GameListDialogFragment
 import com.akggame.akg_sdk.ui.dialog.PhoneLoginDialogFragment
-import com.akggame.akg_sdk.ui.dialog.menu.AccountIView
 import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.akg_sdk.util.Constants
 import com.akggame.akg_sdk.util.DeviceUtil
@@ -39,7 +35,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.*
+import com.google.firebase.auth.EmailAuthProvider
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.content_dialog_login.*
 import kotlinx.android.synthetic.main.content_dialog_login.view.*
@@ -79,7 +78,7 @@ class LoginDialogFragment() : BaseDialogFragment() {
         var mLoginCallback: LoginSDKCallback? = null
         fun newInstance(
             mFragmentManager: FragmentManager,
-            loginCallback: LoginSDKCallback
+            loginCallback: LoginSDKCallback?
         ): LoginDialogFragment {
             val mDialogFragment = LoginDialogFragment(mFragmentManager)
             mLoginCallback = loginCallback
@@ -98,11 +97,6 @@ class LoginDialogFragment() : BaseDialogFragment() {
         return mView
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-    }
-
     override fun onStart() {
         super.onStart()
         mDismissed = false
@@ -119,7 +113,7 @@ class LoginDialogFragment() : BaseDialogFragment() {
      * Facebook SIGN IN----------------------------------------->
      */
     fun setFacebookLogin() {
-        callbackManager = CallbackManager.Factory.create();
+        callbackManager = CallbackManager.Factory.create()
         mView.fbLoginButton.fragment = this
         mView.fbLoginButton.setPermissions(arrayListOf("email"))
         mView.btnBindFacebook.setOnClickListener {
@@ -311,6 +305,7 @@ class LoginDialogFragment() : BaseDialogFragment() {
     }
 
     fun getTokenClientAuth(user: FirebaseUser?, typeLogin: String) {
+        showDialogLoading(true)
         user!!.getIdToken(true)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
@@ -333,6 +328,8 @@ class LoginDialogFragment() : BaseDialogFragment() {
                                     )
                                 }
                             gameListDialogFragment?.show(fragmentManager!!, "")
+                            gameListDialogFragment?.onBackPressed()
+                            showDialogLoading(false)
                         }
                         typeLogin.equals("facebook", ignoreCase = true) -> {
                             val gameListDialogFragment =
@@ -347,6 +344,7 @@ class LoginDialogFragment() : BaseDialogFragment() {
                                     )
                                 }
                             gameListDialogFragment?.show(fragmentManager!!, "")
+                            showDialogLoading(false)
                         }
                         typeLogin.equals("guest", ignoreCase = true) -> {
                             val gameListDialogFragment =
@@ -362,11 +360,12 @@ class LoginDialogFragment() : BaseDialogFragment() {
                                 }
 
                             gameListDialogFragment?.show(fragmentManager!!, "")
+                            showDialogLoading(false)
                         }
                     }
                 } else {
                     // Handle error -> task.getException();
-                    showToast("gagal token ")
+                    showToast("Terjadi kesalahan pada server")
                 }
             }
 
@@ -413,6 +412,4 @@ class LoginDialogFragment() : BaseDialogFragment() {
             }
         }
     }
-
-
 }
