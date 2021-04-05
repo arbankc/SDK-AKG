@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import com.akggame.akg_sdk.AKG_SDK
 import com.akggame.akg_sdk.IConfig
-import com.akggame.akg_sdk.MenuSDKCallback
+import com.akggame.akg_sdk.callback.MenuSDKCallback
 import com.akggame.akg_sdk.dao.SocmedDao
 import com.akggame.akg_sdk.dao.api.model.request.FacebookAuthRequest
 import com.akggame.akg_sdk.dao.api.model.response.BaseResponse
@@ -23,8 +23,7 @@ import com.akggame.akg_sdk.ui.dialog.BaseDialogFragment
 import com.akggame.akg_sdk.ui.dialog.menu.binding.VerifyAccountDialog
 import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.akg_sdk.util.Constants
-import com.akggame.akg_sdk.util.DeviceUtil
-import com.akggame.android.sdk.R
+import com.akggame.newandroid.sdk.R
 import com.facebook.*
 import com.facebook.internal.ImageRequest
 import com.facebook.login.LoginManager
@@ -167,14 +166,12 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
     }
 
     fun setFacebookLogin() {
-        callbackManager = CallbackManager.Factory.create();
+        callbackManager = CallbackManager.Factory.create()
         mView.fbLoginButton.fragment = this
         mView.fbLoginButton.setPermissions(arrayListOf("email"))
 
         mView.btnBindFacebook.setOnClickListener {
-            if (DeviceUtil.getImei(requireActivity()).isNotEmpty()) {
-                mView.fbLoginButton.performClick()
-            }
+            mView.fbLoginButton.performClick()
         }
 
         fbLoginButton.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
@@ -197,10 +194,8 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
         mGoogleSignInClient = SocmedDao.setGoogleSigninClient(requireContext())
 
         mView.btnBindGoogle.setOnClickListener {
-            if (DeviceUtil.getImei(requireActivity()).isNotEmpty()) {
-                val signInIntent = mGoogleSignInClient.signInIntent
-                startActivityForResult(signInIntent, 101)
-            }
+            val signInIntent = mGoogleSignInClient.signInIntent
+            startActivityForResult(signInIntent, 101)
         }
     }
 

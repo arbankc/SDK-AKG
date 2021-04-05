@@ -16,7 +16,7 @@ import com.akggame.akg_sdk.ui.dialog.BaseDialogFragment
 import com.akggame.akg_sdk.ui.dialog.SuccessDialogFragment
 import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.akg_sdk.util.DeviceUtil
-import com.akggame.android.sdk.R
+import com.akggame.newandroid.sdk.R
 import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.android.synthetic.main.content_dialog_input_password.*
 import kotlinx.android.synthetic.main.content_dialog_input_password.view.btnNext
@@ -68,7 +68,7 @@ class SetPasswordDialog() : BaseDialogFragment(), SetPasswordIView {
         if (myFragmentManager!=null){
             val successDialog = SuccessDialogFragment.newInstance(myFragmentManager, bundle)
             val ftransaction = myFragmentManager!!.beginTransaction()
-            ftransaction?.addToBackStack("success")
+            ftransaction.addToBackStack("success")
             successDialog.show(ftransaction, "success")
             customDismiss()
         }

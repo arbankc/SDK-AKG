@@ -2,11 +2,14 @@ package com.akggame.akg_sdk.baseextend
 
 import android.app.DatePickerDialog
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.text.format.DateFormat
+import android.util.Log
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
@@ -20,9 +23,12 @@ import com.akggame.akg_sdk.dao.api.model.response.CurrentUserResponse
 import com.akggame.akg_sdk.util.Constants
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.orhanobut.hawk.Hawk
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 open class BaseActivity : AppCompatActivity() {
 
@@ -31,13 +37,9 @@ open class BaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         dialogShow = Dialog(this)
         dialogShow!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
-
         hideKeyboard()
-
-
     }
 
     fun createTimestamp(): String {
@@ -82,6 +84,18 @@ open class BaseActivity : AppCompatActivity() {
             e.printStackTrace()
         }
         return output.format(d)
+    }
+
+    fun getModelHp(): String {
+        return Build.MODEL
+    }
+
+    fun getManufacturHp(): String {
+        return Build.MANUFACTURER
+    }
+
+    fun getVersionOsHp(): Int {
+        return Build.VERSION.SDK_INT
     }
 
     fun showDialogPicker(editText: EditText) {
@@ -154,7 +168,7 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     fun intentPageData(classTarget: Class<*>): Intent {
-        return Intent(this, classTarget);
+        return Intent(this, classTarget)
     }
 
     fun intentPageFlags(classTarget: Class<*>) {
@@ -170,4 +184,6 @@ open class BaseActivity : AppCompatActivity() {
             Base64.getEncoder().withoutPadding().encodeToString(value?.toByteArray())
         println(encodedString)
     }
+
+
 }

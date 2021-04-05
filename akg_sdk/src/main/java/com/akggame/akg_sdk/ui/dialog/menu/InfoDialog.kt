@@ -6,11 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
-import androidx.fragment.app.FragmentManager
 import com.akggame.akg_sdk.ui.dialog.BaseDialogFragment
-import com.akggame.android.sdk.R
-import kotlinx.android.synthetic.main.content_dialog_contact_us.*
-import kotlinx.android.synthetic.main.content_dialog_contact_us.view.*
+import com.akggame.newandroid.sdk.R
 
 class InfoDialog : BaseDialogFragment() {
 
@@ -45,6 +42,6 @@ class InfoDialog : BaseDialogFragment() {
             dismiss()
         }
 
-        btnBackDialog?.setText("Kembali")
+        btnBackDialog?.text = "Kembali"
     }
 }

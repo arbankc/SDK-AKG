@@ -6,15 +6,12 @@ import android.content.res.TypedArray
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
-import androidx.core.view.get
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.akggame.akg_sdk.dao.api.model.FloatingItem
@@ -28,9 +25,8 @@ import com.akggame.akg_sdk.extension.updateLayoutParams
 import com.akggame.akg_sdk.extension.visible
 import com.akggame.akg_sdk.ui.adapter.FloatingAdapter
 import com.akggame.akg_sdk.ui.adapter.FloatingAdapterListener
-import com.akggame.android.sdk.R
+import com.akggame.newandroid.sdk.R
 import de.hdodenhof.circleimageview.CircleImageView
-import kotlin.math.abs
 
 class FloatingButton : FrameLayout {
 
@@ -70,8 +66,8 @@ class FloatingButton : FrameLayout {
     var autoNavigate = true
     var autoDip = true
     var duration = 350L
-    var beforeExpandX = 0f;
-    var beforeExpandY = 0f;
+    var beforeExpandX = 0f
+    var beforeExpandY = 0f
 
     var circleSize = 64f
         set(value) {

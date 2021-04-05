@@ -11,7 +11,7 @@ import com.akggame.akg_sdk.presenter.LogoutPresenter
 import com.akggame.akg_sdk.rx.IView
 import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.akg_sdk.util.DeviceUtil
-import com.akggame.android.sdk.R
+import com.akggame.newandroid.sdk.R
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn

@@ -2,7 +2,6 @@ package com.akggame.akg_sdk.ui.dialog
 
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -12,7 +11,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.akggame.akg_sdk.AKG_SDK
 import com.akggame.akg_sdk.IConfig
-import com.akggame.akg_sdk.LoginSDKCallback
+import com.akggame.akg_sdk.callback.LoginSDKCallback
 import com.akggame.akg_sdk.`interface`.OnClickItem
 import com.akggame.akg_sdk.dao.SocmedDao
 import com.akggame.akg_sdk.dao.api.model.request.FacebookAuthRequest
@@ -27,7 +26,7 @@ import com.akggame.akg_sdk.ui.dialog.menu.GameListIView
 import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.akg_sdk.util.Constants
 import com.akggame.akg_sdk.util.DeviceUtil
-import com.akggame.android.sdk.R
+import com.akggame.newandroid.sdk.R
 import com.github.ajalt.timberkt.d
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -168,6 +167,7 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
         model.operating_system = "Android"
         model.phone_model = DeviceUtil.getDeviceName()
         model.login_type = typeLogin
+        model.version = "Model ${getModelHp()} , OS ${getVersionOsHp()}"
 
         activity?.let {
             CacheUtil.putPreferenceString(
@@ -177,7 +177,6 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
         }
 
         typeLogin(typeLogin)
-
         Hawk.put(Constants.DATA_UPSERT, model)
         Hawk.put("gameId", gameIdProduct)
 
@@ -217,7 +216,6 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
         }
     }
 
-
     private fun hitLogEventFirebase(
         eventName: String,
         typeLogin: String,
@@ -225,10 +223,9 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
         uid: String
     ) {
         val bundle = Bundle()
-        bundle.putString("UID", uid)
-        bundle.putString("UserId", userId)
-        bundle.putString("Timestamp", createTimestamp())
-        bundle.putString("Type_Login", typeLogin)
+        bundle.putString("uid", uid)
+        bundle.putString("timestamp", createTimestamp())
+        bundle.putString("type_login", typeLogin)
         hitEventFirebase(eventName, bundle)
     }
 
@@ -300,7 +297,7 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
         }
 
 
-        if (facebookAuthResponse?.meta?.code == 401)
+        if (facebookAuthResponse.meta?.code == 401)
             showToast(facebookAuthResponse.data?.message)
 
 

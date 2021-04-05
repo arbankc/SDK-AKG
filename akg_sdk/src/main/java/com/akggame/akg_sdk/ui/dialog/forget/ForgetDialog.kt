@@ -17,7 +17,7 @@ import com.akggame.akg_sdk.presenter.RegisterPresenter
 import com.akggame.akg_sdk.ui.dialog.BaseDialogFragment
 import com.akggame.akg_sdk.ui.dialog.register.OTPIView
 import com.akggame.akg_sdk.util.CacheUtil
-import com.akggame.android.sdk.R
+import com.akggame.newandroid.sdk.R
 import kotlinx.android.synthetic.main.content_dialog_forgot.*
 import kotlinx.android.synthetic.main.content_dialog_forgot.view.*
 

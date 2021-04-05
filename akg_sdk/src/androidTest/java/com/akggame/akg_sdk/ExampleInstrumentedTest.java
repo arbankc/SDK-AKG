@@ -1,4 +1,4 @@
-package com.akggame.android;
+package com.akggame.newandroid;
 
 import android.content.Context;
 import androidx.test.InstrumentationRegistry;

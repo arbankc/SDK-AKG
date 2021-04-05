@@ -4,7 +4,7 @@ import android.os.Bundle
 import com.akggame.akg_sdk.baseextend.BaseActivity
 import com.akggame.akg_sdk.dao.api.model.response.EulaResponse
 import com.akggame.akg_sdk.presenter.EulaPresenter
-import com.akggame.android.sdk.R
+import com.akggame.newandroid.sdk.R
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_eula.*
 

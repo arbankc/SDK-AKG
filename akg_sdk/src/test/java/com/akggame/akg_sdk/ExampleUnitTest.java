@@ -1,4 +1,4 @@
-package com.akggame.android;
+package com.akggame.newandroid;
 
 import org.junit.Test;
 

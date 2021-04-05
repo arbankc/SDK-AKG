@@ -3,17 +3,19 @@ package com.akggame.akg_sdk.ui.activity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.akggame.akg_sdk.baseextend.BaseActivity
+import com.akggame.akg_sdk.dao.api.model.ProductData
 import com.akggame.akg_sdk.ui.dialog.login.LoginDialogFragment
 import com.akggame.akg_sdk.ui.fragment.GameListProductFragment
 import com.akggame.akg_sdk.ui.fragment.paymentmethod.PaymentOttoFragment
 import com.akggame.akg_sdk.util.Constants
-import com.akggame.android.sdk.R
+import com.akggame.newandroid.sdk.R
 
 class FrameLayoutActivity : BaseActivity() {
     var fragment: Fragment? = null
     var typePayment: String? = null
     var getPos: Int? = null
-    var idGameProduct: String? = null
+    var productData: ProductData? = null
+    var idProductSku: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +27,8 @@ class FrameLayoutActivity : BaseActivity() {
     private fun initial() {
         getPos = intent.getIntExtra("pos", 0)
         typePayment = intent.getStringExtra(Constants.TYPE_PAYMENT)
-        idGameProduct = intent.getStringExtra(Constants.DATA_GAME_PRODUCT)
+        productData = intent.getParcelableExtra(Constants.DATA_GAME_PRODUCT)
+        idProductSku = intent.getStringExtra("idProductSku")
 
         initPositionFragment(getPos)
 
@@ -63,7 +66,7 @@ class FrameLayoutActivity : BaseActivity() {
                 gotoFragment(GameListProductFragment.newInstance(typePayment.toString(), ""))
             }
             3 -> {
-                gotoFragment(PaymentOttoFragment.newInstance(idGameProduct.toString(), ""))
+                gotoFragment(PaymentOttoFragment.newInstance(productData!!, ""))
             }
             4 -> {
                 gotoFragment(LoginDialogFragment())

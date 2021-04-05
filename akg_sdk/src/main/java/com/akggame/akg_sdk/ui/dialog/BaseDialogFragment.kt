@@ -15,7 +15,7 @@ import androidx.fragment.app.FragmentManager
 import com.akggame.akg_sdk.IConfig
 import com.akggame.akg_sdk.rx.IView
 import com.akggame.akg_sdk.util.CacheUtil
-import com.akggame.android.sdk.R
+import com.akggame.newandroid.sdk.R
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
 import com.orhanobut.hawk.Hawk
@@ -214,4 +214,16 @@ open class BaseDialogFragment : DialogFragment(), IView {
 //        super.onConfigurationChanged(newConfig)
 //        onRelauch()
 //    }
+
+    fun getModelHp(): String {
+        return Build.MODEL
+    }
+
+    fun getManufacturHp(): String {
+        return Build.MANUFACTURER
+    }
+
+    fun getVersionOsHp(): Int {
+        return Build.VERSION.SDK_INT
+    }
 }

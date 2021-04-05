@@ -10,13 +10,13 @@ import com.akggame.akg_sdk.dao.api.model.response.BannerResponse
 import com.akggame.akg_sdk.presenter.InfoPresenter
 import com.akggame.akg_sdk.ui.adapter.BanerAdapter
 import com.akggame.akg_sdk.ui.dialog.BaseDialogFragment
-import com.akggame.android.sdk.R
+import com.akggame.newandroid.sdk.R
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.content_dialog_banner.*
 import kotlinx.android.synthetic.main.content_dialog_banner.view.*
 import java.util.*
 
-class BannerDialog() : BaseDialogFragment(), BannerIView {
+class BannerDialog : BaseDialogFragment(), BannerIView {
 
 
     private lateinit var mView: View
@@ -74,7 +74,7 @@ class BannerDialog() : BaseDialogFragment(), BannerIView {
 
         })
         val update = Runnable {
-            if (mView.vpBaner.getCurrentItem() == (mView.vpBaner.getAdapter()?.getCount()!!
+            if (mView.vpBaner.currentItem == (mView.vpBaner.adapter?.count!!
                     .minus(1))
             ) {
                 currentPage = 0

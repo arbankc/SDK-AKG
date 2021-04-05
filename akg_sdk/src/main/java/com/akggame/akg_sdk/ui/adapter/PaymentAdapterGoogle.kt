@@ -8,8 +8,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.akggame.akg_sdk.AKG_SDK
-import com.akggame.akg_sdk.PurchaseSDKCallback
-import com.akggame.android.sdk.R
+import com.akggame.akg_sdk.callback.PurchaseSDKCallback
+import com.akggame.newandroid.sdk.R
 import com.android.billingclient.api.SkuDetails
 import kotlinx.android.synthetic.main.item_list_product.view.*
 

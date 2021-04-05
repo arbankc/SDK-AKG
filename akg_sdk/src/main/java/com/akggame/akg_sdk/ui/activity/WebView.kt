@@ -2,7 +2,7 @@ package com.akggame.akg_sdk.ui.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.akggame.android.sdk.R
+import com.akggame.newandroid.sdk.R
 import kotlinx.android.synthetic.main.activity_web_view.*
 
 class WebView : AppCompatActivity() {

@@ -5,14 +5,11 @@ import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.Gravity
-import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.widget.TextView
-import androidx.annotation.NonNull
-import com.akggame.akg_sdk.IConfig
 //import com.akggame.akg_sdk.ui.BaseActivity
-import com.akggame.android.sdk.R
+import com.akggame.newandroid.sdk.R
 
 class LoadingDialogComponent(private val message: String, context: Context, style: Int) :
     Dialog(context, style) {
@@ -20,7 +17,7 @@ class LoadingDialogComponent(private val message: String, context: Context, styl
     private var widthLayout = WindowManager.LayoutParams.MATCH_PARENT
     private var heightLayout = WindowManager.LayoutParams.MATCH_PARENT
 
-    protected override fun onCreate(savedInstanceState: Bundle) {
+    override fun onCreate(savedInstanceState: Bundle) {
         super.onCreate(savedInstanceState)
         setWindowContentDialogLayout(R.layout.dialog_loading)
         dialog = this

@@ -12,8 +12,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import com.akggame.akg_sdk.IConfig
 import com.akggame.akg_sdk.IConfig.Companion.SESSION_TOKEN
-import com.akggame.akg_sdk.LoginSDKCallback
-import com.akggame.akg_sdk.StartGameSDKCallback
+import com.akggame.akg_sdk.callback.LoginSDKCallback
+import com.akggame.akg_sdk.callback.StartGameSDKCallback
 import com.akggame.akg_sdk.dao.SocmedDao
 import com.akggame.akg_sdk.dao.api.model.response.DataItemGameList
 import com.akggame.akg_sdk.presenter.LoginPresenter
@@ -22,8 +22,7 @@ import com.akggame.akg_sdk.ui.dialog.GameListDialogFragment
 import com.akggame.akg_sdk.ui.dialog.PhoneLoginDialogFragment
 import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.akg_sdk.util.Constants
-import com.akggame.akg_sdk.util.DeviceUtil
-import com.akggame.android.sdk.R
+import com.akggame.newandroid.sdk.R
 import com.facebook.*
 import com.facebook.appevents.AppEventsLogger
 import com.facebook.internal.ImageRequest
@@ -35,10 +34,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.EmailAuthProvider
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.*
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.content_dialog_login.*
 import kotlinx.android.synthetic.main.content_dialog_login.view.*
@@ -117,16 +113,13 @@ class LoginDialogFragment() : BaseDialogFragment() {
         mView.fbLoginButton.fragment = this
         mView.fbLoginButton.setPermissions(arrayListOf("email"))
         mView.btnBindFacebook.setOnClickListener {
-            if (DeviceUtil.getImei(requireActivity()).isNotEmpty()) {
-                mView.fbLoginButton.performClick()
-            }
+            mView.fbLoginButton.performClick()
         }
 
         fbLoginButton.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
             override fun onSuccess(result: LoginResult?) {
                 result?.let { setFacebookData(it) }
                 d { "respon Data fb ${result?.accessToken}" }
-
             }
 
             override fun onCancel() {
@@ -154,7 +147,6 @@ class LoginDialogFragment() : BaseDialogFragment() {
                 nameFb = response.jsonObject.getString("first_name")
                 tokenFb = loginResult.accessToken.toString()
                 idFb = response.jsonObject.getString("id")
-
                 val lastName = response.jsonObject.getString("last_name")
                 var profileURL = ""
                 if (Profile.getCurrentProfile() != null) {
@@ -166,7 +158,7 @@ class LoginDialogFragment() : BaseDialogFragment() {
                 }
 
                 statusLogin = "facebook"
-                getTokenClientAuth(currentUser, statusLogin.toString())
+                firebaseAuthWithFb(loginResult.accessToken)
 
             } catch (e: JSONException) {
                 d { "respon Error ${e.message}" }
@@ -199,10 +191,9 @@ class LoginDialogFragment() : BaseDialogFragment() {
         mGoogleSignInClient = SocmedDao.setGoogleSigninClient(requireContext())
 
         btnBindGoogle.setOnClickListener {
-            if (DeviceUtil.getImei(requireActivity()).isNotEmpty()) {
-                val signInIntent = mGoogleSignInClient.signInIntent
-                startActivityForResult(signInIntent, 20)
-            }
+            showDialogLoading(true)
+            val signInIntent = mGoogleSignInClient.signInIntent
+            startActivityForResult(signInIntent, 20)
         }
     }
 
@@ -224,17 +215,13 @@ class LoginDialogFragment() : BaseDialogFragment() {
         setGoogleLogin()
         setFacebookLogin()
         mView.btnBack.setOnClickListener {
-            if (DeviceUtil.getImei(requireActivity()).isNotEmpty()) {
-                this.customDismiss()
-                changeToPhoneLogin()
-            }
+            this.customDismiss()
+            changeToPhoneLogin()
         }
 
-        mView.btnGuest.setOnClickListener {
-            if (DeviceUtil.getImei(requireActivity()).isNotEmpty()) {
-//
-                loginGuestFirebase()
-            }
+        mView.btnGuest.setOnClickListener { //
+            showDialogLoading(true)
+            loginGuestFirebase()
 
         }
     }
@@ -260,12 +247,14 @@ class LoginDialogFragment() : BaseDialogFragment() {
                 ?.addOnCompleteListener(it) { task ->
                     if (task.isSuccessful) {
                         // Sign in success, update UI with the signed-in user's information
-                        val user = auth?.currentUser
+                        currentUser = auth?.currentUser
                         statusLogin = "guest"
-                        getTokenClientAuth(user, statusLogin.toString())
+                        showDialogLoading(false)
+                        getTokenClientAuth(currentUser, statusLogin.toString())
                     } else {
                         // If sign in fails, display a message to the user.
-                        showToast("Gagal geuest")
+                        showToast("Gagal guest")
+                        showDialogLoading(false)
                         val gameListDialogFragment =
                             currentUser?.let {
                                 GameListDialogFragment.newInstance(
@@ -298,6 +287,7 @@ class LoginDialogFragment() : BaseDialogFragment() {
             val account = completedTask.getResult(ApiException::class.java)
             idToken = account?.idToken
             d { "respon Login account ${account?.idToken}" }
+            showDialogLoading(false)
             firebaseAuthWithGoogle(account?.idToken.toString())
         } catch (e: ApiException) {
             Log.w("FRAGMENT_GOOGLE", "signInResult:failed code=" + e.statusCode)
@@ -306,8 +296,8 @@ class LoginDialogFragment() : BaseDialogFragment() {
 
     fun getTokenClientAuth(user: FirebaseUser?, typeLogin: String) {
         showDialogLoading(true)
-        user!!.getIdToken(true)
-            .addOnCompleteListener {
+        user?.getIdToken(true)
+            ?.addOnCompleteListener {
                 if (it.isSuccessful) {
                     val idToken: String = it.result?.token.toString()
                     Log.d("Get token ", "+ $idToken")
@@ -328,7 +318,6 @@ class LoginDialogFragment() : BaseDialogFragment() {
                                     )
                                 }
                             gameListDialogFragment?.show(fragmentManager!!, "")
-                            gameListDialogFragment?.onBackPressed()
                             showDialogLoading(false)
                         }
                         typeLogin.equals("facebook", ignoreCase = true) -> {
@@ -366,6 +355,25 @@ class LoginDialogFragment() : BaseDialogFragment() {
                 } else {
                     // Handle error -> task.getException();
                     showToast("Terjadi kesalahan pada server")
+                    showDialogLoading(false)
+                }
+            }
+
+    }
+
+    fun firebaseAuthWithFb(token: AccessToken) {
+        showDialogLoading(true)
+        val credential = FacebookAuthProvider.getCredential(token.token)
+        auth?.signInWithCredential(credential)
+            ?.addOnCompleteListener {
+                if (it.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d("respon ", "signInWithCredential:success")
+                    currentUser = auth?.currentUser
+                    getTokenClientAuth(currentUser, statusLogin.toString())
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w("respon ", "signInWithCredential:failure", it.exception)
                 }
             }
 
@@ -391,6 +399,7 @@ class LoginDialogFragment() : BaseDialogFragment() {
                                 it
                             )
                         }
+                    showDialogLoading(false)
                 }
             }
 

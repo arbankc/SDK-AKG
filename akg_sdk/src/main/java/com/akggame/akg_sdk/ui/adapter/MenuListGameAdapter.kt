@@ -1,9 +1,8 @@
 package com.akggame.akg_sdk.ui.adapter
 
-import android.service.autofill.OnClickAction
 import com.akggame.akg_sdk.`interface`.OnClickItem
 import com.akggame.akg_sdk.dao.api.model.response.DataItemGameList
-import com.akggame.android.sdk.R
+import com.akggame.newandroid.sdk.R
 import com.xwray.groupie.kotlinandroidextensions.Item
 import com.xwray.groupie.kotlinandroidextensions.ViewHolder
 import kotlinx.android.synthetic.main.layout_item_menulist.view.*

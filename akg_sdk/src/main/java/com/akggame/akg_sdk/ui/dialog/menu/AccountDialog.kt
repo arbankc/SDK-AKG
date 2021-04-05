@@ -1,6 +1,5 @@
 package com.akggame.akg_sdk.ui.dialog.menu
 
-import android.opengl.Visibility
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +14,7 @@ import com.akggame.akg_sdk.ui.dialog.BaseDialogFragment
 import com.akggame.akg_sdk.ui.dialog.login.LoginDialogFragment
 import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.akg_sdk.util.Constants
-import com.akggame.android.sdk.R
+import com.akggame.newandroid.sdk.R
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.content_dialog_account.*
 import kotlinx.android.synthetic.main.content_dialog_account.view.*

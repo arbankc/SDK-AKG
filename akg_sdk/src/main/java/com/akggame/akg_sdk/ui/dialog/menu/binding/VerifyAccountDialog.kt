@@ -15,14 +15,9 @@ import com.akggame.akg_sdk.extension.beginDelayedTransition
 import com.akggame.akg_sdk.extension.doAfterAnimate
 import com.akggame.akg_sdk.presenter.RegisterPresenter
 import com.akggame.akg_sdk.ui.dialog.BaseDialogFragment
-import com.akggame.akg_sdk.ui.dialog.register.OTPDialog
 import com.akggame.akg_sdk.ui.dialog.register.OTPIView
-import com.akggame.akg_sdk.ui.dialog.register.SetPasswordDialog
 import com.akggame.akg_sdk.util.CacheUtil
-import com.akggame.android.sdk.R
-import kotlinx.android.synthetic.main.content_dialog_registration.*
-import kotlinx.android.synthetic.main.content_dialog_registration.view.*
-import kotlinx.android.synthetic.main.content_dialog_verify.*
+import com.akggame.newandroid.sdk.R
 import kotlinx.android.synthetic.main.content_dialog_verify.clOtp
 import kotlinx.android.synthetic.main.content_dialog_verify.view.*
 import kotlinx.android.synthetic.main.content_dialog_verify.view.btnNext

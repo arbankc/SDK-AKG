@@ -3,11 +3,10 @@ package com.akggame.akg_sdk.ui.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.akggame.akg_sdk.`interface`.OnClickItem
 import com.akggame.akg_sdk.dao.api.model.response.DataItemGameList
-import com.akggame.android.sdk.R
+import com.akggame.newandroid.sdk.R
 import kotlinx.android.synthetic.main.layout_item_menulist.view.*
 
 class GameListAdapter : RecyclerView.Adapter<GameListAdapter.ViewHolder>() {
@@ -15,9 +14,7 @@ class GameListAdapter : RecyclerView.Adapter<GameListAdapter.ViewHolder>() {
     var indextPos: Int = 0
     var onClickItem: OnClickItem? = null
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-    }
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(

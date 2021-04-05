@@ -8,11 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.akggame.akg_sdk.IConfig
-import com.akggame.akg_sdk.RelaunchSDKCallback
+import com.akggame.akg_sdk.callback.RelaunchSDKCallback
 import com.akggame.akg_sdk.ui.dialog.BaseDialogFragment
 import com.akggame.akg_sdk.ui.dialog.menu.LogoutIView
 import com.akggame.akg_sdk.util.CacheUtil
-import com.akggame.android.sdk.R
+import com.akggame.newandroid.sdk.R
 import com.github.ajalt.timberkt.d
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser

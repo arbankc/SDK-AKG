@@ -8,12 +8,116 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:899553062125:android:023aafa8274b3f90f770e4",
+        "android_client_info": {
+          "package_name": "com.akg.melbitsmobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "899553062125-m32o2s4avcpj8tv71778ped7n9c5v6lk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.akg.melbitsmobile",
+            "certificate_hash": "a582e8b795a59c0e1545c12904e986344908826e"
+          }
+        },
+        {
+          "client_id": "899553062125-jtp72pmk9et9h3pogq2k92imerc1vjn1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbE7B6p64lNrsmamQbxXNPt_hcOQuLvbI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "899553062125-jtp72pmk9et9h3pogq2k92imerc1vjn1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "899553062125-1918uigcamct2auauc7qa0ao76sfm7gj.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.clappingape.akg"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:899553062125:android:9f8afd1a95c5052cf770e4",
+        "android_client_info": {
+          "package_name": "com.akggame.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "899553062125-sd7lgqn1egg7q79nrtlf7d52g2q5sqiq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.akggame.android",
+            "certificate_hash": "bb0de1cff9ad6af9b670aade6766a83fa771fd08"
+          }
+        },
+        {
+          "client_id": "899553062125-ur2lcs8607r240m4m3slg2om5h4uluup.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.akggame.android",
+            "certificate_hash": "9e04ea77444cda9315e5422714f31ca878d0ea9b"
+          }
+        },
+        {
+          "client_id": "899553062125-jtp72pmk9et9h3pogq2k92imerc1vjn1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbE7B6p64lNrsmamQbxXNPt_hcOQuLvbI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "899553062125-jtp72pmk9et9h3pogq2k92imerc1vjn1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "899553062125-1918uigcamct2auauc7qa0ao76sfm7gj.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.clappingape.akg"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:899553062125:android:53fe0ca62930032ff770e4",
         "android_client_info": {
           "package_name": "com.akggame.android.sdk"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "899553062125-apmgahvtvu4skebjbpf245vj09l4f10o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.akggame.android.sdk",
+            "certificate_hash": "9e04ea77444cda9315e5422714f31ca878d0ea9b"
+          }
+        },
         {
           "client_id": "899553062125-lpamdkgunafa1pqtfgsc0emjbikm2doj.apps.googleusercontent.com",
           "client_type": 1,
@@ -38,6 +142,73 @@
             {
               "client_id": "899553062125-jtp72pmk9et9h3pogq2k92imerc1vjn1.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "899553062125-1918uigcamct2auauc7qa0ao76sfm7gj.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.clappingape.akg"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:899553062125:android:6e82f1fb7e294f9af770e4",
+        "android_client_info": {
+          "package_name": "com.akggame.newandroid.sdk"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "899553062125-48f66lbhjv1vuqdmpoiec2ocogm47viq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.akggame.newandroid.sdk",
+            "certificate_hash": "bb0de1cff9ad6af9b670aade6766a83fa771fd08"
+          }
+        },
+        {
+          "client_id": "899553062125-6n2k7v304201ecbopl38tvp8m6drc88v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.akggame.newandroid.sdk",
+            "certificate_hash": "08ed8ddfbf86a3a0921729f5eaaf42249df5640e"
+          }
+        },
+        {
+          "client_id": "899553062125-nc05kos17b6f181s3torigtf7ll0lh27.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.akggame.newandroid.sdk",
+            "certificate_hash": "9e04ea77444cda9315e5422714f31ca878d0ea9b"
+          }
+        },
+        {
+          "client_id": "899553062125-jtp72pmk9et9h3pogq2k92imerc1vjn1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbE7B6p64lNrsmamQbxXNPt_hcOQuLvbI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "899553062125-jtp72pmk9et9h3pogq2k92imerc1vjn1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "899553062125-1918uigcamct2auauc7qa0ao76sfm7gj.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.clappingape.akg"
+              }
             }
           ]
         }

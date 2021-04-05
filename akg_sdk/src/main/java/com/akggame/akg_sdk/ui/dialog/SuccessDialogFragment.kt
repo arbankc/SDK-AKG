@@ -7,8 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
-import com.akggame.akg_sdk.ui.dialog.login.LoginDialogFragment
-import com.akggame.android.sdk.R
+import com.akggame.newandroid.sdk.R
 import kotlinx.android.synthetic.main.content_dialog_success.view.*
 
 class SuccessDialogFragment() : BaseDialogFragment() {
@@ -52,11 +51,7 @@ class SuccessDialogFragment() : BaseDialogFragment() {
             }
 
             override fun onKey(p0: DialogInterface?, keyCode: Int, event: KeyEvent?): Boolean {
-                if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-                    return true
-                } else {
-                    return false
-                }
+                return (keyCode == KeyEvent.KEYCODE_BACK)
             }
         })
     }
@@ -65,7 +60,7 @@ class SuccessDialogFragment() : BaseDialogFragment() {
         mView.btnNext.setOnClickListener {
             restartBackStack()
         }
-        mView.tvUID.setText("Your account with number " + phone + " already been made")
+        mView.tvUID.text = "Your account with number " + phone + " already been made"
     }
 
 }

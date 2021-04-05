@@ -11,14 +11,14 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.akggame.akg_sdk.AKG_SDK
 import com.akggame.akg_sdk.IConfig
-import com.akggame.akg_sdk.ProductSDKCallback
-import com.akggame.akg_sdk.PurchaseSDKCallback
+import com.akggame.akg_sdk.callback.ProductSDKCallback
+import com.akggame.akg_sdk.callback.PurchaseSDKCallback
 import com.akggame.akg_sdk.`interface`.OnClickItem
 import com.akggame.akg_sdk.baseextend.BaseFragment
 import com.akggame.akg_sdk.dao.BillingDao
+import com.akggame.akg_sdk.dao.api.model.ProductData
 import com.akggame.akg_sdk.dao.api.model.response.GameProductsResponse
 import com.akggame.akg_sdk.dao.pojo.PurchaseItem
 import com.akggame.akg_sdk.presenter.ProductPresenter
@@ -28,19 +28,20 @@ import com.akggame.akg_sdk.ui.adapter.PaymentAdapter
 import com.akggame.akg_sdk.ui.adapter.PaymentAdapterGoogle
 import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.akg_sdk.util.Constants
-import com.akggame.android.sdk.R
+import com.akggame.newandroid.sdk.R
 import com.android.billingclient.api.SkuDetails
 import com.google.android.gms.wallet.PaymentsClient
 import kotlinx.android.synthetic.main.activity_payment.*
 
-class GameListProductFragment : BaseFragment(), PurchaseSDKCallback,
+class GameListProductFragment : BaseFragment(),
+    PurchaseSDKCallback,
     PaymentIView {
     lateinit var mPaymentsClient: PaymentsClient
     lateinit var paymentAdapter: PaymentAdapter
     lateinit var paymentAdapterGoogle: PaymentAdapterGoogle
+    var mutableListProductData: MutableList<ProductData>? = null
 
-    lateinit private var billingDao: BillingDao
-    lateinit var productData: GameProductsResponse
+    private lateinit var billingDao: BillingDao
     var typePayment: String? = null
     var dialogChoicePayment: Dialog? = null
     var constraintLayout: ConstraintLayout? = null
@@ -50,8 +51,10 @@ class GameListProductFragment : BaseFragment(), PurchaseSDKCallback,
     private val onClickItem: OnClickItem = object : OnClickItem {
         override fun clickItem(pos: Int) {
             val dataPaymentGameProduct = paymentAdapter.skuDetails[pos]
+            val gameProductResponse = mutableListProductData?.get(pos)
             val intent = Intent(activity, FrameLayoutActivity::class.java)
-            intent.putExtra(Constants.DATA_GAME_PRODUCT, dataPaymentGameProduct.id.toString())
+            intent.putExtra("idProductSku", dataPaymentGameProduct.id.toString())
+            intent.putExtra(Constants.DATA_GAME_PRODUCT, gameProductResponse)
             intent.putExtra("pos", 3)
             activity?.startActivityForResult(intent, AKG_SDK.SDK_PAYMENT_CODE)
         }
@@ -152,6 +155,7 @@ class GameListProductFragment : BaseFragment(), PurchaseSDKCallback,
     }
 
     override fun doOnSuccessPost(o: GameProductsResponse) {
+        mutableListProductData = o.data as MutableList<ProductData>
         paymentAdapter.setInAppProduct(o.data.toMutableList())
     }
 

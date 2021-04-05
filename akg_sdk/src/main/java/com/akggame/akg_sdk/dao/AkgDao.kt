@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
 import com.akggame.akg_sdk.*
+import com.akggame.akg_sdk.callback.*
 import com.akggame.akg_sdk.dao.api.model.FloatingItem
 import com.akggame.akg_sdk.dao.api.model.response.CurrentUserResponse
 import com.akggame.akg_sdk.dao.api.model.response.DepositResponse
@@ -26,7 +27,8 @@ import com.akggame.akg_sdk.ui.dialog.login.RelaunchDialog
 import com.akggame.akg_sdk.ui.dialog.menu.*
 import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.akg_sdk.util.Constants
-import com.akggame.android.sdk.R
+import com.akggame.akg_sdk.util.JSBridge
+import com.akggame.newandroid.sdk.R
 import com.android.billingclient.api.SkuDetails
 import com.clappingape.dplkagent.model.api.request.DepositRequest
 import com.orhanobut.hawk.Hawk
@@ -68,8 +70,7 @@ class AkgDao : AccountIView, OttopayIView, EulaIView {
         callback: ProductSDKCallback
     ) {
         productPresenter.getProductsGoogle(
-            CacheUtil.getPreferenceString(IConfig.SESSION_GAME, context),
-            application, context, callback
+            application, callback
         )
     }
 
@@ -88,6 +89,13 @@ class AkgDao : AccountIView, OttopayIView, EulaIView {
         val ftransaction = activity.supportFragmentManager.beginTransaction()
         ftransaction.addToBackStack("banner")
         banner.show(ftransaction, "banner")
+    }
+
+    fun getStatusOttopay(
+        activity: AppCompatActivity,
+        statusOttoPayCallback: StatusOttoPayCallback
+    ) {
+        JSBridge(activity, statusOttoPayCallback)
     }
 
     fun callApiWebviewEula(context: Context, idGame: String, eulaSdkCallBackEula: EulaSdkCallBack) {

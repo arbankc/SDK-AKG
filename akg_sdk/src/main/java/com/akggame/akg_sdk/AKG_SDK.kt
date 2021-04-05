@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
+import com.akggame.akg_sdk.callback.*
 import com.akggame.akg_sdk.dao.AkgDao
 import com.akggame.akg_sdk.dao.api.model.request.FacebookAuthRequest
 import com.akggame.akg_sdk.presenter.LoginPresenter
@@ -78,6 +79,14 @@ object AKG_SDK {
     @JvmStatic
     fun callBannerDialog(activity: AppCompatActivity) {
         AkgDao.callBannerDialog(activity)
+    }
+
+    @JvmStatic
+    fun callStatusOttopay(
+        activity: AppCompatActivity,
+        statusOttoPayCallback: StatusOttoPayCallback
+    ) {
+        AkgDao.getStatusOttopay(activity, statusOttoPayCallback)
     }
 
     @JvmStatic
@@ -178,6 +187,11 @@ object AKG_SDK {
     }
 
     @JvmStatic
+    fun getResponseOttoPay() {
+
+    }
+
+    @JvmStatic
     fun callStartUpsert(
         mIView: IView,
         context: Context,
@@ -195,9 +209,8 @@ object AKG_SDK {
         val banner = GameListDialogFragment()
         val ftransaction = fragmentManager.beginTransaction()
         ftransaction.addToBackStack("gamedialog")
-        banner.show(ftransaction, "gamedialog")
+//        banner.show(ftransaction, "gamedialog")
     }
-
 
     @JvmStatic
     fun callListGame(context: Context, iView: IView) {

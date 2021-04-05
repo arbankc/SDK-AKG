@@ -10,7 +10,7 @@ import com.akggame.akg_sdk.dao.api.model.request.ChangePasswordRequest
 import com.akggame.akg_sdk.dao.api.model.response.BaseResponse
 import com.akggame.akg_sdk.presenter.UpdatePresenter
 import com.akggame.akg_sdk.ui.dialog.BaseDialogFragment
-import com.akggame.android.sdk.R
+import com.akggame.newandroid.sdk.R
 import kotlinx.android.synthetic.main.content_dialog_change_password.*
 import kotlinx.android.synthetic.main.content_dialog_change_password.view.*
 

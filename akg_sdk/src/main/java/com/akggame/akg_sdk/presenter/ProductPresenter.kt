@@ -5,19 +5,17 @@ import android.app.Application
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import com.akggame.akg_sdk.ProductSDKCallback
-import com.akggame.akg_sdk.PurchaseSDKCallback
+import com.akggame.akg_sdk.callback.ProductSDKCallback
+import com.akggame.akg_sdk.callback.PurchaseSDKCallback
 import com.akggame.akg_sdk.dao.BillingDao
 import com.akggame.akg_sdk.dao.MainDao
 import com.akggame.akg_sdk.dao.api.model.request.PostOrderRequest
 import com.akggame.akg_sdk.dao.api.model.response.BaseResponse
-import com.akggame.akg_sdk.dao.api.model.response.EulaResponse
 import com.akggame.akg_sdk.dao.api.model.response.GameProductsResponse
 import com.akggame.akg_sdk.dao.pojo.PurchaseItem
 import com.akggame.akg_sdk.rx.IView
 import com.akggame.akg_sdk.rx.RxObserver
 import com.akggame.akg_sdk.ui.activity.PaymentIView
-import com.akggame.akg_sdk.ui.activity.eula.EulaIView
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.SkuDetails
 
@@ -27,10 +25,11 @@ class ProductPresenter(val mIView: IView) {
 
 
     object SKU {
-        val janjiDoang = "com.sdkgame.product1"
+        val product1 = "com.sdkgame.product1"
+        val janjiDoang = "com.akg.productbaru"
         val tempeOrek = "com.sdkgame.product2"
         val janjiDoang2 = "com.sdkgame.product1"
-        val tempeOrek2 = "com.sdkgame.product2"
+        val tempeOrek2 = "tempe_0rek"
         val product3 = "com.sdkgame.product3"
 
         val testingPurchased = "android.test.purchased"
@@ -38,12 +37,12 @@ class ProductPresenter(val mIView: IView) {
         val testingUnavailable = "android.test.item_unavailable"
 
         val testListSKU = listOf(
+            tempeOrek2,
             testingPurchased,
-            testingCancelled,
             testingUnavailable,
             product3,
-            tempeOrek,
-            janjiDoang2
+            janjiDoang,
+            product1
         )
     }
 
@@ -77,47 +76,22 @@ class ProductPresenter(val mIView: IView) {
 
 
     fun getProductsGoogle(
-        gameProvider: String?,
         application: Application,
-        context: Context,
         callback: ProductSDKCallback
     ) {
-        MainDao().onGetProduct(gameProvider, context)
-            .subscribe(object : RxObserver<GameProductsResponse>(mIView, "") {
-                override fun onNext(t: BaseResponse) {
-                    super.onNext(t)
-                    t as GameProductsResponse
-                    if (t.meta?.code == 200) {
-                        t.data.forEach {
-                            val dataProductList = ArrayList<String>()
-                            dataProductList.add(it.id.toString())
-                            dataProductList.add(it.attributes?.name.toString())
-                            billingDao = BillingDao(
-//                                dataProductList,
-                                SKU.testListSKU,
-                                t.data,
-                                this@ProductPresenter,
-                                application,
-                                object : BillingDao.BillingDaoQuerySKU {
-                                    override fun onQuerySKU(skuDetails: MutableList<SkuDetails>) {
-                                        println("dataArray sku $$skuDetails")
-                                        callback.ProductResult(skuDetails)
-                                    }
-                                }
-                            )
-                            billingDao.onInitiateBillingClient()
-                        }
-                    } else {
-                        (mIView as PaymentIView).handleError("Failed for getting products")
-                    }
+        billingDao = BillingDao(
+            SKU.testListSKU,
+            null,
+            this@ProductPresenter,
+            application,
+            object : BillingDao.BillingDaoQuerySKU {
+                override fun onQuerySKU(skuDetails: MutableList<SkuDetails>) {
+                    println("dataArray sku $$skuDetails")
+                    callback.ProductResult(skuDetails)
                 }
-
-                override fun onError(e: Throwable) {
-                    super.onError(e)
-                    Log.d("TESTING API", "onError : " + e.toString())
-
-                }
-            })
+            }
+        )
+        billingDao.onInitiateBillingClient()
     }
 
     fun lauchBilling(activity: Activity, skuDetails: SkuDetails, callback: PurchaseSDKCallback) {
@@ -144,10 +118,6 @@ class ProductPresenter(val mIView: IView) {
                     }
                 }
 
-                override fun onComplete() {
-                    super.onComplete()
-                }
-
                 override fun onError(e: Throwable) {
                     super.onError(e)
                     Log.d("TESTING API", "onError : " + e.toString())
@@ -156,32 +126,4 @@ class ProductPresenter(val mIView: IView) {
             })
     }
 
-
-    fun onPostOrderOttoPay(body: PostOrderRequest, context: Context) {
-        MainDao().onPostOrder(body, context)
-            .subscribe(object : RxObserver<BaseResponse>(mIView, "") {
-                override fun onNext(t: BaseResponse) {
-                    super.onNext(t)
-                    if (t.BaseMetaResponse?.code == 200) {
-                        println("respon Sukses")
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "Error: " + t.BaseDataResponse?.message,
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                }
-
-                override fun onComplete() {
-                    super.onComplete()
-                }
-
-                override fun onError(e: Throwable) {
-                    super.onError(e)
-                    Log.d("TESTING API", "onError : " + e.toString())
-
-                }
-            })
-    }
 }

@@ -3,7 +3,7 @@ package com.akggame.akg_sdk.ui.adapter
 import android.view.View
 import com.akggame.akg_sdk.dao.api.model.SectionRow
 import com.akggame.akg_sdk.ui.component.ItemWrapper
-import com.akggame.android.sdk.R
+import com.akggame.newandroid.sdk.R
 
 class FloatingAdapter(private val listener:FloatingAdapterListener?=null) : BaseAdapter() {
 

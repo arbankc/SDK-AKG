@@ -8,7 +8,6 @@ import android.widget.ImageView
 import androidx.viewpager.widget.PagerAdapter
 import com.akggame.akg_sdk.dao.api.model.response.BannerResponse
 import com.akggame.akg_sdk.ui.activity.WebView
-import com.akggame.android.sdk.R
 import com.squareup.picasso.Picasso
 
 class BanerAdapter(val context : Context) : PagerAdapter() {

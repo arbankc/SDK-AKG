@@ -26,6 +26,7 @@ class FacebookAuthRequest : Parcelable, BaseResponse() {
     var game_provider: String? = null
     var device_id: String? = null
     var phone_model: String? = null
+    var version: String? = null
     var operating_system: String? = null
     var expires_in: Int? = 0
     var refresh_token: String? = null

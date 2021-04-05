@@ -5,16 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.akggame.akg_sdk.ui.dialog.BaseDialogFragment
-import com.akggame.android.sdk.R
+import com.akggame.newandroid.sdk.R
 import kotlinx.android.synthetic.main.content_dialog_version.view.*
-import android.content.pm.PackageManager
-import android.R.attr.versionName
-import android.content.pm.PackageInfo
-import com.akggame.akg_sdk.dao.api.model.response.BaseResponse
 import com.akggame.akg_sdk.dao.api.model.response.SDKVersionResponse
 import com.akggame.akg_sdk.presenter.InfoPresenter
-import com.akggame.android.sdk.BuildConfig
-import com.fasterxml.jackson.databind.util.ClassUtil.getPackageName
+import com.akggame.newandroid.sdk.BuildConfig
 
 
 class CheckVersionDialog : BaseDialogFragment(), CheckVersionIView {

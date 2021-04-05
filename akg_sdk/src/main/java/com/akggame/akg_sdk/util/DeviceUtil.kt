@@ -42,57 +42,56 @@ object DeviceUtil {
     }
 
 
+    fun decoded(JWTEncoded: String): String {
+        try {
+            val split =
+                JWTEncoded.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            Log.d("JWT_DECODED", "Header: " + getJson(split[0]))
+            Log.d("JWT_DECODED", "Body: " + getJson(split[1]))
+            return getJson(split[1])
+        } catch (e: UnsupportedEncodingException) {
+            //Error
+            return ""
+        }
+    }
 
-    fun decoded(JWTEncoded: String) : String {
-         try {
-             val split =
-                 JWTEncoded.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-             Log.d("JWT_DECODED", "Header: " + getJson(split[0]))
-             Log.d("JWT_DECODED", "Body: " + getJson(split[1]))
-             return getJson(split[1])
-         } catch (e: UnsupportedEncodingException) {
-             //Error
-             return ""
-         }
-     }
+    private fun getJson(strEncoded: String): String {
+        val decodedBytes = decode(strEncoded, URL_SAFE)
+        return String(decodedBytes, Charsets.UTF_8)
+    }
 
-     private fun getJson(strEncoded: String): String {
-         val decodedBytes = decode(strEncoded,URL_SAFE)
-         return String(decodedBytes, Charsets.UTF_8)
-     }
+    fun getDeviceName(): String {
+        val manufacter = Build.MANUFACTURER
+        val model = Build.MODEL
 
-     fun getDeviceName():String{
-         var manufacter = Build.MANUFACTURER
-         var model = Build.MODEL
+        if (model.startsWith(manufacter)) {
+            return capitalize(model)
+        }
 
-         if(model.startsWith(manufacter)){
-             return capitalize(model)
-         }
+        return capitalize(manufacter) + " " + model
+    }
 
-         return capitalize(manufacter) + " " + model;
-     }
+    private fun capitalize(str: String): String {
+        if (TextUtils.isEmpty(str)) {
+            return str
+        }
+        val arr = str.toCharArray()
+        var capitalizeNext = true
 
-     private fun capitalize(str: String): String {
-         if (TextUtils.isEmpty(str)) {
-             return str
-         }
-         val arr = str.toCharArray()
-         var capitalizeNext = true
+        val phrase = StringBuilder()
+        for (c in arr) {
+            if (capitalizeNext && Character.isLetter(c)) {
+                phrase.append(Character.toUpperCase(c))
+                capitalizeNext = false
+                continue
+            } else if (Character.isWhitespace(c)) {
+                capitalizeNext = true
+            }
+            phrase.append(c)
+        }
 
-         val phrase = StringBuilder()
-         for (c in arr) {
-             if (capitalizeNext && Character.isLetter(c)) {
-                 phrase.append(Character.toUpperCase(c))
-                 capitalizeNext = false
-                 continue
-             } else if (Character.isWhitespace(c)) {
-                 capitalizeNext = true
-             }
-             phrase.append(c)
-         }
-
-         return phrase.toString()
-     }
+        return phrase.toString()
+    }
 
     private fun makeRequest(context: Context) {
         ActivityCompat.requestPermissions(

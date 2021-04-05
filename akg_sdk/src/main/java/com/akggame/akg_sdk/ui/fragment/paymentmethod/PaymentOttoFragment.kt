@@ -12,16 +12,16 @@ import androidx.fragment.app.Fragment
 import com.akggame.akg_sdk.AKG_SDK.onSDKPayment
 import com.akggame.akg_sdk.IConfig
 import com.akggame.akg_sdk.PAYMENT_TYPE
-import com.akggame.akg_sdk.PurchaseSDKCallback
+import com.akggame.akg_sdk.callback.PurchaseSDKCallback
 import com.akggame.akg_sdk.dao.BillingDao
-import com.akggame.akg_sdk.dao.api.model.response.GameProductsResponse
+import com.akggame.akg_sdk.dao.api.model.ProductData
 import com.akggame.akg_sdk.dao.pojo.PurchaseItem
 import com.akggame.akg_sdk.ui.activity.PaymentOttopayActivity
 import com.akggame.akg_sdk.ui.adapter.PaymentAdapterGoogle
 import com.akggame.akg_sdk.ui.dialog.menu.BindAccountDialog
 import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.akg_sdk.util.Constants
-import com.akggame.android.sdk.R
+import com.akggame.newandroid.sdk.R
 import com.google.android.gms.wallet.PaymentsClient
 import kotlinx.android.synthetic.main.fragment_payment_otto.*
 
@@ -35,16 +35,16 @@ private const val ARG_PARAM2 = "param2"
  * Use the [PaymentOttoFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class PaymentOttoFragment : Fragment(), PurchaseSDKCallback {
+class PaymentOttoFragment : Fragment(),
+    PurchaseSDKCallback {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    var idGameProduct: String? = null
+    var productData: ProductData? = null
     var mView: View? = null
     lateinit var mPaymentsClient: PaymentsClient
     lateinit var adapter: PaymentAdapterGoogle
-    lateinit private var billingDao: BillingDao
-    lateinit var productData: GameProductsResponse
+    private lateinit var billingDao: BillingDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,7 +79,7 @@ class PaymentOttoFragment : Fragment(), PurchaseSDKCallback {
                 fragmentManager?.let { it1 -> bindAccountDialog.show(it1, "bind account") }
             } else {
                 val intent = Intent(activity, PaymentOttopayActivity::class.java)
-                intent.putExtra(Constants.DATA_GAME_PRODUCT, idGameProduct)
+                intent.putExtra(Constants.DATA_GAME_PRODUCT, productData)
                 startActivity(intent)
             }
 
@@ -88,10 +88,9 @@ class PaymentOttoFragment : Fragment(), PurchaseSDKCallback {
 
     companion object {
         @JvmStatic
-        fun newInstance(idGetGameProduct: String, param2: String) =
+        fun newInstance(productDatas: ProductData, param2: String) =
             PaymentOttoFragment().apply {
-                idGameProduct = idGetGameProduct
-
+                productData = productDatas
             }
     }
 

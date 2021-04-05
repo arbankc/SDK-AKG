@@ -18,6 +18,7 @@ import com.akggame.akg_sdk.util.Constants
 import com.android.billingclient.api.*
 import com.android.billingclient.api.BillingClient.BillingResponseCode.OK
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.gson.Gson
 import com.orhanobut.hawk.Hawk
 import java.io.IOException
 import java.security.*
@@ -27,13 +28,11 @@ import java.util.*
 
 class BillingDao(
     private val listOfSku: List<String>,
-    private val productData: List<ProductData>,
+    private val productData: List<ProductData>?,
     private val presenter: ProductPresenter,
     private val application: Application,
     val queryCallback: BillingDaoQuerySKU
-) :
-    PurchasesUpdatedListener, BillingClientStateListener {
-
+) : PurchasesUpdatedListener, BillingClientStateListener {
 
     val LOG_TAG = "Billing Dao :"
     lateinit var billingClient: BillingClient
@@ -61,9 +60,7 @@ class BillingDao(
         val testingUnavailable = "android.test.item_unavailable"
 
         val myTestListSKU = listOf(janjiDoang2, tempeOrek2, product3)
-
         val myListSKU = listOf(janjiDoang, tempeOrek)
-
         val testListSKU = listOf(testingPurchased, testingCancelled, testingUnavailable)
     }
 
@@ -136,12 +133,12 @@ class BillingDao(
             }
             BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
                 //Some apps may choose to make decisions based on this knowledge.
-                Log.e(LOG_TAG, billingResult?.debugMessage.toString())
+                Log.e("respon unvailanble", billingResult.debugMessage.toString())
             }
             else -> {
                 //do nothing. Someone else will connect it through retry policy.
                 //May choose to send to server though
-                Log.e(LOG_TAG, billingResult?.debugMessage.toString())
+                Log.e("respon else", billingResult?.debugMessage.toString())
             }
         }
     }
@@ -149,7 +146,7 @@ class BillingDao(
     fun queryPurchasesAsync() {
         Log.d(LOG_TAG, "queryPurchasesAsync called")
         val purchasesResult = HashSet<Purchase>()
-        var result = billingClient.queryPurchases(BillingClient.SkuType.INAPP)
+        val result = billingClient.queryPurchases(BillingClient.SkuType.INAPP)
         Log.d(LOG_TAG, "queryPurchasesAsync INAPP results: ${result?.purchasesList?.size}")
         result?.purchasesList?.apply { purchasesResult.addAll(this) }
         processPurchase(purchasesResult)
@@ -159,15 +156,19 @@ class BillingDao(
         billingResult: BillingResult?,
         purchases: MutableList<Purchase>?
     ) {
+        val getGson = Gson().toJson(purchases)
+        println("responelse Purchase $getGson")
         if (billingResult?.responseCode == OK && purchases != null) {
             for (purchase in purchases) {
                 handlePurchase(purchase)
                 purchases.apply {
                     processPurchase(this.toSet())
-                };
+                }
             }
         } else if (billingResult?.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
-
+            println("responelse cancel")
+        } else {
+            println("responelse tidakada ${billingResult?.responseCode}")
         }
     }
 
@@ -197,7 +198,10 @@ class BillingDao(
                 .build()
 
             billingClient.consumeAsync(params) { billingResult, purchaseToken ->
-                println("responBiling result ${billingResult.debugMessage} dan ${billingResult.responseCode}")
+                println(
+                    "responBiling result ${billingResult.debugMessage} dan ${billingResult.responseCode} " +
+                            "dan purchasetoken $purchaseToken"
+                )
                 when (billingResult.responseCode) {
                     OK -> {
                         purchaseToken.apply {
@@ -220,7 +224,7 @@ class BillingDao(
 
     private fun handlePurchase(purchase: Purchase) {
         if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
-
+            println("respon purchase ${purchase.purchaseToken}")
         } else if (purchase.purchaseState == Purchase.PurchaseState.PENDING) {
 
         }
@@ -297,6 +301,33 @@ class BillingDao(
 //        return 0.0
 //    }
 
+    fun onPaymentCanceled(purchase: Purchase) {
+        val idUser = Hawk.get<String>(Constants.DATA_USER_ID)
+        val firebaseId = Hawk.get<String>(Constants.FIREBASE_ID)
+        val replacePrice = skuDetails!!.price
+            .replace("\\s".toRegex(), "")
+            .replace("Rp", "")
+            .replace(".", "")
+            .replace(",", "")
+
+        hitEventFirebase(purchase, "purchase_failed")
+        val postOrderRequest = PostOrderRequest(
+            "Google Play",
+            purchase.purchaseTime,
+            CacheUtil.getPreferenceString(IConfig.SESSION_GAME, application)!!,
+            purchase.orderId,
+            purchase.packageName,
+            replacePrice.toInt(),
+            "Android",
+            purchase.sku,
+            purchase.purchaseToken,
+            purchase.sku,
+            "Cancel",
+            CacheUtil.getPreferenceString(IConfig.SESSION_USERNAME, application),
+            firebaseId
+        )
+        presenter.onPostOrder(postOrderRequest, purchase, application)
+    }
 
     fun onPaymentSuccess(purchase: Purchase) {
         val idUser = Hawk.get<String>(Constants.DATA_USER_ID)
@@ -327,14 +358,16 @@ class BillingDao(
     }
 
     private fun hitEventFirebase(purchase: Purchase, eventName: String) {
+        val firebaseId = Hawk.get<String>(Constants.FIREBASE_ID)
         val bundle = Bundle()
         val tsLong = System.currentTimeMillis() / 1000
         val timestamp = tsLong.toString()
         bundle.putString("timestamp", timestamp)
-        bundle.putString("user_id", CacheUtil.getPreferenceString(IConfig.SESSION_UID, application))
+        bundle.putString("uid", firebaseId)
+        bundle.putString("amount", skuDetails!!.price)
         bundle.putString("item_id", purchase.orderId)
-        bundle.putString("currency", skuDetails!!.price)
         bundle.putString("channel", "Google Play")
+        bundle.putString("status", eventName)
 
         val firebaseAnalytics = FirebaseAnalytics.getInstance(application)
         firebaseAnalytics.logEvent(eventName, bundle)

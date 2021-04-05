@@ -16,10 +16,9 @@ import com.akggame.akg_sdk.ui.dialog.BaseDialogFragment
 import com.akggame.akg_sdk.ui.dialog.register.SetPasswordIView
 import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.akg_sdk.util.DeviceUtil
-import com.akggame.android.sdk.R
+import com.akggame.newandroid.sdk.R
 import kotlinx.android.synthetic.main.content_dialog_verification.*
 import kotlinx.android.synthetic.main.content_dialog_verification.view.*
-import kotlinx.android.synthetic.main.content_dialog_verify.view.*
 import kotlinx.android.synthetic.main.content_dialog_verify.view.btnNext
 import kotlinx.android.synthetic.main.content_dialog_verify.view.ivClose
 
