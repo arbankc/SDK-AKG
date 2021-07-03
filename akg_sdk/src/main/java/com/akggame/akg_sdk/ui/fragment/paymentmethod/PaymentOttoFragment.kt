@@ -42,10 +42,6 @@ class PaymentOttoFragment : Fragment(),
     private var param2: String? = null
     var productData: ProductData? = null
     var mView: View? = null
-    lateinit var mPaymentsClient: PaymentsClient
-    lateinit var adapter: PaymentAdapterGoogle
-    private lateinit var billingDao: BillingDao
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -65,7 +61,6 @@ class PaymentOttoFragment : Fragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = activity?.let { PaymentAdapterGoogle(it, this) }!!
 
         llPaymentGoogle.setOnClickListener {
             onSDKPayment(PAYMENT_TYPE.GOOGLE, activity as AppCompatActivity)

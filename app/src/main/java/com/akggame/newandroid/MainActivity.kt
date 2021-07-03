@@ -13,7 +13,6 @@ import io.fabric.sdk.android.Fabric
 
 
 open class MainActivity : BaseActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Fabric.with(this, Crashlytics())

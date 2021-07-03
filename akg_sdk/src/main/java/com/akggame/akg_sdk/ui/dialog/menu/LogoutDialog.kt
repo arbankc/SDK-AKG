@@ -14,7 +14,10 @@ import com.akggame.akg_sdk.dao.SocmedDao
 import com.akggame.akg_sdk.presenter.LogoutPresenter
 import com.akggame.akg_sdk.ui.dialog.BaseDialogFragment
 import com.akggame.akg_sdk.util.CacheUtil
+import com.akggame.akg_sdk.util.Constants
 import com.akggame.newandroid.sdk.R
+import com.facebook.AccessToken
+import com.facebook.login.LoginManager
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
@@ -80,6 +83,7 @@ class LogoutDialog() : BaseDialogFragment(), LogoutIView {
         }
         btnNext.setOnClickListener {
             if (CacheUtil.getPreferenceBoolean(IConfig.SESSION_LOGIN, requireActivity())) {
+                hitEventLogout()
                 signOut()
             } else {
                 Toast.makeText(requireActivity(), "You are not logged in", Toast.LENGTH_LONG).show()
@@ -91,6 +95,15 @@ class LogoutDialog() : BaseDialogFragment(), LogoutIView {
         }
     }
 
+    fun hitEventLogout() {
+        val packageName = Hawk.get<String>(Constants.ID_GAME_PROVIDER)
+        val bundle = Bundle()
+        bundle.putString("game_provider", packageName)
+        bundle.putString("uid", getDataLogin()?.data?.attributes?.firebase_id)
+        bundle.putString("udid", deviceIdAndroid())
+        hitEventFirebase(Constants.EVENT_LOGOUT, bundle)
+    }
+
     private fun signOut() {
         showDialogLoading(true)
         auth?.signOut()
@@ -99,14 +112,11 @@ class LogoutDialog() : BaseDialogFragment(), LogoutIView {
                 showDialogLoading(false)
                 Hawk.deleteAll()
                 CacheUtil.clearPreference(activity!!)
-
-//                val intent = Intent(activity, FrameLayoutActivity::class.java)
-//                intent.putExtra("pos", 4)
-//                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK
-//                context?.startActivity(intent)
-//                activity!!.finish()
-
+                if (AccessToken.getCurrentAccessToken() != null) {
+                    LoginManager.getInstance().logOut()
+                }
                 logoutSdkCallback.onSuccesLogout()
+
             }
         }
     }

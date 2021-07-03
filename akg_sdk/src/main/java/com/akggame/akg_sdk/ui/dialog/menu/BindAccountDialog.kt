@@ -126,9 +126,8 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
     }
 
     fun initialize() {
-        setFacebookLogin()
         setGoogleLogin()
-
+        setLoginFb()
         mView.ivClose.setOnClickListener {
             this.dismiss()
         }
@@ -141,6 +140,30 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
                 customDismiss()
             }
         }
+    }
+
+    private fun setLoginFb() {
+        callbackManager = CallbackManager.Factory.create()
+        LoginManager.getInstance().registerCallback(callbackManager,
+            object : FacebookCallback<LoginResult> {
+                override fun onSuccess(result: LoginResult?) {
+                    result?.let { setFacebookData(it) }
+                }
+
+                override fun onCancel() {
+                }
+
+                override fun onError(error: FacebookException?) {
+                    error?.printStackTrace()
+                    println("respon Error fb ${error?.message}")
+                    if (error is FacebookAuthorizationException) {
+                        if (AccessToken.getCurrentAccessToken() != null) {
+                            LoginManager.getInstance().logOut()
+                        }
+                    }
+                }
+
+            })
     }
 
 
@@ -165,34 +188,11 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
         Toast.makeText(requireActivity(), message, Toast.LENGTH_LONG).show()
     }
 
-    fun setFacebookLogin() {
-        callbackManager = CallbackManager.Factory.create()
-        mView.fbLoginButton.fragment = this
-        mView.fbLoginButton.setPermissions(arrayListOf("email"))
-
-        mView.btnBindFacebook.setOnClickListener {
-            mView.fbLoginButton.performClick()
-        }
-
-        fbLoginButton.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
-            override fun onSuccess(result: LoginResult?) {
-                result?.let { setFacebookData(it) }
-            }
-
-            override fun onCancel() {
-            }
-
-            override fun onError(error: FacebookException?) {
-            }
-        })
-    }
-
     /*
   * GOOGLE SIGN IN----------------------------------------->
   **/
     fun setGoogleLogin() {
         mGoogleSignInClient = SocmedDao.setGoogleSigninClient(requireContext())
-
         mView.btnBindGoogle.setOnClickListener {
             val signInIntent = mGoogleSignInClient.signInIntent
             startActivityForResult(signInIntent, 101)
@@ -224,6 +224,7 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
                 d { "respon Error ${e.message}" }
             }
         }
+
         val parameters = Bundle()
         parameters.putString("fields", "id,email,first_name,last_name")
         request.parameters = parameters
@@ -257,12 +258,11 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
 
 
     fun hitEvent(model: FacebookAuthRequest, typeLogin: String?) {
+        val packageName = Hawk.get<String>(Constants.ID_GAME_PROVIDER)
         val bundle = Bundle()
-
-        bundle.putString("UID", model.firebase_id)
-        bundle.putString("Timestamp", createTimestamp())
-        bundle.putString("Type_Login", typeLogin)
-
+        bundle.putString("uid", model.firebase_id)
+        bundle.putString("game_provider", packageName)
+        bundle.putString("type_login", typeLogin)
         hitEventFirebase("Bind Account ", bundle)
     }
 
@@ -334,7 +334,7 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
     private fun hitLoginBindAccount(email: String?, name: String?, typeLogin: String?) {
         showDialogLoading(true)
         val getChaceLogin = Hawk.get<FacebookAuthRequest>(Constants.DATA_UPSERT)
-        val idUser = Hawk.get<String>(Constants.DATA_USER_ID)
+        val firebaseId = Hawk.get<String>(Constants.FIREBASE_ID)
 
         val model = FacebookAuthRequest()
         model.firebase_id = currentUser?.uid
@@ -354,7 +354,7 @@ class BindAccountDialog() : BaseDialogFragment(), BindAccountIView {
         hitEvent(model, typeLogin)
 
         Hawk.put(Constants.DATA_UPSERT, model)
-        presenter.updateUpsertUser(model, idUser, requireActivity(), typeLogin.toString())
+        presenter.updateUpsertUser(model, firebaseId, requireActivity(), typeLogin.toString())
 
     }
 

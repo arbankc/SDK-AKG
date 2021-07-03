@@ -43,6 +43,7 @@ class BillingDao(
     private val SIGNATURE_ALGORITHM = "SHA1withRSA"
     private val TAG = "VERIFY PAYMENT"
     var skuDetails: SkuDetails? = null
+    var floatPrice: Float? = null
 
     private val firebaseAnalytics by lazy {
         FirebaseAnalytics.getInstance(application)
@@ -165,10 +166,20 @@ class BillingDao(
                     processPurchase(this.toSet())
                 }
             }
-        } else if (billingResult?.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
+        } else if (billingResult?.responseCode == BillingClient.BillingResponseCode.ITEM_UNAVAILABLE) {
             println("responelse cancel")
-        } else {
-            println("responelse tidakada ${billingResult?.responseCode}")
+            if (purchases != null) {
+                for (purchase in purchases) {
+                    onPaymentItemUnvailable(purchase)
+                }
+            }
+        } else if (billingResult?.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
+            println("responelse tidakada ${billingResult.responseCode}")
+            if (purchases != null) {
+                for (purchase in purchases) {
+                    onPaymentCanceled(purchase)
+                }
+            }
         }
     }
 
@@ -292,7 +303,7 @@ class BillingDao(
         }
     }
 
-//    fun getPrice(datas: List<ProductData>?, sku: String): Double {
+    //    fun getPrice(datas: List<ProductData>?, sku: String): Double {
 //        datas?.forEach {
 //            if (it.attributes?.price.equals(sku)) {
 //                return it.attributes?.price!!.toDouble()
@@ -300,6 +311,34 @@ class BillingDao(
 //        }
 //        return 0.0
 //    }
+    fun onPaymentItemUnvailable(purchase: Purchase) {
+        val idUser = Hawk.get<String>(Constants.DATA_USER_ID)
+        val firebaseId = Hawk.get<String>(Constants.FIREBASE_ID)
+        val replacePrice = skuDetails!!.price
+            .replace("\\s".toRegex(), "")
+            .replace("Rp", "")
+            .replace(".", "")
+            .replace(",", "")
+        floatPrice = replacePrice.toFloat()
+
+        hitEventFirebase(purchase, "purchase_failed")
+        val postOrderRequest = PostOrderRequest(
+            "Google Play",
+            purchase.purchaseTime,
+            CacheUtil.getPreferenceString(IConfig.SESSION_GAME, application)!!,
+            purchase.orderId,
+            purchase.packageName,
+            replacePrice.toInt(),
+            "Android",
+            purchase.sku,
+            purchase.purchaseToken,
+            purchase.sku,
+            "failed",
+            CacheUtil.getPreferenceString(IConfig.SESSION_USERNAME, application),
+            firebaseId
+        )
+        presenter.onPostOrder(postOrderRequest, purchase, application)
+    }
 
     fun onPaymentCanceled(purchase: Purchase) {
         val idUser = Hawk.get<String>(Constants.DATA_USER_ID)
@@ -322,7 +361,7 @@ class BillingDao(
             purchase.sku,
             purchase.purchaseToken,
             purchase.sku,
-            "Cancel",
+            "failed",
             CacheUtil.getPreferenceString(IConfig.SESSION_USERNAME, application),
             firebaseId
         )
@@ -337,6 +376,8 @@ class BillingDao(
             .replace("Rp", "")
             .replace(".", "")
             .replace(",", "")
+        floatPrice = replacePrice.toFloat()
+        println("respon Price $replacePrice dann $floatPrice")
 
         hitEventFirebase(purchase, "purchase_success")
         val postOrderRequest = PostOrderRequest(
@@ -350,10 +391,11 @@ class BillingDao(
             purchase.sku,
             purchase.purchaseToken,
             purchase.sku,
-            "Success",
+            "paid",
             CacheUtil.getPreferenceString(IConfig.SESSION_USERNAME, application),
             firebaseId
         )
+
         presenter.onPostOrder(postOrderRequest, purchase, application)
     }
 
@@ -362,13 +404,14 @@ class BillingDao(
         val bundle = Bundle()
         val tsLong = System.currentTimeMillis() / 1000
         val timestamp = tsLong.toString()
+        val packageName = Hawk.get<String>(Constants.ID_GAME_PROVIDER)
         bundle.putString("timestamp", timestamp)
         bundle.putString("uid", firebaseId)
-        bundle.putString("amount", skuDetails!!.price)
-        bundle.putString("item_id", purchase.orderId)
+        bundle.putString("amount", floatPrice.toString())
+        bundle.putString("item_id", purchase.sku)
         bundle.putString("channel", "Google Play")
         bundle.putString("status", eventName)
-
+        bundle.putString("game_provider", packageName)
         val firebaseAnalytics = FirebaseAnalytics.getInstance(application)
         firebaseAnalytics.logEvent(eventName, bundle)
     }

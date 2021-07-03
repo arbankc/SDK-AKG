@@ -10,9 +10,9 @@ import com.akggame.akg_sdk.baseextend.BaseActivity
 import com.akggame.akg_sdk.callback.EulaSdkCallBack
 import com.akggame.akg_sdk.callback.LogoutSdkCallback
 import com.akggame.akg_sdk.callback.MenuSDKCallback
-import com.akggame.akg_sdk.callback.StatusOttoPayCallback
 import com.akggame.akg_sdk.dao.api.model.response.EulaResponse
 import com.akggame.akg_sdk.dao.pojo.PurchaseItem
+import com.akggame.akg_sdk.util.Constants
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_main2.*
 
@@ -96,35 +96,19 @@ class Main2Activity : BaseActivity(),
 
     }
 
-    override fun onStart() {
-        super.onStart()
-
-        val bundle = Bundle()
-        bundle.putString("timestamp", createTimestamp())
-        bundle.putString("uid", getDataLogin()?.data?.id)
-        bundle.putString("udid", deviceIdAndroid())
-
-        hitEventFirebase("session_start", bundle)
-    }
-
     override fun onStop() {
         super.onStop()
+        AKG_SDK.callSessionStop(this)
+    }
 
-        val bundle = Bundle()
-        bundle.putString("timestamp", createTimestamp())
-        bundle.putString("uid", getDataLogin()?.data?.id)
-        bundle.putString("udid", deviceIdAndroid())
-        hitEventFirebase("session_stop", bundle)
+    override fun onStart() {
+        super.onStart()
+        AKG_SDK.callSessionStart(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-
-        val bundle = Bundle()
-        bundle.putString("timestamp", createTimestamp())
-        bundle.putString("uid", getDataLogin()?.data?.id)
-        bundle.putString("udid", deviceIdAndroid())
-        hitEventFirebase("session_stop", bundle)
+        AKG_SDK.callSessionStop(this)
     }
 
     private fun callBanner() {

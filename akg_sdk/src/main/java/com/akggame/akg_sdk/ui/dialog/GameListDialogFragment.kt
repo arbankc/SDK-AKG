@@ -13,7 +13,6 @@ import com.akggame.akg_sdk.AKG_SDK
 import com.akggame.akg_sdk.IConfig
 import com.akggame.akg_sdk.callback.LoginSDKCallback
 import com.akggame.akg_sdk.`interface`.OnClickItem
-import com.akggame.akg_sdk.dao.SocmedDao
 import com.akggame.akg_sdk.dao.api.model.request.FacebookAuthRequest
 import com.akggame.akg_sdk.dao.api.model.response.DataItemGameList
 import com.akggame.akg_sdk.dao.api.model.response.FacebookAuthResponse
@@ -28,6 +27,7 @@ import com.akggame.akg_sdk.util.Constants
 import com.akggame.akg_sdk.util.DeviceUtil
 import com.akggame.newandroid.sdk.R
 import com.github.ajalt.timberkt.d
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.orhanobut.hawk.Hawk
@@ -44,6 +44,7 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
     private var mParam2: String? = null
     var productCodeGame: String? = null
     var gameIdProduct: String? = null
+    var packageName: String? = null
 
     var dataItemGameList: List<DataItemGameList>? = null
     var itemGameList: DataItemGameList? = null
@@ -64,6 +65,7 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
             itemGameList = dataItemGameList?.get(pos)
             productCodeGame = itemGameList?.attributes?.productCode
             gameIdProduct = itemGameList?.id.toString()
+            packageName = itemGameList?.attributes?.packageName
         }
     }
 
@@ -98,7 +100,6 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
     private fun initial() {
         GamePresenter(this)
             .onGameList(context as Context)
-
     }
 
     private fun showDialogListGame(dataItemGameList: List<DataItemGameList>?) {
@@ -114,6 +115,8 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
         productCodeGame =
             gameListAdapter.dataItemGameList?.get(0)?.attributes?.productCode.toString()
         gameIdProduct = gameListAdapter.dataItemGameList?.get(0)?.id.toString()
+        packageName = gameListAdapter.dataItemGameList?.get(0)?.attributes?.packageName.toString()
+
         Hawk.put(Constants.ID_GAME, gameIdProduct)
         btnStartGame?.setOnClickListener {
             if (productCodeGame?.isNotEmpty()!!) {
@@ -180,14 +183,18 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
         Hawk.put(Constants.DATA_UPSERT, model)
         Hawk.put("gameId", gameIdProduct)
 
-
         itemGameList?.let { it1 ->
             AKG_SDK.getStartSdkCallback()?.onStartGame(it1)
         }
 
+        println("respon package name $gameIdProduct")
+
+        Hawk.put(Constants.ID_GAME_PROVIDER, gameIdProduct)
+
         LoginPresenter(this)
             .upsertUser(model, requireActivity(), typeLogin.toString())
     }
+
 
     private fun typeLogin(typeLogin: String?) {
         when {
@@ -222,11 +229,14 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
         userId: String,
         uid: String
     ) {
+        val packageName = Hawk.get<String>(Constants.ID_GAME_PROVIDER)
         val bundle = Bundle()
         bundle.putString("uid", uid)
         bundle.putString("timestamp", createTimestamp())
         bundle.putString("type_login", typeLogin)
+        bundle.putString("game_provider", packageName)
         hitEventFirebase(eventName, bundle)
+        context?.let { FirebaseAnalytics.getInstance(it).logEvent(eventName, bundle) }
     }
 
     companion object {
@@ -291,7 +301,6 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
         } else {
             mLoginCallback.onResponseSuccess(token, "", typeLogin)
             CacheUtil.putPreferenceString(IConfig.SESSION_PIW, "", requireActivity())
-            SocmedDao.setAdjustEventLogin(isFirstLogin, requireActivity())
             Hawk.put(Constants.DATA_USER_ID, userId)
             validateEventNameType(facebookAuthResponse?.data!!, typeLogin)
         }
@@ -337,7 +346,6 @@ class GameListDialogFragment : BaseDialogFragment(), GameListIView, LoginIView {
                     facebookAuthResponse.attributes?.uid.toString()
                 )
             }
-
         }
     }
 

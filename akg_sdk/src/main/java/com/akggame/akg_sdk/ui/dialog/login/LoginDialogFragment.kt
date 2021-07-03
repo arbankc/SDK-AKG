@@ -4,7 +4,9 @@ package com.akggame.akg_sdk.ui.dialog.login
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -36,12 +38,13 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.*
 import com.orhanobut.hawk.Hawk
-import kotlinx.android.synthetic.main.content_dialog_login.*
 import kotlinx.android.synthetic.main.content_dialog_login.view.*
 import org.json.JSONException
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
 
 
-class LoginDialogFragment() : BaseDialogFragment() {
+class LoginDialogFragment() : BaseDialogFragment(), FacebookCallback<LoginResult> {
 
     lateinit var mView: View
     lateinit var callbackManager: CallbackManager
@@ -64,11 +67,11 @@ class LoginDialogFragment() : BaseDialogFragment() {
     var tokenFb: String? = null
     var idFb: String? = null
 
+//    var loginButtonFb: LoginButton? = null
 
     constructor(fm: FragmentManager?) : this() {
         myFragmentManager = fm
     }
-
 
     companion object {
         var mLoginCallback: LoginSDKCallback? = null
@@ -90,6 +93,8 @@ class LoginDialogFragment() : BaseDialogFragment() {
         mView =
             LayoutInflater.from(requireActivity() as Context)
                 .inflate(R.layout.content_dialog_login, null, false)
+        AppEventsLogger.activateApp(requireActivity().application)
+        initialize()
         return mView
     }
 
@@ -98,9 +103,6 @@ class LoginDialogFragment() : BaseDialogFragment() {
         mDismissed = false
         mShownByMe = true
         onViewDestroyed = false
-
-        AppEventsLogger.activateApp(requireActivity().application)
-        initialize()
         currentUser = auth?.currentUser
     }
 
@@ -108,46 +110,16 @@ class LoginDialogFragment() : BaseDialogFragment() {
     /*
      * Facebook SIGN IN----------------------------------------->
      */
-    fun setFacebookLogin() {
-        callbackManager = CallbackManager.Factory.create()
-        mView.fbLoginButton.fragment = this
-        mView.fbLoginButton.setPermissions(arrayListOf("email"))
-        mView.btnBindFacebook.setOnClickListener {
-            mView.fbLoginButton.performClick()
-        }
-
-        fbLoginButton.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
-            override fun onSuccess(result: LoginResult?) {
-                result?.let { setFacebookData(it) }
-                d { "respon Data fb ${result?.accessToken}" }
-            }
-
-            override fun onCancel() {
-
-            }
-
-            override fun onError(error: FacebookException?) {
-                if (error is FacebookAuthorizationException) {
-                    if (AccessToken.getCurrentAccessToken() != null) {
-                        LoginManager.getInstance().logOut()
-                    }
-                }
-
-            }
-        })
-    }
 
     private fun setFacebookData(loginResult: LoginResult) {
         val request = GraphRequest.newMeRequest(
             loginResult.accessToken
         ) { _, response ->
             try {
-                d { " responData Fb $response" }
                 emailFb = response.jsonObject.getString("email")
                 nameFb = response.jsonObject.getString("first_name")
                 tokenFb = loginResult.accessToken.toString()
                 idFb = response.jsonObject.getString("id")
-                val lastName = response.jsonObject.getString("last_name")
                 var profileURL = ""
                 if (Profile.getCurrentProfile() != null) {
                     profileURL = ImageRequest.getProfilePictureUri(
@@ -156,12 +128,9 @@ class LoginDialogFragment() : BaseDialogFragment() {
                         400
                     ).toString()
                 }
-
                 statusLogin = "facebook"
                 firebaseAuthWithFb(loginResult.accessToken)
-
             } catch (e: JSONException) {
-                d { "respon Error ${e.message}" }
                 val gameListDialogFragment =
                     currentUser?.let {
                         GameListDialogFragment.newInstance(
@@ -190,8 +159,8 @@ class LoginDialogFragment() : BaseDialogFragment() {
     fun setGoogleLogin() {
         mGoogleSignInClient = SocmedDao.setGoogleSigninClient(requireContext())
 
-        btnBindGoogle.setOnClickListener {
-            showDialogLoading(true)
+        mView.btnBindGoogle.setOnClickListener {
+            showDialogLoading(false)
             val signInIntent = mGoogleSignInClient.signInIntent
             startActivityForResult(signInIntent, 20)
         }
@@ -204,7 +173,6 @@ class LoginDialogFragment() : BaseDialogFragment() {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             handleSignInResult(task)
         }
-
     }
 
 
@@ -213,7 +181,9 @@ class LoginDialogFragment() : BaseDialogFragment() {
         dialogListGame = dialogCustom()
 
         setGoogleLogin()
-        setFacebookLogin()
+        setLoginFb()
+        printKeyHash()
+
         mView.btnBack.setOnClickListener {
             this.customDismiss()
             changeToPhoneLogin()
@@ -224,6 +194,22 @@ class LoginDialogFragment() : BaseDialogFragment() {
             loginGuestFirebase()
 
         }
+
+        mView.btnBindFacebook?.setOnClickListener {
+            showDialogLoading(true)
+            callLoginFb()
+        }
+    }
+
+    private fun setLoginFb() {
+        callbackManager = CallbackManager.Factory.create()
+        LoginManager.getInstance().registerCallback(callbackManager, this)
+    }
+
+
+    private fun callLoginFb() {
+        LoginManager.getInstance()
+            .logInWithReadPermissions(this, listOf("public_profile", "email"))
     }
 
     private fun loginUpdateGuestFirebase() {
@@ -238,7 +224,25 @@ class LoginDialogFragment() : BaseDialogFragment() {
                     }
                 }
         }
+    }
 
+    private fun printKeyHash() {
+        // Add code to print out the key hash
+        try {
+            val info = activity?.packageManager?.getPackageInfo(
+                activity!!.packageName,
+                PackageManager.GET_SIGNATURES
+            )
+            for (signature in info?.signatures!!) {
+                val md = MessageDigest.getInstance("SHA")
+                md.update(signature.toByteArray())
+                Log.d("respon Key has:", Base64.encodeToString(md.digest(), Base64.DEFAULT))
+            }
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+        } catch (e: NoSuchAlgorithmException) {
+            e.printStackTrace()
+        }
     }
 
     private fun loginGuestFirebase() {
@@ -286,8 +290,7 @@ class LoginDialogFragment() : BaseDialogFragment() {
         try {
             val account = completedTask.getResult(ApiException::class.java)
             idToken = account?.idToken
-            d { "respon Login account ${account?.idToken}" }
-            showDialogLoading(false)
+            showDialogLoading(true)
             firebaseAuthWithGoogle(account?.idToken.toString())
         } catch (e: ApiException) {
             Log.w("FRAGMENT_GOOGLE", "signInResult:failed code=" + e.statusCode)
@@ -405,7 +408,6 @@ class LoginDialogFragment() : BaseDialogFragment() {
 
     }
 
-
     override fun onResume() {
         super.onResume()
         if (!CacheUtil.getPreferenceBoolean(IConfig.SESSION_LOGIN, requireActivity())) {
@@ -421,4 +423,29 @@ class LoginDialogFragment() : BaseDialogFragment() {
             }
         }
     }
+
+    override fun onCancel() {
+        showDialogLoading(false)
+        println("respon Cancel ")
+    }
+
+    override fun onSuccess(result: LoginResult?) {
+        showDialogLoading(false)
+        result?.let {
+            setFacebookData(it)
+        }
+    }
+
+    override fun onError(error: FacebookException?) {
+        error?.printStackTrace()
+        showDialogLoading(false)
+        println("respon Error fb ${error?.message}")
+        showToast(error?.message)
+        if (error is FacebookAuthorizationException) {
+            if (AccessToken.getCurrentAccessToken() != null) {
+                LoginManager.getInstance().logOut()
+            }
+        }
+    }
+
 }

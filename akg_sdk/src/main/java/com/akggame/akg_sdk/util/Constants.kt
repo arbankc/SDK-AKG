@@ -11,5 +11,8 @@ object Constants {
     const val ID_GAME = "ID_GAME"
     const val PURCHASE_SUKSES = "purchase_success"
     const val PURCHASE_FAILED = "purchase_failed"
-
+    const val ID_GAME_PROVIDER = "PACKAGE_GAME"
+    const val SESSION_START = "session_starts"
+    const val SESSION_STOP = "session_stop"
+    const val EVENT_LOGOUT = "logouts"
 }

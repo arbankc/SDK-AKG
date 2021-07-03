@@ -16,6 +16,7 @@ import com.akggame.akg_sdk.IConfig
 import com.akggame.akg_sdk.callback.ProductSDKCallback
 import com.akggame.akg_sdk.callback.PurchaseSDKCallback
 import com.akggame.akg_sdk.`interface`.OnClickItem
+import com.akggame.akg_sdk.`interface`.OnClickItemGoogle
 import com.akggame.akg_sdk.baseextend.BaseFragment
 import com.akggame.akg_sdk.dao.BillingDao
 import com.akggame.akg_sdk.dao.api.model.ProductData
@@ -24,8 +25,10 @@ import com.akggame.akg_sdk.dao.pojo.PurchaseItem
 import com.akggame.akg_sdk.presenter.ProductPresenter
 import com.akggame.akg_sdk.ui.activity.FrameLayoutActivity
 import com.akggame.akg_sdk.ui.activity.PaymentIView
+import com.akggame.akg_sdk.ui.activity.PaymentOttopayActivity
 import com.akggame.akg_sdk.ui.adapter.PaymentAdapter
 import com.akggame.akg_sdk.ui.adapter.PaymentAdapterGoogle
+import com.akggame.akg_sdk.ui.dialog.menu.BindAccountDialog
 import com.akggame.akg_sdk.util.CacheUtil
 import com.akggame.akg_sdk.util.Constants
 import com.akggame.newandroid.sdk.R
@@ -48,6 +51,19 @@ class GameListProductFragment : BaseFragment(),
     var progressBarPayment: ProgressBar? = null
 
 
+    val onClickItemGoogle = object : OnClickItemGoogle {
+        override fun clickItem(position: Int, skuDetails: SkuDetails) {
+            val bindAccountDialog = BindAccountDialog()
+            if (CacheUtil.getPreferenceString(IConfig.LOGIN_TYPE, activity as Context)
+                    ?.equals(IConfig.LOGIN_GUEST)!!
+            ) {
+                fragmentManager?.let { it1 -> bindAccountDialog.show(it1, "bind account") }
+            } else {
+                AKG_SDK.launchBilling(context as Activity, skuDetails, this@GameListProductFragment)
+            }
+
+        }
+    }
     private val onClickItem: OnClickItem = object : OnClickItem {
         override fun clickItem(pos: Int) {
             val dataPaymentGameProduct = paymentAdapter.skuDetails[pos]
@@ -87,7 +103,7 @@ class GameListProductFragment : BaseFragment(),
 
 //        typePayment = intent.getStringExtra(Constants.TYPE_PAYMENT)
 
-        paymentAdapterGoogle = PaymentAdapterGoogle(activity as Context, this)
+        paymentAdapterGoogle = PaymentAdapterGoogle(activity as Context, this, onClickItemGoogle)
 
         if (typePayment.equals("paymentgoogle", ignoreCase = true))
             initialListGoogleProduct()

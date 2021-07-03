@@ -12,7 +12,7 @@ android {
         applicationId "com.akggame.newandroid"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 25
+        versionCode 42
         versionName "1.15"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

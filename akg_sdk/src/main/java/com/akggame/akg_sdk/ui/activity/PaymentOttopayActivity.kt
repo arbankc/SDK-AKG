@@ -46,6 +46,8 @@ class PaymentOttopayActivity : BaseActivity(), OttopayIView, StatusOttoPayCallba
     }
 
     override fun handleError(message: String) {
+//        showToast(message)
+        println("respon Message $message")
     }
 
     override fun handleRetryConnection() {
@@ -102,11 +104,13 @@ class PaymentOttopayActivity : BaseActivity(), OttopayIView, StatusOttoPayCallba
     }
 
     override fun onSuccess(status: String) {
+        val packageName = Hawk.get<String>(Constants.ID_GAME_PROVIDER)
         val bundle = Bundle()
         bundle.putString("uid", firebaseId)
         bundle.putString("item_id", productData?.attributes?.game_id.toString())
-        bundle.putString("amount", productData?.attributes?.price)
+        bundle.putString("amount", productData?.attributes?.price?.toFloat().toString())
         bundle.putString("timestamp", createTimestamp())
+        bundle.putString("game_provider", packageName)
         bundle.putString("channel", "ottopay")
         bundle.putString("status", "success")
         println("respon failed ottopay $status")
@@ -115,15 +119,18 @@ class PaymentOttopayActivity : BaseActivity(), OttopayIView, StatusOttoPayCallba
     }
 
     override fun onFailed(status: String) {
+        val packageName = Hawk.get<String>(Constants.ID_GAME_PROVIDER)
         val bundle = Bundle()
         bundle.putString("uid", firebaseId)
-        bundle.putString("item_id", productData?.attributes?.game_id.toString())
-        bundle.putString("amount", productData?.attributes?.price)
+        bundle.putString("item_id", productData?.attributes?.product_code.toString())
+        bundle.putString("amount", productData?.attributes?.price?.toFloat().toString())
         bundle.putString("timestamp", createTimestamp())
         bundle.putString("channel", "ottopay")
+        bundle.putString("game_provider", packageName)
         bundle.putString("status", "failed")
         hitEventFirebase(Constants.PURCHASE_FAILED, bundle)
         FirebaseAnalytics.getInstance(this).logEvent(status, bundle)
         println("respon failed ottopay $status")
     }
+
 }

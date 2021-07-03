@@ -24,13 +24,11 @@
                     android:id="@+id/fbLoginButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="379dp"
-                    android:layout_marginBottom="387dp"
+                    android:gravity="center"
                     android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/btnBindFacebook"
+                    app:layout_constraintStart_toStartOf="@+id/btnBindFacebook"
+                    app:layout_constraintTop_toBottomOf="@+id/btnBindFacebook"
                     tools:ignore="MissingConstraints" />
 
             <ImageView
@@ -55,7 +53,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="24dp"
                     android:background="@drawable/button_selector_blue"
-                    android:drawableLeft="@drawable/vector_ic_btn_fb"
+                    android:drawableStart="@drawable/vector_ic_btn_fb"
                     android:drawablePadding="24dp"
                     android:paddingLeft="36dp"
                     android:paddingRight="36dp"

@@ -26,10 +26,8 @@ class ProductPresenter(val mIView: IView) {
 
     object SKU {
         val product1 = "com.sdkgame.product1"
-        val janjiDoang = "com.akg.productbaru"
-        val tempeOrek = "com.sdkgame.product2"
-        val janjiDoang2 = "com.sdkgame.product1"
-        val tempeOrek2 = "tempe_0rek"
+        val product2 = "com.sdkgame.product2"
+        val product4 = "com.sdkgame.product4"
         val product3 = "com.sdkgame.product3"
 
         val testingPurchased = "android.test.purchased"
@@ -37,12 +35,11 @@ class ProductPresenter(val mIView: IView) {
         val testingUnavailable = "android.test.item_unavailable"
 
         val testListSKU = listOf(
-            tempeOrek2,
-            testingPurchased,
-            testingUnavailable,
+//            testingPurchased,
+            product1,
+            product2,
             product3,
-            janjiDoang,
-            product1
+            product4
         )
     }
 

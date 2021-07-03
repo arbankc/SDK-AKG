@@ -7,11 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.akggame.akg_sdk.AKG_SDK
 import com.akggame.akg_sdk.IConfig
 import com.akggame.akg_sdk.callback.RelaunchSDKCallback
 import com.akggame.akg_sdk.ui.dialog.BaseDialogFragment
 import com.akggame.akg_sdk.ui.dialog.menu.LogoutIView
 import com.akggame.akg_sdk.util.CacheUtil
+import com.akggame.akg_sdk.util.Constants
 import com.akggame.newandroid.sdk.R
 import com.github.ajalt.timberkt.d
 import com.google.firebase.auth.FirebaseAuth
@@ -96,6 +98,11 @@ class RelaunchDialog : BaseDialogFragment(), LogoutIView {
             Hawk.put(IConfig.SESSION_TOKEN, idToken)
         }
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        AKG_SDK.callSessionStart(requireContext())
     }
 
     fun startCountDown() {

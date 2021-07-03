@@ -5,11 +5,13 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
+import android.provider.Settings
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
-import com.akggame.akg_sdk.*
+import com.akggame.akg_sdk.IConfig
 import com.akggame.akg_sdk.callback.*
 import com.akggame.akg_sdk.dao.api.model.FloatingItem
 import com.akggame.akg_sdk.dao.api.model.response.CurrentUserResponse
@@ -31,13 +33,13 @@ import com.akggame.akg_sdk.util.JSBridge
 import com.akggame.newandroid.sdk.R
 import com.android.billingclient.api.SkuDetails
 import com.clappingape.dplkagent.model.api.request.DepositRequest
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.orhanobut.hawk.Hawk
 
 
 class AkgDao : AccountIView, OttopayIView, EulaIView {
 
     private lateinit var customCallback: LoginSDKCallback
-
     private val productPresenter = ProductPresenter(this)
     private val eulaPresenter = EulaPresenter(this)
     private val presenter = InfoPresenter(this)
@@ -90,6 +92,41 @@ class AkgDao : AccountIView, OttopayIView, EulaIView {
         ftransaction.addToBackStack("banner")
         banner.show(ftransaction, "banner")
     }
+
+    fun getDataLogin(): CurrentUserResponse? {
+        return Hawk.get(Constants.DATA_LOGIN)
+    }
+
+    fun deviceIdAndroid(context: Context): String {
+        return Settings.Secure.getString(
+            context.contentResolver, Settings.Secure.ANDROID_ID
+        )
+    }
+
+    fun hitEventFirebase(eventName: String, bundle: Bundle, context: Context) {
+        val firebaseAnalytics = FirebaseAnalytics.getInstance(context)
+        firebaseAnalytics.logEvent(eventName, bundle)
+    }
+
+    fun callSessionStart(context: Context) {
+        val packageName = Hawk.get<String>(Constants.ID_GAME_PROVIDER)
+        val bundle = Bundle()
+        bundle.putString("game_provider", packageName)
+        bundle.putString("uid", getDataLogin()?.data?.attributes?.firebase_id)
+        bundle.putString("udid", deviceIdAndroid(context))
+        hitEventFirebase(Constants.SESSION_START, bundle, context)
+
+    }
+
+    fun callSessionStop(context: Context) {
+        val packageName = Hawk.get<String>(Constants.ID_GAME_PROVIDER)
+        val bundle = Bundle()
+        bundle.putString("game_provider", packageName)
+        bundle.putString("uid", getDataLogin()?.data?.attributes?.firebase_id)
+        bundle.putString("udid", deviceIdAndroid(context))
+        hitEventFirebase(Constants.SESSION_STOP, bundle, context)
+    }
+
 
     fun getStatusOttopay(
         activity: AppCompatActivity,
@@ -149,7 +186,9 @@ class AkgDao : AccountIView, OttopayIView, EulaIView {
                     5 -> {
                         menuSDKCallback.onLogout()
                     }
-
+                    6 -> {
+                        hitEventLevelup(context)
+                    }
                 }
             }
         }
@@ -157,6 +196,14 @@ class AkgDao : AccountIView, OttopayIView, EulaIView {
         floatingButton.floatingAdapterListener = onItemClickListener
     }
 
+    fun hitEventLevelup(context: Context) {
+        val packageName = Hawk.get<String>(Constants.ID_GAME_PROVIDER)
+        val bundle = Bundle()
+        bundle.putInt("level", 10000)
+        bundle.putString("game_provider", packageName)
+        bundle.putString("uid", getDataLogin()?.data?.attributes?.firebase_id)
+        hitEventFirebase("level_up", bundle, context)
+    }
 
     fun callLogoutDialog(menuSDKCallback: LogoutSdkCallback, fragmentManager: FragmentManager) {
         val logoutDialog = LogoutDialog.newInstance(menuSDKCallback)
@@ -183,15 +230,13 @@ class AkgDao : AccountIView, OttopayIView, EulaIView {
     fun setFloatingButtonItem(
         floatingButton: FloatingButton, activity: AppCompatActivity
     ): FloatingButton {
-
-
+        floatingButton.clearAllItems()
         floatingButton.circleIcon.setImageDrawable(
             ContextCompat.getDrawable(
                 activity,
                 R.mipmap.btn_akg_logo
             )
         )
-        floatingButton.clearAllItems()
         if (CacheUtil.getPreferenceString(
                 IConfig.LOGIN_TYPE,
                 activity
@@ -246,6 +291,13 @@ class AkgDao : AccountIView, OttopayIView, EulaIView {
             FloatingItem(
                 ContextCompat.getDrawable(activity, R.mipmap.btn_log_out),
                 null, "Logout"
+            )
+        )
+        floatingButton.addItem(
+            FloatingItem(
+                ContextCompat.getDrawable(activity, R.mipmap.x_btn),
+                null,
+                "Level Up"
             )
         )
         callGetAccount(activity)

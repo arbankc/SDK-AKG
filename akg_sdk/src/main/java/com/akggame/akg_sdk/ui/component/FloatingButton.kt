@@ -424,14 +424,16 @@ class FloatingButton : FrameLayout {
         recyclerView.visible(false)
         recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
         recyclerView.adapter = adapter
-        addView(recyclerView, getRecyclerViewSize(), dp2Px(circleSize))
+        recyclerView.hasFixedSize()
+        addView(recyclerView, getRecyclerViewSize(), getRecyclerViewSize())
     }
 
     private fun addVerticalRecyclerView() {
         recyclerView.visible(false)
         recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         recyclerView.adapter = adapter
-        addView(recyclerView, dp2Px(circleSize), getRecyclerViewSize())
+        recyclerView.hasFixedSize()
+        addView(recyclerView, getRecyclerViewSize(), getRecyclerViewSize())
     }
 
     fun setFloat() {
@@ -440,7 +442,6 @@ class FloatingButton : FrameLayout {
         if (!isFloating) {
             isFloating = true
             visible(true)
-
             when (floatingButtonAnimation) {
                 Animation.SCALE -> {
                     animateScale(1.0f, 1.0f, duration / 2)
@@ -481,7 +482,6 @@ class FloatingButton : FrameLayout {
 
             if (orientation == ORIENTATION.HORIZONTAL) {
                 updateWidthParams(dp2Px(circleSize), 1000f)
-
                 circleIcon.translateX(duration, 0f)
                     .doAfterAnimate {
                         if (!isNavigating) {

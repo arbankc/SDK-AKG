@@ -82,6 +82,16 @@ object AKG_SDK {
     }
 
     @JvmStatic
+    fun callSessionStart(context: Context) {
+        AkgDao.callSessionStart(context)
+    }
+
+    @JvmStatic
+    fun callSessionStop(context: Context) {
+        AkgDao.callSessionStop(context)
+    }
+
+    @JvmStatic
     fun callStatusOttopay(
         activity: AppCompatActivity,
         statusOttoPayCallback: StatusOttoPayCallback

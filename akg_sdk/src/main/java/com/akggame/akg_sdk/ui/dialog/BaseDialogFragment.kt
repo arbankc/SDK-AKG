@@ -1,10 +1,12 @@
 package com.akggame.akg_sdk.ui.dialog
 
 import android.app.Dialog
+import android.content.Context
 import android.content.DialogInterface
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
@@ -13,8 +15,10 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import com.akggame.akg_sdk.IConfig
+import com.akggame.akg_sdk.dao.api.model.response.CurrentUserResponse
 import com.akggame.akg_sdk.rx.IView
 import com.akggame.akg_sdk.util.CacheUtil
+import com.akggame.akg_sdk.util.Constants
 import com.akggame.newandroid.sdk.R
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
@@ -56,6 +60,16 @@ open class BaseDialogFragment : DialogFragment(), IView {
         CacheUtil.clearPreference(activity!!)
     }
 
+    fun getDataLogin(): CurrentUserResponse? {
+        return Hawk.get(Constants.DATA_LOGIN)
+    }
+
+    fun deviceIdAndroid(): String {
+        return Settings.Secure.getString(
+            activity?.contentResolver, Settings.Secure.ANDROID_ID
+        )
+    }
+
     fun createTimestamp(): String {
         val tsLong = System.currentTimeMillis() / 1000
         return tsLong.toString()
@@ -82,7 +96,7 @@ open class BaseDialogFragment : DialogFragment(), IView {
                 )
             }
         }
-        setOnBackPressed()
+//        setOnBackPressed()
 
     }
 
